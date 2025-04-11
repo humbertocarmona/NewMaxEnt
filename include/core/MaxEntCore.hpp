@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/parameters.hpp"
-#include "util/edge.hpp"
 #include <armadillo>
 #include <memory>
 #include <vector>
@@ -28,6 +27,11 @@ class MaxEntCore
         return LOGGER;
     }
 
+    const Params &get_params() const
+    {
+        return par;
+    }
+
   private:
     std::shared_ptr<spdlog::logger> LOGGER;
     bool verbose;
@@ -41,7 +45,6 @@ class MaxEntCore
     arma::Col<double> J;
     arma::Mat<int> samples;
 
-    std::vector<Edge> edge;
     arma::Mat<int> edge_index;
 
     void initialize_network();

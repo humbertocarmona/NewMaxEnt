@@ -42,7 +42,7 @@ double rms(const arma::Col<double> &vec1, const arma::Col<double> &vec2)
  */
 arma::Col<double> center_xy(const arma::Col<double> &x, const arma::Col<double> &xy)
 {
-    auto logger = get_logger();
+    auto logger = create_logger();
 
     // Compute the discriminant for the quadratic equation to get nspins
     double discriminant = std::sqrt(1 + 8 * xy.n_elem);

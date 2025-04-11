@@ -6,14 +6,13 @@
 
 MaxEntCore::MaxEntCore(const Params &params, bool verbose_) : par(params), verbose(verbose_)
 {
-    LOGGER = get_logger();
+    LOGGER = create_logger();
     set_console_verbosity(verbose);
 
     nspins = par.gen_nspins;
     nedges = nspins * (nspins - 1) / 2;
     iter   = 1;
 
-    initialize_network();
     initialize_from_params();
 }
 
@@ -33,24 +32,6 @@ void MaxEntCore::initialize_from_params()
     {
         set_J(par.gen_J_mean, par.gen_J_width);
         par.gen_J0 = J;
-    }
-}
-
-void MaxEntCore::initialize_network()
-{
-    edge.resize(nedges);
-    edge_index.set_size(nspins, nspins);
-    edge_index.fill(-1);
-    int idx = 0;
-    for (int i = 0; i < nspins - 1; ++i)
-    {
-        for (int j = i + 1; j < nspins; ++j)
-        {
-            edge[idx]        = Edge(i, j);
-            edge_index(i, j) = idx;
-            edge_index(j, i) = idx;
-            ++idx;
-        }
     }
 }
 

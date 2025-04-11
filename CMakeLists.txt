@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(MaxEntModel VERSION 0.1.0)
 cmake_policy(SET CMP0167 NEW)
 
+# Use system-installed fmt
 add_compile_definitions(SPDLOG_FMT_EXTERNAL)
 
 # Set C++ standard
@@ -15,8 +16,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Dependencies
-find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
+find_package(spdlog REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
@@ -28,7 +29,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Source files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-# Build the library
+# Build the main library
 add_library(maxent_lib ${SOURCES})
 target_link_libraries(maxent_lib
     PRIVATE
@@ -39,7 +40,8 @@ target_link_libraries(maxent_lib
 )
 
 # Build the test executable
-add_executable(test_maxent tests/test_main.cpp)
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
+add_executable(test_maxent ${TEST_SOURCES})
 target_link_libraries(test_maxent
     PRIVATE
     maxent_lib
@@ -48,11 +50,23 @@ target_link_libraries(test_maxent
     pthread
 )
 
-# Set test output dir
+# Optional: set output directory for test binary
 set_target_properties(test_maxent PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
-# Enable CTest
+# Enable testing and test discovery
+# enable_testing()
+# include(GoogleTest)
+# gtest_discover_tests(test_maxent)
+
 enable_testing()
-add_test(NAME unit_tests COMMAND test_maxent)
+
+include(GoogleTest)
+
+gtest_discover_tests(test_maxent
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    DISCOVERY_TIMEOUT 30
+    DISCOVERY_MODE PRE_TEST
+)
+

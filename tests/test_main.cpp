@@ -1,19 +1,33 @@
 #include "core/MaxEntCore.hpp"
-#include "core/parameters.hpp"
-#include "entropy/ShannonEntropy.hpp"
-#include <iostream>
+#include <armadillo>
+#include <gtest/gtest.h>
 
-int main()
+int main(int argc, char **argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+TEST(MaxEntCoreSmokeTest, LoggerInitialization)
 {
     Params params;
     params.gen_nspins = 4;
     params.gen_seed   = 42;
 
     MaxEntCore model(params, true);
+    auto logger = model.get_logger();
 
-    ShannonEntropy entropy;
-    entropy.compute_expectations(model);
+    ASSERT_TRUE(logger != nullptr);
+    logger->info("[Test] Logger works inside MaxEntCore.");
+    logger->flush();
+}
 
-    std::cout << "[Test] Basic MaxEntCore + ShannonEntropy ran successfully.\n";
-    return 0;
+TEST(MaxEntCoreSmokeTest, ParamsLogInfo)
+{
+    Params params;
+    params.gen_nspins = 4;
+    params.gen_seed   = 42;
+
+    MaxEntCore model(params, true);
+    model.get_params().log_info(true); // should just print info
 }

@@ -115,7 +115,7 @@ struct Params
     {
         std::string q_val_str = utils::col_string(q_val);
         set_console_verbosity(verbose); // Adjust verbosity based on the flag
-        auto logger = get_logger();
+        auto logger = create_logger();
 
         logger->info("[Params] id                {}", id);
         logger->info("[Params] runid             {}", runid);

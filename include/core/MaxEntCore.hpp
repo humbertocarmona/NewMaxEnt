@@ -29,21 +29,21 @@ class MaxEntCore
 
     const Params &get_params() const
     {
-        return par;
+        return run_parameters;
     }
 
   private:
     std::shared_ptr<spdlog::logger> LOGGER;
     bool verbose;
 
-    Params par;
-    int nspins;
-    int nedges;
+    Params run_parameters;
+    int n_spins;
+    int n_edges;
     int iter;
 
     arma::Col<double> h;
     arma::Col<double> J;
-    arma::Mat<int> samples;
+    arma::Mat<int> raw_samples;
 
     arma::Mat<int> edge_index;
 

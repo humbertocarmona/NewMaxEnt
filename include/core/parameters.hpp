@@ -9,9 +9,10 @@ struct Params
 {
     /* data */
     std::string id;
-    int runid; // runid could be the gen seed
-    std::string input_file;
-    int input_type; // 1:: classified spins csv file (default), 2 sample means json file
+    int runid;                    // runid could be the gen seed
+    std::string raw_samples_file; // filename with raw samples to compute means
+    std::string stats_file;       // JSON file with means, and correlations
+    std::string checkpoint_file;  // JSON checkpoint file with means, and correlations
     std::string run_type;
     std::string comment;
     std::string result_dir;
@@ -47,8 +48,9 @@ struct Params
     // clang-format off
     Params(std::string id_ = "",
            int runid_ = 0,
-           std::string input_file_ = "none",
-           int input_type_ = 1,
+           std::string raw_sample_file_ = "none",
+           std::string stats_file_ = "none",
+           std::string checkpoint_file_ = "none",
            std::string run_type_ = "ens",
            std::string comment_ = "auto",
            std::string result_dir_ = "./Testing",
@@ -79,8 +81,9 @@ struct Params
            int mc_n_rept_ = 40,
            int mc_seed_ = 1234): runid(runid_),
         id(id_),
-        input_file(input_file_),
-        input_type(input_type_),
+        raw_samples_file(raw_sample_file_),
+        stats_file(stats_file_),
+        checkpoint_file(checkpoint_file_),
         run_type(run_type_),
         comment(comment_),
         result_dir(result_dir_),
@@ -119,8 +122,9 @@ struct Params
 
         logger->info("[Params] id                {}", id);
         logger->info("[Params] runid             {}", runid);
-        logger->info("[Params] input_file        {}", input_file);
-        logger->info("[Params] input_type        {}", input_type);
+        logger->info("[Params] raw_samples_file  {}", raw_samples_file);
+        logger->info("[Params] stats_file        {}", stats_file);
+        logger->info("[Params] checkpoint_file   {}", checkpoint_file);
         logger->info("[Params] run_type          {}", run_type);
         logger->info("[Params] comment           {}", comment);
         logger->info("[Params] result_dir        {}", result_dir);

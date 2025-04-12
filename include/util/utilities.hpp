@@ -10,8 +10,6 @@
 
 namespace utils
 {
-double rms(const arma::Col<double> &vec1, const arma::Col<double> &vec2);
-
 arma::Col<double> center_xy(const arma::Col<double> &x, const arma::Col<double> &xy);
 
 arma::Col<double> center_xyz(const arma::Col<double> &x, const arma::Col<double> &xy, const arma::Col<double> &xyz);

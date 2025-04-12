@@ -1,6 +1,6 @@
-#include "core/CostFunction.hpp"
+#include "core/cost_function.hpp"
 
-CostBreakdown computeCost(const arma::Col<double> &moment_1_data, const arma::Col<double> &moment_1_model,
+CostBreakdown compute_cost(const arma::Col<double> &moment_1_data, const arma::Col<double> &moment_1_model,
                           const arma::Col<double> &moment_2_data, const arma::Col<double> &moment_2_model)
 {
     double cost1 = arma::accu(arma::square(moment_1_model - moment_1_data));

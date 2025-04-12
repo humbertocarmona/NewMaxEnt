@@ -8,21 +8,6 @@ namespace utils
 {
 namespace fs = std::filesystem;
 
-double rms(const arma::Col<double> &vec1, const arma::Col<double> &vec2)
-{
-    // Ensure the vectors are the same size
-    if (vec1.n_elem != vec2.n_elem)
-    {
-        throw std::invalid_argument("Vectors must be the same length");
-    }
-
-    // Calculate the squared differences
-    arma::Col<double> diff = vec1 - vec2;
-    double rms             = std::sqrt(arma::accu(arma::square(diff)) / diff.n_elem);
-
-    return rms;
-}
-
 /**
  * @brief Centers the given vector `xy` based on the values from vector `x`.
  *

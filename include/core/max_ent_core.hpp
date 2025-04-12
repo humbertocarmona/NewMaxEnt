@@ -10,13 +10,13 @@ class MaxEntCore
   public:
     MaxEntCore(const Params &params, bool verbose = false);
 
-    void initialize_from_params();
-    void relax(double q = 1.0);
+    void initialize_fields();
+    void run_full_enumeration(double q, double beta);
 
     void set_samples(const arma::Mat<int> &samples);
     void set_h(double mean, double width);
     void set_J(double mean, double width);
-
+    
     const arma::Col<double> &get_h() const;
     const arma::Col<double> &get_J() const;
     const arma::Mat<int> &get_raw_samples() const;
@@ -82,7 +82,11 @@ class MaxEntCore
     arma::Col<double> model_moment_2;
     arma::Col<double> model_moment_3;
 
+    arma::Col<double> momentum_m_1;
+    arma::Col<double> momentum_m_2;
+
     void initialize_network();
     void initialize_random_fields();
     void initialize_couplings();
+    void update_model_parameters();
 };

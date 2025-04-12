@@ -1,4 +1,4 @@
-#include "core/MaxEntCore.hpp"
+#include "core/max_ent_core.hpp"
 #include <armadillo>
 
 void MaxEntCore::compute_sample_statistics()

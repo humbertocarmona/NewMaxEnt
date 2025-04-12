@@ -78,7 +78,7 @@ const arma::Col<double> &MaxEntCore::get_J() const
 {
     return J;
 }
-const arma::Mat<int> &MaxEntCore::get_samples() const
+const arma::Mat<int> &MaxEntCore::get_raw_samples() const
 {
     return raw_samples;
 }

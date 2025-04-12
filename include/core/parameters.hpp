@@ -13,7 +13,7 @@ struct Params
     std::string raw_samples_file; // filename with raw samples to compute means
     std::string stats_file;       // JSON file with means, and correlations
     std::string checkpoint_file;  // JSON checkpoint file with means, and correlations
-    std::string run_type;
+    std::string run_type;         //
     std::string comment;
     std::string result_dir;
     int save_state;

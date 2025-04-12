@@ -7,7 +7,7 @@
 
 void compute_model_statistics(const int &n_spins, const arma::Col<double> &h, const arma::Col<double> &J,
                               arma::Col<double> &model_moment_1, arma::Col<double> &model_moment_2,
-                              arma::Col<double> &model_moment_3, double q, double beta = 1.0)
+                              arma::Col<double> &model_moment_3, double q = 1.0, double beta = 1.0)
 {
     int n_edges = n_spins * (n_spins - 1) / 2;
     int n_triplets = n_spins * (n_spins - 1) * (n_spins - 2) / 6;

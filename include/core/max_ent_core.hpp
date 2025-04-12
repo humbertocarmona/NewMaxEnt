@@ -11,7 +11,7 @@ class MaxEntCore
     MaxEntCore(const Params &params, bool verbose = false);
 
     void initialize_fields();
-    void run_full_enumeration(double q, double beta);
+    void run_full_enumeration();
 
     void set_samples(const arma::Mat<int> &samples);
     void set_h(double mean, double width);

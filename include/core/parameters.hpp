@@ -19,16 +19,17 @@ struct Params
     int save_state;
     bool save_result;
     bool save_energies;
-    int n_relax_steps;
+    int max_iter;
     int init_step;
-    arma::Col<double> q_val;
+    float q_val;
+    float beta;
     float eta_h;
     float eta_J;
     float gamma_h;
     float gamma_J;
     float alpha;
-    float tol_mag;
-    float tol_cor;
+    float tol_1;
+    float tol_2;
     // Generate means from h0, J0
     int gen_nspins;
     int gen_seed; // could define the runid for this run, and also for any run
@@ -57,16 +58,17 @@ struct Params
            int save_sate_ = 1000,
            bool save_result_ = true,
            bool save_energies_ = false,
-           int n_relax_steps_ = 1000,
+           int max_iter_ = 1000,
            int init_step_ = 0,
-           arma::Col<double> q_val_ = {1.0},
+           float q_val_ = 1.0,
+           float beta_ = 1.0,
            double eta_h_ = 0.1,
            double eta_J_ = 0.1,
            double gamma_h_ = 0.2,
            double gamma_J_ = 0.2,
            double alpha_ = 0.1,
-           double tol_mag_ = 0.001,
-           double tol_cor_ = 0.001,
+           double tol_1_ = 0.001,
+           double tol_2_ = 0.001,
            // generate means from h0, J0
            int gen_nspins_ = 16,
            int gen_seed_ = -1,
@@ -90,16 +92,17 @@ struct Params
         save_result(save_result_),
         save_energies(save_energies_),
         save_state(save_sate_),
-        n_relax_steps(n_relax_steps_),
+        max_iter(max_iter_),
         init_step(init_step_),
         q_val(q_val_),
+        beta(beta_),
         eta_h(eta_h_),
         eta_J(eta_J_),
         gamma_h(gamma_h_),
         gamma_J(gamma_J_),
         alpha(alpha_),
-        tol_mag(tol_mag_),
-        tol_cor(tol_cor_),
+        tol_1(tol_1_),
+        tol_2(tol_2_),
         gen_seed(gen_seed_),
         gen_nspins(gen_nspins_),
         gen_h_mean(gen_h_mean_),
@@ -116,7 +119,6 @@ struct Params
 
     void log_info(bool verbose = false) const
     {
-        std::string q_val_str = utils::col_string(q_val);
         set_console_verbosity(verbose); // Adjust verbosity based on the flag
         auto logger = create_logger();
 
@@ -130,16 +132,17 @@ struct Params
         logger->info("[Params] result_dir        {}", result_dir);
         logger->info("[Params] save_state        {}", save_state);
         logger->info("[Params] save_energies     {}", save_energies);
-        logger->info("[Params] n_relax_steps     {}", n_relax_steps);
+        logger->info("[Params] max_iter          {}", max_iter);
         logger->info("[Params] init_step         {}", init_step);
-        logger->info("[Params] q_val             {}", q_val_str);
+        logger->info("[Params] q_val             {}", q_val);
+        logger->info("[Params] beta              {}", beta);
         logger->info("[Params] eta_h             {}", eta_h);
         logger->info("[Params] eta_J             {}", eta_J);
         logger->info("[Params] gamma_h           {}", gamma_h);
         logger->info("[Params] gamma_J           {}", gamma_J);
         logger->info("[Params] alpha             {}", alpha);
-        logger->info("[Params] tol_mag           {}", tol_mag);
-        logger->info("[Params] tol_cor           {}", tol_cor);
+        logger->info("[Params] tol_1             {}", tol_1);
+        logger->info("[Params] tol_2             {}", tol_2);
         // Gen section
         if (run_type=="gen"){
             logger->info("[Params] gen_nspins        {}", gen_nspins);

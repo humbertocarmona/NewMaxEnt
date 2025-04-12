@@ -21,7 +21,7 @@ TEST(ComputeModelStatisticsTest, ComputesCorrectMomentsForFourSpins)
     arma::Col<double> expected_2(n_edges, arma::fill::zeros);
     arma::Col<double> expected_3(n_triplets, arma::fill::zeros);
 
-    compute_model_statistics(n, h, J, moment_1, moment_2, moment_3, /*q=*/1.0, /*beta=*/1.0);
+    compute_model_statistics(n, h, J, moment_1, moment_2, moment_3, /*q=*/1.0, /*beta=*/1.0, /*compute_triplets=*/true);
 
     double Z = 0.0;
 

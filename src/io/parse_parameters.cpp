@@ -35,25 +35,20 @@ Params parse_params(const std::string &filename)
     p.save_energies = json_data.value("save_energies", false);
 
     // Optimization parameters
-    p.n_relax_steps = json_data.value("n_relax_steps", 1000);
+    p.max_iter = json_data.value("max_iter", 1000);
     p.init_step     = json_data.value("init_step", 0);
     p.eta_h         = json_data.value("eta_h", 0.1);
     p.eta_J         = json_data.value("eta_J", 0.1);
     p.gamma_h       = json_data.value("gamma_h", 0.2);
     p.gamma_J       = json_data.value("gamma_J", 0.2);
     p.alpha         = json_data.value("alpha", 0.1);
-    p.tol_mag       = json_data.value("tol_mag", 0.001);
-    p.tol_cor       = json_data.value("tol_cor", 0.001);
-
+    p.tol_1       = json_data.value("tol_1", 0.001);
+    p.tol_2       = json_data.value("tol_2", 0.001);
+    
     // Entropic parameters (typically only one q value, but can be extended)
-    if (json_data.contains("q_val") && json_data["q_val"].is_array())
-    {
-        p.q_val = arma::Col<double>(json_data["q_val"].size());
-        for (size_t i = 0; i < p.q_val.n_elem; ++i)
-        {
-            p.q_val[i] = json_data["q_val"][i];
-        }
-    }
+    p.q_val         = json_data.value("q_val",1.0);
+    p.beta          = json_data.value("beta",1.0);
+
 
     // Generation parameters (only used in run_type = "gen")
     p.gen_nspins  = json_data.value("gen_nspins", 16);

@@ -7,7 +7,9 @@
 
 void compute_model_statistics(const int &n_spins, const arma::Col<double> &h, const arma::Col<double> &J,
                               arma::Col<double> &model_moment_1, arma::Col<double> &model_moment_2,
-                              arma::Col<double> &model_moment_3, double q = 1.0, double beta = 1.0)
+                              arma::Col<double> &model_moment_3, double q = 1.0, double beta = 1.0,
+                              bool compute_triplets = true // default to true for safety
+)
 {
     int n_edges = n_spins * (n_spins - 1) / 2;
     int n_triplets = n_spins * (n_spins - 1) * (n_spins - 2) / 6;
@@ -38,15 +40,18 @@ void compute_model_statistics(const int &n_spins, const arma::Col<double> &h, co
             }
         }
 
-        // Third-order
-        idx = 0;
-        for (int i = 0; i < n_spins - 2; ++i)
+        if (compute_triplets)
         {
-            for (int j = i + 1; j < n_spins - 1; ++j)
+            // Third-order
+            idx = 0;
+            for (int i = 0; i < n_spins - 2; ++i)
             {
-                for (int k = j + 1; k < n_spins; ++k)
+                for (int j = i + 1; j < n_spins - 1; ++j)
                 {
-                    model_moment_3(idx++) += P * s(i) * s(j) * s(k);
+                    for (int k = j + 1; k < n_spins; ++k)
+                    {
+                        model_moment_3(idx++) += P * s(i) * s(j) * s(k);
+                    }
                 }
             }
         }

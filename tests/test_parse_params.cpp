@@ -18,7 +18,7 @@ TEST(ParseParamsTest, ReadsBasicFields)
 {
     nlohmann::json test_json = {{"id", "test_run"},   {"runid", 123},        {"raw_samples_file", "samples.csv"},
                                 {"run_type", "ens"},  {"save_result", true}, {"eta_h", 0.25},
-                                {"q_val", {1.0, 1.5}}};
+                                {"q_val", 1.0}};
 
     auto file = create_temp_json_file(test_json);
     Params p  = parse_params(file);
@@ -29,7 +29,5 @@ TEST(ParseParamsTest, ReadsBasicFields)
     EXPECT_EQ(p.run_type, "ens");
     EXPECT_TRUE(p.save_result);
     EXPECT_NEAR(p.eta_h, 0.25, 1e-6);
-    ASSERT_EQ(p.q_val.n_elem, 2);
-    EXPECT_NEAR(p.q_val[0], 1.0, 1e-6);
-    EXPECT_NEAR(p.q_val[1], 1.5, 1e-6);
+    EXPECT_NEAR(p.q_val, 1.0, 1e-6);
 }

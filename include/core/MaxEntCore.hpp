@@ -4,7 +4,6 @@
 #include <armadillo>
 #include <memory>
 #include <spdlog/spdlog.h>
-#include <vector>
 
 class MaxEntCore
 {
@@ -33,6 +32,7 @@ class MaxEntCore
     }
 
     void compute_sample_statistics();
+
     const arma::Col<double> &get_sample_moment_1() const
     {
         return sample_moment_1;
@@ -86,4 +86,3 @@ class MaxEntCore
     void initialize_random_fields();
     void initialize_couplings();
 };
-

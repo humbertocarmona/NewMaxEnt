@@ -1,4 +1,4 @@
-#include "core/parameters.hpp"
+#include "io/parse_parameters.hpp"
 #include <fstream>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -12,7 +12,7 @@ std::string create_temp_json_file(const nlohmann::json &data, const std::string 
     return filename;
 }
 
-Params parse_params(const std::string &filename); // Assume this exists elsewhere
+Params parse_parameters(const std::string &filename); // Assume this exists elsewhere
 
 TEST(ParseParamsTest, ReadsBasicFields)
 {
@@ -21,7 +21,7 @@ TEST(ParseParamsTest, ReadsBasicFields)
                                 {"q_val", 1.0}};
 
     auto file = create_temp_json_file(test_json);
-    Params p  = parse_params(file);
+    Params p  = parse_parameters(file);
 
     EXPECT_EQ(p.id, "test_run");
     EXPECT_EQ(p.runid, 123);

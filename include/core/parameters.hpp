@@ -3,6 +3,7 @@
 #include "util/logger.hpp"
 #include "util/utilities.hpp"
 #include <armadillo>
+#include <nlohmann/json.hpp>
 #include <string>
 
 struct Params
@@ -161,5 +162,52 @@ struct Params
         }
         logger->flush();
     }
+
+    nlohmann::json to_json() const
+    {
+        using json = nlohmann::json;
+        json j;
+
+        j["id"] = id;
+        j["runid"] = runid;
+        j["raw_samples_file"] = raw_samples_file;
+        j["stats_file"] = stats_file;
+        j["checkpoint_file"] = checkpoint_file;
+        j["run_type"] = run_type;
+        j["comment"] = comment;
+        j["result_dir"] = result_dir;
+        j["save_state"] = save_state;
+        j["save_result"] = save_result;
+        j["save_energies"] = save_energies;
+        j["max_iter"] = max_iter;
+        j["init_step"] = init_step;
+        j["q_val"] = q_val;
+        j["beta"] = beta;
+        j["eta_h"] = eta_h;
+        j["eta_J"] = eta_J;
+        j["gamma_h"] = gamma_h;
+        j["gamma_J"] = gamma_J;
+        j["alpha"] = alpha;
+        j["tol_1"] = tol_1;
+        j["tol_2"] = tol_2;
+
+        // Generation
+        j["gen_nspins"] = gen_nspins;
+        j["gen_seed"] = gen_seed;
+        j["gen_h_mean"] = gen_h_mean;
+        j["gen_h_width"] = gen_h_width;
+        j["gen_J_mean"] = gen_J_mean;
+        j["gen_J_width"] = gen_J_width;
+
+        // Monte Carlo
+        j["mc_n_samples"] = mc_n_samples;
+        j["mc_n_equilibrium"] = mc_n_equilibrium;
+        j["mc_n_coherence"] = mc_n_coherence;
+        j["mc_n_rept"] = mc_n_rept;
+        j["mc_seed"] = mc_seed;
+
+        return j;
+    }
+
 };
 

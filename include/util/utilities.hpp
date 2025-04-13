@@ -52,3 +52,21 @@ inline double log_q(double x, double q)
 }
 
 } // namespace utils
+
+inline std::string brief(const arma::Col<double>& v)
+{
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < std::min<std::size_t>(3, v.n_elem); ++i)
+    {
+        out << v(i);
+        if (i < 2 && i + 1 < v.n_elem) out << ", ";
+    }
+    if (v.n_elem > 3) out << ", ...";
+    out << "]";
+    return out.str();
+}
+
+
+
+

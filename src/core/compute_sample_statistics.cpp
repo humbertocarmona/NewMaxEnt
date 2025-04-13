@@ -39,4 +39,5 @@ void MaxEntCore::compute_sample_statistics()
     LOGGER->info("[compute_sample_statistics] Computed moments 1 (size {}), 2 (size {}), 3 (size {})",
                  sample_moment_1.n_elem, sample_moment_2.n_elem, sample_moment_3.n_elem);
     LOGGER->flush();
+    
 }

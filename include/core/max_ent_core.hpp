@@ -58,6 +58,10 @@ class MaxEntCore
     {
         return model_moment_3;
     }
+ 
+    double get_energy_mean() const { return energy_mean; }
+    double get_energy_fluctuation() const { return energy_fluctuation; }
+    int get_iteration() const { return iter; }
 
   private:
     std::shared_ptr<spdlog::logger> LOGGER;
@@ -67,6 +71,9 @@ class MaxEntCore
     int n_spins;
     int n_edges;
     int iter;
+
+    double energy_mean = 0.0;
+    double energy_fluctuation = 0.0;
 
     arma::Col<double> h;
     arma::Col<double> J;

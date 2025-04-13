@@ -3,6 +3,7 @@
 
 void MaxEntCore::initialize_fields()
 {
+    LOGGER->info("[initialize_fields] Setting h and J");
     if (run_parameters.gen_h0.n_elem > 0)
         h = run_parameters.gen_h0;
     else
@@ -18,6 +19,8 @@ void MaxEntCore::initialize_fields()
         set_J(run_parameters.gen_J_mean, run_parameters.gen_J_width);
         run_parameters.gen_J0 = J;
     }
+    LOGGER->info("[initialize_fields] h (brief): {}", brief(h));
+    LOGGER->info("[initialize_fields]J (brief): {}", brief(J));
 }
 
 void MaxEntCore::set_h(double mean, double width)

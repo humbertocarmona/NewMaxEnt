@@ -1,6 +1,7 @@
 #include "core/max_ent_core.hpp"
 #include "core/compute_model_statistics.hpp"
 #include "core/cost_function.hpp"
+#include "core/centered_moments.hpp"  // ← needed for centered correlations
 
 void MaxEntCore::run_full_enumeration()
 {
@@ -26,7 +27,7 @@ void MaxEntCore::run_full_enumeration()
             model_moment_3,
             run_parameters.q_val,
             run_parameters.beta,
-            false  
+            false  // skip triplets and energy during training
         );
 
         update_model_parameters();
@@ -36,18 +37,21 @@ void MaxEntCore::run_full_enumeration()
 
         if (cost.check_convergence(run_parameters.tol_1, run_parameters.tol_2))
         {
-            logger->info("Converged at iteration {}", iter);
+            logger->info("[run_full_enumeration] Converged at iteration {}", iter);
             break;
         }
 
         if (iter % 10 == 0)
         {
-            logger->info("Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}",
+            logger->info("[run_full_enumeration] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}",
                 iter, cost.total, cost.moment_1, cost.moment_2);
         }
     }
 
-    logger->info("Post-convergence analysis...");
+    logger->info("[run_full_enumeration] Post-convergence analysis...");
+
+    // Final model statistics including triplets and energy info
+    double energy_sq_mean = 0.0;
 
     compute_model_statistics(
         n_spins,
@@ -58,14 +62,13 @@ void MaxEntCore::run_full_enumeration()
         model_moment_3,
         run_parameters.q_val,
         run_parameters.beta,
-        true
+        true,  // compute triplets
+        &energy_mean,
+        &energy_sq_mean
     );
 
-    // TODO:
-    // compute_centered_moments();
-    // compute_triplet_correlations();
-    // compute_energy_fluctuations();
-    // write_output_json();
+    energy_fluctuation = energy_sq_mean - std::pow(energy_mean, 2.0);
 
-    logger->info("Full enumeration workflow completed.");
+
+    logger->info("[run_full_enumeration] Full enumeration workflow completed.");
 }

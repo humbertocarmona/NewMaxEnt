@@ -13,7 +13,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Default build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
+
+set(CUSTOM_OUTPUT_DIR "$ENV{HOME}/.config/bin")
+file(MAKE_DIRECTORY ${CUSTOM_OUTPUT_DIR})
+
 
 # Dependencies
 find_package(fmt REQUIRED)
@@ -31,6 +36,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 # Build the main library
 add_library(maxent_lib ${SOURCES})
+
 target_link_libraries(maxent_lib
     PRIVATE
     armadillo
@@ -70,3 +76,19 @@ gtest_discover_tests(test_maxent
     DISCOVERY_MODE PRE_TEST
 )
 
+
+# Build the main executable
+add_executable(maxent_main src/main.cpp)
+
+target_link_libraries(maxent_main
+    PRIVATE
+    maxent_lib
+    armadillo
+    Boost::program_options
+    spdlog::spdlog
+    fmt::fmt
+)
+
+set_target_properties(maxent_main PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CUSTOM_OUTPUT_DIR}
+)

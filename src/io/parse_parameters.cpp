@@ -21,7 +21,7 @@ Params parse_parameters(const std::string &filename)
     p.id       = json_data.value("id", "");
     p.runid    = json_data.value("runid", 0);
     p.comment  = json_data.value("comment", "");
-    p.run_type = json_data.value("run_type", "ens");
+    p.run_type = json_data.value("run_type", "full enumeration");
 
     // Input and checkpoint files
     p.raw_samples_file = json_data.value("raw_samples_file", "none");
@@ -44,6 +44,29 @@ Params parse_parameters(const std::string &filename)
     p.alpha     = json_data.value("alpha", 0.1);
     p.tol_1     = json_data.value("tol_1", 0.001);
     p.tol_2     = json_data.value("tol_2", 0.001);
+
+    // for run_type == thermo sweep
+    // p.temperature_range = json_data.value("temperature_range", std::vector<double>{1.0});
+    if (json_data.contains("temperature_range") && json_data["temperature_range"].is_array())
+    {
+        const auto &arr = json_data["temperature_range"];
+        if (arr.size() == 3)
+        {
+            double t_begin = arr[0];
+            double t_end   = arr[1];
+            double t_step  = arr[2];
+
+            if (t_step <= 0)
+                throw std::runtime_error("temperature_range step must be > 0");
+
+            for (double T = t_begin; T <= t_end + 1e-10; T += t_step)
+                p.temperature_range.push_back(T);
+        }
+        else
+        {
+            p.temperature_range = arr.get<std::vector<double>>();
+        }
+    }
 
     // Entropic parameters (typically only one q value, but can be extended)
     p.q_val = json_data.value("q_val", 1.0);

@@ -78,6 +78,14 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp",
+        "csignal": "cpp",
+        "list": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp",
+        "stdfloat": "cpp",
+        "typeindex": "cpp"
     }
 }

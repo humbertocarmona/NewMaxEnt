@@ -31,6 +31,8 @@ struct Params
     float alpha;
     float tol_1;
     float tol_2;
+    // run_type == for thermo sweep
+    std::vector<double> temperature_range;
     // Generate means from h0, J0
     int gen_nspins;
     int gen_seed; // could define the runid for this run, and also for any run
@@ -70,6 +72,8 @@ struct Params
            double alpha_ = 0.1,
            double tol_1_ = 0.001,
            double tol_2_ = 0.001,
+           // run_type == for thermo sweep
+           std::vector<double> temperature_range_ = {},
            // generate means from h0, J0
            int gen_nspins_ = 16,
            int gen_seed_ = -1,
@@ -104,6 +108,7 @@ struct Params
         alpha(alpha_),
         tol_1(tol_1_),
         tol_2(tol_2_),
+        temperature_range(temperature_range_),
         gen_seed(gen_seed_),
         gen_nspins(gen_nspins_),
         gen_h_mean(gen_h_mean_),

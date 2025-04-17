@@ -44,6 +44,7 @@ Params parse_parameters(const std::string &filename)
     p.alpha     = json_data.value("alpha", 0.1);
     p.tol_1     = json_data.value("tol_1", 0.001);
     p.tol_2     = json_data.value("tol_2", 0.001);
+    p.top_k_states     = json_data.value("top_k_states", 0);
 
     // for run_type == thermo sweep
     // p.temperature_range = json_data.value("temperature_range", std::vector<double>{1.0});

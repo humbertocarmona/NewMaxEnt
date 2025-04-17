@@ -49,6 +49,7 @@ struct Params
     int mc_n_equilibrium;
     int mc_n_rept;
     int mc_seed;
+    int top_k_states;
     // clang-format off
     Params(std::string id_ = "",
            int runid_ = 0,
@@ -86,7 +87,8 @@ struct Params
            int mc_n_equilibrium_ = 3000,
            int mc_n_coherence_ = 40,
            int mc_n_rept_ = 40,
-           int mc_seed_ = 1234): runid(runid_),
+           int mc_seed_ = 1234,
+           int top_k_states_=0): runid(runid_),
         id(id_),
         raw_samples_file(raw_sample_file_),
         stats_file(stats_file_),
@@ -119,7 +121,8 @@ struct Params
         mc_n_coherence(mc_n_coherence_),
         mc_n_equilibrium(mc_n_equilibrium_),
         mc_n_rept(mc_n_rept_),
-        mc_seed(mc_seed_) {};
+        mc_seed(mc_seed_),
+        top_k_states(top_k_states_) {};
     //clang-format on
 
 
@@ -149,6 +152,7 @@ struct Params
         logger->info("[Params] alpha             {}", alpha);
         logger->info("[Params] tol_1             {}", tol_1);
         logger->info("[Params] tol_2             {}", tol_2);
+        logger->info("[Params] top_k_states      {}", top_k_states);
         // Gen section
         if (run_type=="gen"){
             logger->info("[Params] gen_nspins        {}", gen_nspins);
@@ -210,6 +214,7 @@ struct Params
         j["mc_n_coherence"] = mc_n_coherence;
         j["mc_n_rept"] = mc_n_rept;
         j["mc_seed"] = mc_seed;
+        j["top_k_states"] = top_k_states;
 
         return j;
     }

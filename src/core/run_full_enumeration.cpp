@@ -70,5 +70,5 @@ void MaxEntCore::run_full_enumeration()
     energy_fluctuation = energy_sq_mean - std::pow(energy_mean, 2.0);
 
 
-    logger->info("[run_full_enumeration] Full enumeration workflow completed.");
+    logger->info("[run_full_enumeration] Full enumeration run completed.");
 }

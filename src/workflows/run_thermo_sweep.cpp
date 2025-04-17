@@ -2,7 +2,7 @@
 #include "core/compute_model_statistics.hpp"
 #include "io/make_file_names.hpp"
 #include "io/read_model_minimal_from_json.hpp"
-#include "util/logger.hpp"
+// #include "util/logger.hpp"
 #include "util/replica_state.hpp"
 
 #include <fstream>
@@ -13,7 +13,7 @@ void write_top_k_replicas(const std::string &filename, const std::vector<Replica
     std::ofstream out_k(filename);
     out_k << "prob";
     for (int i = 0; i < n_spins; ++i)
-        out_k << ",s" << i;
+        out_k << ",s" << std::setfill('0') << std::setw(2) << i + 1;
     out_k << "\n";
 
     for (const auto &rep : sorted_replicas)
@@ -63,10 +63,11 @@ void run_thermo_sweep_workflow(const Params &run_parameters)
         logger->info("[run_thermo_sweep_workflow] T={:.2f} | E={:.4f} | Cv={:.4f} | M={:.4f}", T, energy, specific_heat,
                      magnetization);
 
-        auto filename_top_k = io::make_top_k_filename(run_parameters, T);
-
-
-        write_top_k_replicas(filename_top_k, sorted, n);
+        if (run_parameters.top_k_states > 0)
+        {
+            auto filename_top_k = io::make_top_k_filename(run_parameters, T);
+            write_top_k_replicas(filename_top_k, top_replicas, n);
+        }
     }
 
     out.close();

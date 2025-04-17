@@ -1,17 +1,16 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-
+#include <spdlog/spdlog.h>
 
 #include "util/utilities.hpp"
 #include <memory>
-#include <sstream>
+// #include <sstream>
 #include <string>
 #include <vector>
 
-inline std::shared_ptr<spdlog::logger> create_logger(const std::string& logger_name = "bm")
+inline std::shared_ptr<spdlog::logger> create_logger(const std::string &logger_name = "bm")
 {
 
     // Reuse if already created

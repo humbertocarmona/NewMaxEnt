@@ -1,25 +1,22 @@
 #include "core/centered_moments.hpp"
-#include "util/logger.hpp"
 #include "util/utilities.hpp"
 #include <spdlog/spdlog.h>
 
 inline int edge_index(int i, int j, int n)
 {
-    if (i > j) std::swap(i, j);
+    if (i > j)
+        std::swap(i, j);
     return i * n - (i * (i + 1)) / 2 + (j - i - 1);
 }
 
-CenteredMoments compute_centered_moments(const arma::Col<double>& moment_1,
-                                         const arma::Col<double>& moment_2,
-                                         const arma::Col<double>& moment_3)
+CenteredMoments compute_centered_moments(const arma::Col<double> &moment_1,
+                                         const arma::Col<double> &moment_2,
+                                         const arma::Col<double> &moment_3)
 {
     auto logger = spdlog::get("bm");
 
-    if (logger)
-        logger->info("[compute_centered_moments] moment_3 (brief): {}", brief(moment_3));
-
-    int n = moment_1.n_elem;
-    int n_edges = n * (n - 1) / 2;
+    int n          = moment_1.n_elem;
+    int n_edges    = n * (n - 1) / 2;
     int n_triplets = n * (n - 1) * (n - 2) / 6;
 
     // Check for expected sizes
@@ -28,30 +25,23 @@ CenteredMoments compute_centered_moments(const arma::Col<double>& moment_1,
     if (moment_3.n_elem != n_triplets)
         throw std::runtime_error("moment_3 size does not match expected number of triplets.");
 
-    arma::Mat<double> corr2(n, n, arma::fill::zeros);
-    arma::Col<double> centered_triplets(n_triplets, arma::fill::zeros);
+    arma::Col<double> centered_moment_2(n_edges, arma::fill::zeros);
+    arma::Col<double> centered_moment_3(n_triplets, arma::fill::zeros);
 
     // Centered pairwise correlations
-    for (int i = 0; i < n; ++i)
+
+    for (int i = 0; i < n-1; ++i)
     {
-        for (int j = i; j < n; ++j)
+        for (int j = i+1; j < n; ++j)
         {
-            double centered = 0.0;
-            if (i == j)
-            {
-                centered = 1.0 - std::pow(moment_1(i), 2);  // Var(x_i)
-            }
-            else
-            {
-                int idx = edge_index(i, j, n);
-                centered = moment_2(idx) - moment_1(i) * moment_1(j);
-            }
-            corr2(i, j) = corr2(j, i) = centered;
+            int idx                = edge_index(i, j, n);
+
+            double centered        = 0.0;
+            centered_moment_2(idx) = moment_2(idx) - moment_1(i) * moment_1(j);
+            ;
         }
     }
 
-    if (logger)
-        logger->info("[compute_centered_moments] passed centered_moment_2");
 
     // Centered triplet correlations (connected 3rd order)
     int idx = 0;
@@ -59,20 +49,20 @@ CenteredMoments compute_centered_moments(const arma::Col<double>& moment_1,
     {
         for (int j = i + 1; j < n - 1; ++j)
         {
+            int ij = edge_index(i, j, n);
             for (int k = j + 1; k < n; ++k)
             {
+                int jk = edge_index(j, k, n);
+                int ik = edge_index(i, k, n);
+
                 double m3 = moment_3(idx);
+                double c3 = m3 - moment_1(i) * moment_2(jk) - moment_1(j) * moment_2(ik) - moment_1(k) * moment_2(ij) +
+                            2.0 * moment_1(i) * moment_1(j) * moment_1(k);
 
-                double c3 = m3
-                    - moment_1(i) * moment_2(edge_index(j, k, n))
-                    - moment_1(j) * moment_2(edge_index(i, k, n))
-                    - moment_1(k) * moment_2(edge_index(i, j, n))
-                    + 2.0 * moment_1(i) * moment_1(j) * moment_1(k);
-
-                centered_triplets(idx++) = c3;
+                centered_moment_3(idx++) = c3;
             }
         }
     }
-
-    return {corr2, centered_triplets};
+    logger->debug("[compute_centered_moments] Centering moments completed");
+    return {centered_moment_2, centered_moment_3};
 }

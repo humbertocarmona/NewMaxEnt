@@ -1,99 +1,41 @@
 #pragma once
-
-#include "core/parameters.hpp"
 #include <armadillo>
-#include <memory>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h> // Add this for stdout_color_mt
 
 class MaxEntCore
 {
   public:
-    MaxEntCore(const Params &params, bool verbose = false);
 
-    void initialize_fields();
-    void run_full_enumeration();
-
-    void set_samples(const arma::Mat<int> &samples);
-    void set_h(double mean, double width);
-    void set_J(double mean, double width);
-    
-    const arma::Col<double> &get_h() const;
-    const arma::Col<double> &get_J() const;
-    const arma::Mat<int> &get_raw_samples() const;
-
-    std::shared_ptr<spdlog::logger> get_logger() const
-    {
-        return LOGGER;
-    }
-
-    const Params &get_params() const
-    {
-        return run_parameters;
-    }
-
-    void compute_sample_statistics();
-
-    const arma::Col<double> &get_sample_moment_1() const
-    {
-        return sample_moment_1;
-    }
-    const arma::Col<double> &get_sample_moment_2() const
-    {
-        return sample_moment_2;
-    }
-    const arma::Col<double> &get_sample_moment_3() const
-    {
-        return sample_moment_3;
-    }
-
-    const arma::Col<double> &get_model_moment_1() const
-    {
-        return model_moment_1;
-    }
-    const arma::Col<double> &get_model_moment_2() const
-    {
-        return model_moment_2;
-    }
-    const arma::Col<double> &get_model_moment_3() const
-    {
-        return model_moment_3;
-    }
- 
-    double get_energy_mean() const { return energy_mean; }
-    double get_energy_fluctuation() const { return energy_fluctuation; }
-    int get_iteration() const { return iter; }
-
-  private:
-    std::shared_ptr<spdlog::logger> LOGGER;
-    bool verbose;
-
-    Params run_parameters;
-    int n_spins;
-    int n_edges;
-    int iter;
-
-    double energy_mean = 0.0;
-    double energy_fluctuation = 0.0;
+    int nspins;
+    int nedges;
 
     arma::Col<double> h;
     arma::Col<double> J;
-    arma::Mat<int> raw_samples;
+    arma::Mat<int> edges;
 
-    arma::Mat<int> edge_index;
+    std::shared_ptr<spdlog::logger> logger;
 
-    arma::Col<double> sample_moment_1;
-    arma::Col<double> sample_moment_2;
-    arma::Col<double> sample_moment_3;
 
-    arma::Col<double> model_moment_1;
-    arma::Col<double> model_moment_2;
-    arma::Col<double> model_moment_3;
+    MaxEntCore(size_t n) : nspins(n){
+      nedges = nspins * (nspins - 1) / 2;
+      h.set_size(nspins);
+      h.fill(0);
+      J.set_size(nedges);
+      J.fill(0);
+      edges.set_size(nspins,nspins);
+      int idx = 0;
+      for (int i=0; i< nspins-1; ++i){
+        for (int j=i+1; j< nspins; ++j){
+          edges(i,j) = edges(j,i) = idx++;
+        }
+      }
+    
+        // Initialize spdlog logger
+        logger = spdlog::stdout_color_mt("core_logger");
+        logger->set_level(spdlog::level::info);
+        logger->info("Logger initialized in MaxEntCore");
+    }
 
-    arma::Col<double> momentum_m_1;
-    arma::Col<double> momentum_m_2;
 
-    void initialize_network();
-    void initialize_random_fields();
-    void initialize_couplings();
-    void update_model_parameters();
 };

@@ -1,4 +1,4 @@
-#include "util/spin_permutations_iterator.hpp"
+#include "utils/spin_permutations_iterator.hpp"
 
 // Constructor for SpinPermutationsIterator
 SpinPermutationsIterator::SpinPermutationsIterator(int n, bool end) : n(n), finished(end)

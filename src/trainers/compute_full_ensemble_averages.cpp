@@ -1,11 +1,11 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "utils/binary_permutations_sequence.hpp"
-
 #include "utils/utilities.hpp"
+#include "utils/get_logger.hpp"
 
 void FullEnsembleTrainer::computeFullEnumerationAverages(double beta, bool triplets = false)
 {
-    auto logger = core.logger;
+    auto logger = getLogger();
     logger->info("[computeFullEnumerationAverages] Starting full enumeration averages");
 
     auto &h = core.h;

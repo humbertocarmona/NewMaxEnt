@@ -1,9 +1,21 @@
 #include "core/max_ent_core.hpp"
 #include "core/run_parameters.hpp"
+#include "workflows/full_ensemble_training_workflow.hpp"
 
-int main(argc, argv)
+
+int main(int argc, char **argv)
 {
-    MaxEntCore core(16);
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " path/to/params.json\n";
+        return 1;
+    }    
+    std::string param_file = argv[1];
 
-    RunParameters params = parseParameters(arc)
+    RunParameters params = parseParameters(param_file);
+    params.loginfo();
+
+    fullEnsembleTrainingWorkflow(params);
+
+    return 0;
 }

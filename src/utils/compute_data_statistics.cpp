@@ -1,4 +1,5 @@
 #include "utils/compute_data_statistics.hpp"
+#include "utils/get_logger.hpp"
 #include <armadillo>
 #include <cctype>
 #include <fstream>
@@ -11,7 +12,7 @@
 
 arma::Mat<int> read_raw_data(const std::string &filename)
 {
-    auto logger = spdlog::stdout_color_mt("core_logger");
+    auto logger = getLogger();
 
     std::ifstream file(filename);
 
@@ -87,7 +88,8 @@ arma::Mat<int> read_raw_data(const std::string &filename)
 
 DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
 {
-    auto logger = spdlog::stdout_color_mt("core_logger");
+
+    auto logger = getLogger();
 
     arma::Mat<int> raw_data = read_raw_data(filename);
 
@@ -126,9 +128,9 @@ DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
     }
 
     logger->debug("[compute_data_statistics] Computed moments 1 (size {}), 2 (size {}), 3 (size {})",
-                 res.m1_data.n_elem,
-                 res.m2_data.n_elem,
-                 res.m3_data.n_elem);
+                  res.m1_data.n_elem,
+                  res.m2_data.n_elem,
+                  res.m3_data.n_elem);
 
     return res;
 }

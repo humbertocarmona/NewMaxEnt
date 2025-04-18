@@ -1,9 +1,10 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/compute_cost.hpp"
+#include "utils/get_logger.hpp"
 
 void FullEnsembleTrainer::train()
 {
-    auto logger = core.logger;
+    auto logger = getLogger();
     logger->info("[train] Starting full enumeration training");
     auto &h = core.h;
     auto &J = core.J;
@@ -17,7 +18,7 @@ void FullEnsembleTrainer::train()
         auto cost = compute_cost(m1_data, m2_data, m1_model, m2_model);
         if (cost.check_convergence(tolerance_h, tolerance_J))
         {
-             logger->info("[train] Full ensemble converged at iteration {}", iter);
+            logger->info("[train] Full ensemble converged at iteration {}", iter);
              break;
         }
         if (iter % 10 == 0)

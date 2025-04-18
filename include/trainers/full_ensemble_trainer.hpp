@@ -38,6 +38,8 @@ class FullEnsembleTrainer
 
         delta_h = arma::zeros<arma::Col<double>>(core.nspins);
         delta_J = arma::zeros<arma::Col<double>>(core.nedges);
+
+        m3_data.brief_print("m3_data");
     };
 
     // Main training function

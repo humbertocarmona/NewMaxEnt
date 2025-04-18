@@ -1,6 +1,6 @@
 {
     "run_type": "fun ensemble train",
-    "runid": "testing",
+    "runid": "first_example",
     "raw_data_file": "raw_data.csv",
     "result_dir": "./results",
   

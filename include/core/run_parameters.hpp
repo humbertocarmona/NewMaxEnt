@@ -2,8 +2,7 @@
 #include "utils/utilities.hpp"
 #include <armadillo>
 #include <nlohmann/json.hpp>
-#include <spdlog/sinks/stdout_color_sinks.h> // Add this for stdout_color_mt
-#include <spdlog/spdlog.h>
+#include "utils/get_logger.hpp"
 
 #include <string>
 
@@ -34,7 +33,9 @@ struct RunParameters
 
     void loginfo() const
     {
-        auto logger = spdlog::stdout_color_mt("core_logger");
+
+        auto logger = getLogger();
+        
         logger->info("[RunParameters] run_type          {}", run_type);
         logger->info("[RunParameters] runid             {}", runid);
         logger->info("[RunParameters] raw_data_file     {}", raw_data_file);

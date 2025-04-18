@@ -1,0 +1,16 @@
+[2025-04-18 18:11:09.049] [info] [RunParameters] run_type          fun ensemble train
+[2025-04-18 18:11:09.049] [info] [RunParameters] runid             first_example
+[2025-04-18 18:11:09.049] [info] [RunParameters] raw_data_file     raw_data.csv
+[2025-04-18 18:11:09.049] [info] [RunParameters] result_dir        ./results/first_example
+[2025-04-18 18:11:09.049] [info] [RunParameters] nspins            16
+[2025-04-18 18:11:09.049] [info] [RunParameters] q_val             1
+[2025-04-18 18:11:09.049] [info] [RunParameters] beta              1
+[2025-04-18 18:11:09.049] [info] [RunParameters] maxIterations     1000
+[2025-04-18 18:11:09.049] [info] [RunParameters] tolerance_h       0.0001
+[2025-04-18 18:11:09.049] [info] [RunParameters] tolerance_J       0.0001
+[2025-04-18 18:11:09.049] [info] [RunParameters] eta_h             0.1
+[2025-04-18 18:11:09.049] [info] [RunParameters] eta_J             0.1
+[2025-04-18 18:11:09.049] [info] [RunParameters] alpha_h           0.1
+[2025-04-18 18:11:09.049] [info] [RunParameters] alpha_J           0.1
+[2025-04-18 18:11:09.049] [info] [RunParameters] gamma_h           0.2
+[2025-04-18 18:11:09.049] [info] [RunParameters] gamma_J           0.2

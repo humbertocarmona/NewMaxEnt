@@ -1,3 +1,7 @@
+#pragma once
+#include "core/run_parameters.hpp"
+
+
 // so now I am going to implement the full_ensemble_training_workflow:
 // 
 // 1 - read JSON file with run parameters: nspins, location of row data
@@ -6,3 +10,5 @@
 // 4 - actually train the model
 // 5 - make some crude post processing
 // 6 - save the result
+
+void fullEnsembleTrainingWorkflow(RunParameters params);

@@ -13,7 +13,7 @@ void FullEnsembleTrainer::train()
 
     for (size_t iter=1; iter<maxIterations; ++iter){
         computeFullEnumerationAverages(1.0, false); // beta = 1 for training, triplets=false don't need m3_model here
-        updateModelParameters();
+        updateModelParameters(iter);
         auto cost = compute_cost(m1_data, m2_data, m1_model, m2_model);
         if (cost.check_convergence(tolerance_h, tolerance_J))
         {
@@ -29,6 +29,6 @@ void FullEnsembleTrainer::train()
                          cost.cost_m2);
         }
     }
-    updateModelParameters();
+    computeFullEnumerationAverages(1.0, true);
     logger->debug("[train] Finished full enumeration training.");
 }

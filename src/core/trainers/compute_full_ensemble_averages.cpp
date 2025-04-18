@@ -1,5 +1,6 @@
 #include "trainers/full_ensemble_trainer.hpp"
-#include "utils/spin_permutations_iterator.hpp"
+#include "utils/binary_permutations_sequence.hpp"
+
 #include "utils/utilities.hpp"
 
 void FullEnsembleTrainer::computeFullEnumerationAverages(double beta, bool triplets = false)
@@ -20,13 +21,14 @@ void FullEnsembleTrainer::computeFullEnumerationAverages(double beta, bool tripl
     avg_energy    = 0.0;
     avg_energy_sq = 0.0;
 
-    arma::Col<int> s(nspins);
+    // arma::Col<int> s(nspins);
     double Z = 0.0;
     double E = 0.0;
     double P = 0.0;
-    for (auto p = SpinPermutationsSequence(nspins).begin(); p != SpinPermutationsSequence(nspins).end(); ++p)
+    BinaryPermutationsSequence sequence(nspins);
+
+    for (const auto& s : sequence)
     {
-        s = *p;
         E = energyAllPairs(s);
         P = utils::exp_q(-beta * E, q_val, q_inv);
         Z += P;

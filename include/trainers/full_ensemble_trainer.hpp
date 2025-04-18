@@ -18,11 +18,12 @@ class FullEnsembleTrainer
                         double eta_J,
                         double alpha_h,
                         double alpha_J,
-                        double delta_h,
-                        double delta_J,
+                        double gamma_h,
+                        double gamma_J,
+
                         const std::string &data_filename)
         : core(core), maxIterations(maxIterations), tolerance_h(tolerance_h), tolerance_J(tolerance_J), eta_h(eta_h),
-          eta_J(eta_J), alpha_h(alpha_h), alpha_J(alpha_J), delta_h(delta_h), delta_J(delta_J)
+          eta_J(eta_J), alpha_h(alpha_h), alpha_J(alpha_J), gamma_h(gamma_h), gamma_J(gamma_J)
     {
         int n                       = core.nspins;
         ntriplets                   = n * (n - 1) * (n - 2) / 6;
@@ -34,6 +35,9 @@ class FullEnsembleTrainer
         m1_model = arma::zeros<arma::Col<double>>(core.nspins);
         m2_model = arma::zeros<arma::Col<double>>(core.nedges);
         m3_model = arma::zeros<arma::Col<double>>(ntriplets);
+
+        delta_h = arma::zeros<arma::Col<double>>(core.nspins);
+        delta_J = arma::zeros<arma::Col<double>>(core.nedges);
     };
 
     // Main training function
@@ -82,8 +86,11 @@ class FullEnsembleTrainer
     double eta_J;   // training rate for J
     double alpha_h; // training momentum alpha_h * delta_h
     double alpha_J; // training momentum alpha_J * delta_J
-    double delta_h; // training momentum alpha_h * delta_h
-    double delta_J; // training momentum alpha_J * delta_J
+    double gamma_h; // training momentum alpha_h * delta_h
+    double gamma_J; // training momentum alpha_J * delta_J
+
+    arma::Col<double> delta_h; // training momentum alpha_h * delta_h(i)
+    arma::Col<double> delta_J; // training momentum alpha_J * delta_J(idx)
 
     // sample and model averages
     double avg_energy;
@@ -101,6 +108,6 @@ class FullEnsembleTrainer
 
     // Private helper functions
 
-    void updateModelParameters();
+    void updateModelParameters(size_t t);
     double energyAllPairs(arma::Col<int> s);
 };

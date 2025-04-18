@@ -46,35 +46,32 @@ target_link_libraries(maxent_lib
 )
 
 # Build the test executable
-# file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
-# add_executable(test_maxent ${TEST_SOURCES})
-# target_link_libraries(test_maxent
-#     PRIVATE
-#     maxent_lib
-#     GTest::gtest
-#     GTest::gtest_main
-#     pthread
-# )
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
+add_executable(test_maxent ${TEST_SOURCES})
+target_link_libraries(test_maxent
+    PRIVATE
+    maxent_lib
+    GTest::gtest
+    GTest::gtest_main
+    pthread
+)
 
 # Optional: set output directory for test binary
-# set_target_properties(test_maxent PROPERTIES
-#     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-# )
+set_target_properties(test_maxent PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
 
 # Enable testing and test discovery
-# enable_testing()
-# include(GoogleTest)
-# gtest_discover_tests(test_maxent)
+enable_testing()
+include(GoogleTest)
+gtest_discover_tests(test_maxent)
 
-# enable_testing()
 
-# include(GoogleTest)
-
-# gtest_discover_tests(test_maxent
-#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-#     DISCOVERY_TIMEOUT 30
-#     DISCOVERY_MODE PRE_TEST
-# )
+gtest_discover_tests(test_maxent
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    DISCOVERY_TIMEOUT 30
+    DISCOVERY_MODE PRE_TEST
+)
 
 
 # Build the main executable

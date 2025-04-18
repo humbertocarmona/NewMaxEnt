@@ -1,40 +1,21 @@
 {
-    "id": "first",
-    "runid": 0,
-    "comment":"first try",
-    "run_type":"full enumeration",
-
-    "raw_samples_file": "none",
-    "stats_file": "none",
-    "checkpoint_file": "none",
-
-    "result_dir":"./Testing",
-    "save_state":1000,
-    "save_result":true,
-    "save_energies":false,
-
-    "max_iter":1000,
-    "init_step":0,
-    "eta_h":0.1,
-    "eta_J":0.1,
-    "gamma_h":0.2,
-    "gamma_J":0.2,
-    "alpha":0.1,
-    "tol_1":0.001,
-    "tol_2":0.001,
+    "run_type": "fun ensemble train",
+    "runid": "testing",
+    "raw_data_file": "raw_data.csv",
+    "result_dir": "./results",
+  
+    "nspins": 16,
     "q_val": 1.0,
-    "beta":1.0,
-    
-    "gen_nspins":16,
-    "gen_seed":-1,
-    "gen_h_mean":0.0,
-    "gen_h_width":2,
-    "gen_J_mean":0.0,
-    "gen_J_width":0.5,
-
-    "mc_n_samples":50000,
-    "mc_n_coherence":40,
-    "mc_n_equilibrium":3000,
-    "mc_n_rept":40,
-    "mc_seed":1
+    "beta": 1.0,
+  
+    "maxIterations": 1000,
+    "tolerance_h": 1.0e-4,
+    "tolerance_J": 1.0e-4,
+    "eta_h": 0.1,
+    "eta_J": 0.1,
+    "alpha_h": 0.1,
+    "alpha_J": 0.1,
+    "gamma_h": 0.2,
+    "gamma_J": 0.2
 }
+  

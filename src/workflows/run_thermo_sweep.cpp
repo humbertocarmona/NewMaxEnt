@@ -1,5 +1,5 @@
 #include "workflows/run_thermo_sweep.hpp"
-#include "core/compute_model_statistics.hpp"
+#include "core/compute_model_statistics_full.hpp"
 #include "io/make_file_names.hpp"
 #include "io/read_model_minimal_from_json.hpp"
 // #include "util/logger.hpp"
@@ -50,9 +50,18 @@ void run_thermo_sweep_workflow(const Params &run_parameters)
         double energy_sq = 0.0;
 
         //clang-format off
-        auto top_replicas = compute_model_statistics(n, model.h, model.J, m1, m2, m3, model.q_val, beta,
-                                                     true, // compute means of energy and energy_sq
-                                                     &energy, &energy_sq, run_parameters.top_k_states);
+        auto top_replicas = compute_model_statistics_full(n,
+                                                          model.h,
+                                                          model.J,
+                                                          m1,
+                                                          m2,
+                                                          m3,
+                                                          model.q_val,
+                                                          beta,
+                                                          true, // compute means of energy and energy_sq
+                                                          &energy,
+                                                          &energy_sq,
+                                                          run_parameters.top_k_states);
         //clang-format on
 
         double specific_heat = (energy_sq - std::pow(energy, 2.0)) / (T * T);
@@ -60,7 +69,10 @@ void run_thermo_sweep_workflow(const Params &run_parameters)
 
         out << T << "," << beta << "," << energy << "," << energy_sq << "," << specific_heat << "," << magnetization
             << "\n";
-        logger->info("[run_thermo_sweep_workflow] T={:.2f} | E={:.4f} | Cv={:.4f} | M={:.4f}", T, energy, specific_heat,
+        logger->info("[run_thermo_sweep_workflow] T={:.2f} | E={:.4f} | Cv={:.4f} | M={:.4f}",
+                     T,
+                     energy,
+                     specific_heat,
                      magnetization);
 
         if (run_parameters.top_k_states > 0)

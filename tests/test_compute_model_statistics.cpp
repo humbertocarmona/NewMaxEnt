@@ -1,4 +1,4 @@
-#include "core/compute_model_statistics.hpp"
+#include "core/compute_model_statistics_full.hpp"
 #include "core/energy.hpp"
 #include "util/spin_permutations_iterator.hpp"
 #include <armadillo>
@@ -14,22 +14,30 @@ TEST(ComputeModelStatisticsTest, ComputesCorrectMomentsForFourSpins)
     arma::Col<double> moment_1, moment_2, moment_3;
 
     // Brute-force computation for verification
-    int n = 4;
-    int n_edges = n * (n - 1) / 2;
+    int n          = 4;
+    int n_edges    = n * (n - 1) / 2;
     int n_triplets = n * (n - 1) * (n - 2) / 6;
     arma::Col<double> expected_1(n, arma::fill::zeros);
     arma::Col<double> expected_2(n_edges, arma::fill::zeros);
     arma::Col<double> expected_3(n_triplets, arma::fill::zeros);
 
-    compute_model_statistics(n, h, J, moment_1, moment_2, moment_3, /*q=*/1.0, /*beta=*/1.0, /*compute_triplets=*/true);
+    compute_model_statistics_full(n,
+                                  h,
+                                  J,
+                                  moment_1,
+                                  moment_2,
+                                  moment_3,
+                                  /*q=*/1.0,
+                                  /*beta=*/1.0,
+                                  /*compute_triplets=*/true);
 
     double Z = 0.0;
 
     for (auto p = SpinPermutationsSequence(n).begin(); p != SpinPermutationsSequence(n).end(); ++p)
     {
         arma::Col<int> s = *p;
-        double E = energy(s, h, J, 4);
-        double P = std::exp(-E);
+        double E         = energy(s, h, J, 4);
+        double P         = std::exp(-E);
         Z += P;
 
         expected_1 += P * arma::conv_to<arma::Col<double>>::from(s);

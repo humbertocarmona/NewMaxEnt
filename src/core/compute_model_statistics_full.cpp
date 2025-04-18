@@ -1,12 +1,21 @@
-#include "core/compute_model_statistics.hpp"
+#include "core/compute_model_statistics_full.hpp"
+// all these need to be separated
 #include "core/energy.hpp"
 #include "util/spin_permutations_iterator.hpp"
 #include "util/utilities.hpp"
 
-std::vector<ReplicaState> compute_model_statistics(
-    const int &n_spins, const arma::Col<double> &h, const arma::Col<double> &J, arma::Col<double> &model_moment_1,
-    arma::Col<double> &model_moment_2, arma::Col<double> &model_moment_3, double q_val, double beta,
-    bool compute_triplets, double *avg_energy, double *avg_energy_sq, int top_k_replicas)
+std::vector<ReplicaState> compute_model_statistics_full(const int &n_spins,
+                                                        const arma::Col<double> &h,
+                                                        const arma::Col<double> &J,
+                                                        arma::Col<double> &model_moment_1,
+                                                        arma::Col<double> &model_moment_2,
+                                                        arma::Col<double> &model_moment_3,
+                                                        double q_val,
+                                                        double beta,
+                                                        bool compute_triplets,
+                                                        double *avg_energy,
+                                                        double *avg_energy_sq,
+                                                        int top_k_replicas)
 {
     std::priority_queue<ReplicaState> top_replicas;
 
@@ -27,7 +36,7 @@ std::vector<ReplicaState> compute_model_statistics(
     {
         s        = *p;
         double E = energy(s, h, J, n_spins);
-        double P = utils::exp_q(-beta * E, q_val);
+        double P = exp_q(-beta * E, q_val);
         Z += P;
 
         // First-order moments

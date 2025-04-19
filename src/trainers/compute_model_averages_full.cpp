@@ -3,7 +3,7 @@
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 
-void FullEnsembleTrainer::computeFullEnumerationAverages(double beta, bool triplets = false)
+void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 {
     // auto logger = getLogger();
 

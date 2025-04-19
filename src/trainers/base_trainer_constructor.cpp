@@ -1,4 +1,4 @@
-#include "trainers/full_ensemble_trainer.hpp"
+#include "trainers/base_trainer.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 #include <armadillo>
@@ -6,18 +6,18 @@
 #include <nlohmann/json.hpp>
 
 // Constructor
-FullEnsembleTrainer::FullEnsembleTrainer(MaxEntCore &core,
-                                         double q_val,
-                                         size_t maxIterations,
-                                         double tolerance_h,
-                                         double tolerance_J,
-                                         double eta_h,
-                                         double eta_J,
-                                         double alpha_h,
-                                         double alpha_J,
-                                         double gamma_h,
-                                         double gamma_J,
-                                         const std::string &data_filename) :
+BaseTrainer::BaseTrainer(MaxEntCore &core,
+                         double q_val,
+                         size_t maxIterations,
+                         double tolerance_h,
+                         double tolerance_J,
+                         double eta_h,
+                         double eta_J,
+                         double alpha_h,
+                         double alpha_J,
+                         double gamma_h,
+                         double gamma_J,
+                         const std::string &data_filename) :
     core(core),
     q_val(q_val),
     maxIterations(maxIterations),
@@ -91,3 +91,9 @@ FullEnsembleTrainer::FullEnsembleTrainer(MaxEntCore &core,
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
 };
+
+
+// void BaseTrainer::train()
+// {
+//     // Provide a default or empty implementation if not overridden.
+// }

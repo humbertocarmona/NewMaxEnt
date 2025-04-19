@@ -1,7 +1,7 @@
-#include "trainers/full_ensemble_trainer.hpp"
+#include "trainers/base_trainer.hpp"
 #include <armadillo>
 
-double FullEnsembleTrainer::energyAllPairs(arma::Col<int> s)
+double BaseTrainer::energyAllPairs(arma::Col<int> s)
 {
 
     double En = 0.0;

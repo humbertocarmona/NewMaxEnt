@@ -1,8 +1,8 @@
-#include "trainers/full_ensemble_trainer.hpp"
+#include "trainers/base_trainer.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 
-void FullEnsembleTrainer::updateModelParameters(size_t t)
+void BaseTrainer::updateModelParameters(size_t t)
 {
 
     // auto logger = getLogger();

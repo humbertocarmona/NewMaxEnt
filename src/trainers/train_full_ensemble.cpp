@@ -9,7 +9,7 @@ void FullEnsembleTrainer::train()
     logger->info("[train] Starting full enumeration training q_val = {}", q_val);
     
     for (iter=iter; iter<maxIterations; ++iter){
-        computeFullEnumerationAverages(1.0, false); // beta = 1 for training, triplets=false don't need m3_model here
+        computeModelAverages(1.0, false); // beta = 1 for training, triplets=false don't need m3_model here
         updateModelParameters(iter);
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
@@ -28,7 +28,7 @@ void FullEnsembleTrainer::train()
                          cost.cost_m2);
         }
     }
-    computeFullEnumerationAverages(1.0, true);
+    computeModelAverages(1.0, true);
 
     logger->debug("[train] Finished full enumeration training.");
 }

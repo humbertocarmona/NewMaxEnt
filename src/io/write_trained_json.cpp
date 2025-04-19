@@ -1,5 +1,6 @@
 #include "io/write_trained_json.hpp"
 #include "utils/get_logger.hpp"
+#include "utils/utilities.hpp"
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
@@ -10,10 +11,14 @@ void writeTrainedModel(RunParameters params, FullEnsembleTrainer model, Centered
 
     std::ostringstream fname;
     fname << params.result_dir << "/"
-          << "run_" << params.nspins << ".json";
+          << "run_" << params.runid << ".json";
     
     nlohmann::json obj;
+    obj["type"] = model.get_type();
 
+
+    obj["iter"] = model.get_iter();
+    
     obj["h"] = model.get_h();
     obj["J"] = model.get_J();
 
@@ -32,8 +37,9 @@ void writeTrainedModel(RunParameters params, FullEnsembleTrainer model, Centered
 
     obj["run_parameters"] = params.to_json();
 
-    std::ofstream out(fname.str());
+    std::filesystem::path output = utils::get_available_filename(fname.str());
+    std::ofstream out(output);
     out << obj.dump(2);
-    logger->info("[writeTrainedModel] saved {}", fname.str());
+    logger->info("[writeTrainedModel] saved {}", output.string());
 
 }

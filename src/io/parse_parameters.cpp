@@ -1,9 +1,8 @@
 #include "core/run_parameters.hpp"
 #include "utils/utilities.hpp"
 #include <fstream>
-#include <sstream>
 #include <nlohmann/json.hpp>
-
+#include <sstream>
 
 RunParameters parseParameters(const std::string &filename)
 {
@@ -22,15 +21,15 @@ RunParameters parseParameters(const std::string &filename)
     p.result_dir    = json_data.value("result_dir", "./results");
     utils::make_path(p.result_dir);
 
-    std::stringstream ss;
-    ss << p.result_dir << "/" << p.runid;
-    p.result_dir  = ss.str();
-    utils::make_path(p.result_dir);
-    
     // needed by MaxEntCore
     p.nspins = json_data.value("nspins", 16);
     p.q_val  = json_data.value("q_val", 1.0);
     p.beta   = json_data.value("beta", 1.0);
+
+    std::stringstream ss;
+    ss << p.result_dir << "/" << p.nspins;
+    p.result_dir = ss.str();
+    utils::make_path(p.result_dir);
 
     // needed by FullEnsembleTrainer
     p.maxIterations = json_data.value("maxIterations", 1000);

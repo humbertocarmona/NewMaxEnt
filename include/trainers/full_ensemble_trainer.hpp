@@ -1,10 +1,13 @@
 #pragma once
 
 #include "core/max_ent_core.hpp" // Your minimal core class header
+#include "io/read_trained_json.hpp"
 #include "utils/compute_data_statistics.hpp"
+#include "utils/get_logger.hpp"
+#include "utils/utilities.hpp"
 #include <armadillo>
 #include <memory>
-#include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
 
 class FullEnsembleTrainer
 {
@@ -21,25 +24,7 @@ class FullEnsembleTrainer
                         double alpha_J,
                         double gamma_h,
                         double gamma_J,
-
-                        const std::string &data_filename)
-        : core(core), q_val(q_val), maxIterations(maxIterations), tolerance_h(tolerance_h), tolerance_J(tolerance_J),
-          eta_h(eta_h), eta_J(eta_J), alpha_h(alpha_h), alpha_J(alpha_J), gamma_h(gamma_h), gamma_J(gamma_J)
-    {
-        int n                       = core.nspins;
-        ntriplets                   = n * (n - 1) * (n - 2) / 6;
-        DataStatisticsBreakdown res = compute_data_statistics(data_filename);
-        m1_data                     = res.m1_data;
-        m2_data                     = res.m2_data;
-        m3_data                     = res.m3_data;
-
-        m1_model = arma::zeros<arma::Col<double>>(core.nspins);
-        m2_model = arma::zeros<arma::Col<double>>(core.nedges);
-        m3_model = arma::zeros<arma::Col<double>>(ntriplets);
-
-        delta_h = arma::zeros<arma::Col<double>>(core.nspins);
-        delta_J = arma::zeros<arma::Col<double>>(core.nedges);
-    };
+                        const std::string &data_filename);
 
     // Main training function
     void train();
@@ -94,8 +79,14 @@ class FullEnsembleTrainer
         return iter;
     }
 
+    const std::string get_type() const
+    {
+        return className;
+    }
+
   private:
     // Reference to the core model
+    std::string className="FullEnsembleTrainer";
     MaxEntCore &core;
     int ntriplets;
 

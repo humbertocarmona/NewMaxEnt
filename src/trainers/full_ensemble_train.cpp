@@ -8,10 +8,7 @@ void FullEnsembleTrainer::train()
     auto logger = getLogger();
     logger->info("[train] Starting full enumeration training q_val = {}", q_val);
     
-    core.h.fill(0);
-    core.J.fill(0);
-
-    for (iter=1; iter<maxIterations; ++iter){
+    for (iter=iter; iter<maxIterations; ++iter){
         computeFullEnumerationAverages(1.0, false); // beta = 1 for training, triplets=false don't need m3_model here
         updateModelParameters(iter);
 

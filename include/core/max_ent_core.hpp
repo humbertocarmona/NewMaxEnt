@@ -21,6 +21,7 @@ class MaxEntCore
         J.set_size(nedges);
         J.fill(0);
         edges.set_size(nspins, nspins);
+        edges.fill(-1);
         int idx = 0;
         for (int i = 0; i < nspins - 1; ++i)
         {

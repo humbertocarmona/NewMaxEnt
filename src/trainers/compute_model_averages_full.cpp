@@ -33,14 +33,14 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         avg_energy_sq += P * E * E;
 
         // First-order moments
-        for (int i = 0; i < nspins; ++i)
+        for (size_t i = 0; i < nspins; ++i)
             m1_model(i) += P * s(i);
 
         // Second-order moments
         int idx = 0;
-        for (int i = 0; i < nspins - 1; ++i)
+        for (size_t i = 0; i < nspins - 1; ++i)
         {
-            for (int j = i + 1; j < nspins; ++j)
+            for (size_t j = i + 1; j < nspins; ++j)
             {
                 m2_model(idx++) += P * s(i) * s(j);
             }
@@ -50,11 +50,11 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         {
             // Third-order moments
             idx = 0;
-            for (int i = 0; i < nspins - 2; ++i)
+            for (size_t i = 0; i < nspins - 2; ++i)
             {
-                for (int j = i + 1; j < nspins - 1; ++j)
+                for (size_t j = i + 1; j < nspins - 1; ++j)
                 {
-                    for (int k = j + 1; k < nspins; ++k)
+                    for (size_t k = j + 1; k < nspins; ++k)
                     {
                         m3_model(idx++) += P * s(i) * s(j) * s(k);
                     }

@@ -15,7 +15,7 @@ RunParameters parseParameters(const std::string &filename)
     nlohmann::json json_data;
     infile >> json_data;
 
-    p.run_type      = json_data.value("run_type", "fun ensemble train");
+    p.run_type      = json_data.value("run_type", "fun ensemble");
     p.runid         = json_data.value("runid", "testing");
     p.raw_data_file = json_data.value("raw_data_file", "raw_data.csv");
     p.result_dir    = json_data.value("result_dir", "./results");
@@ -41,6 +41,18 @@ RunParameters parseParameters(const std::string &filename)
     p.alpha_J       = json_data.value("alpha_J", 0.1);
     p.gamma_h       = json_data.value("gamma_h", 0.2);
     p.gamma_J       = json_data.value("gamma_J", 0.2);
+
+    if (json_data.contains("Monte_Carlo"))
+    {
+        auto mc                  = json_data["Monte_Carlo"];
+        p.numEquilibrationSweeps = mc.value("numEquilibrationSweeps", 1000);
+        p.numSamples             = mc.value("numSamples", 1000);
+        p.sampleInterval         = mc.value("sampleInterval", 100);
+    }
+    else if (p.run_type == "Monte_Carlo")
+    {
+        throw std::runtime_error("JSON need 'Monte_Carlo': " + filename);
+    }
 
     return p;
 }

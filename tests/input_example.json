@@ -16,6 +16,12 @@
     "alpha_h": 0.1,
     "alpha_J": 0.1,
     "gamma_h": 0.2,
-    "gamma_J": 0.2
+    "gamma_J": 0.2,
+
+    "Monte_Carlo": {
+        "numEquilibrationSweeps" : 1000,
+        "numSamples"             : 1000,
+        "sampleInterval"         : 100
+    }
 }
   

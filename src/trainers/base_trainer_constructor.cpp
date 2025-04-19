@@ -90,6 +90,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
 
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
+
 };
 
 

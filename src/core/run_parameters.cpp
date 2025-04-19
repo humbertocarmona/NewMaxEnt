@@ -33,15 +33,15 @@ RunParameters parseParameters(const std::string &filename)
     p.beta   = json_data.value("beta", 1.0);
 
     // needed by FullEnsembleTrainer
-    p.maxIterations = json_data.value("", 1000);
-    p.tolerance_h   = json_data.value("", 1.0e-4);
-    p.tolerance_J   = json_data.value("", 1.0e-4);
-    p.eta_h         = json_data.value("", 0.1);
-    p.eta_J         = json_data.value("", 0.1);
-    p.alpha_h       = json_data.value("", 0.1);
-    p.alpha_J       = json_data.value("", 0.1);
-    p.gamma_h       = json_data.value("", 0.2);
-    p.gamma_J       = json_data.value("", 0.2);
+    p.maxIterations = json_data.value("maxIterations", 1000);
+    p.tolerance_h   = json_data.value("tolerance_h", 1.0e-4);
+    p.tolerance_J   = json_data.value("tolerance_J", 1.0e-4);
+    p.eta_h         = json_data.value("eta_h", 0.1);
+    p.eta_J         = json_data.value("eta_J", 0.1);
+    p.alpha_h       = json_data.value("alpha_h", 0.1);
+    p.alpha_J       = json_data.value("alpha_J", 0.1);
+    p.gamma_h       = json_data.value("gamma_h", 0.2);
+    p.gamma_J       = json_data.value("gamma_J", 0.2);
 
     return p;
 }

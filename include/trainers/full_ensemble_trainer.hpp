@@ -11,6 +11,7 @@ class FullEnsembleTrainer
   public:
     // Constructor
     FullEnsembleTrainer(MaxEntCore &core,
+                        double q_val,
                         size_t maxIterations,
                         double tolerance_h,
                         double tolerance_J,
@@ -22,8 +23,8 @@ class FullEnsembleTrainer
                         double gamma_J,
 
                         const std::string &data_filename)
-        : core(core), maxIterations(maxIterations), tolerance_h(tolerance_h), tolerance_J(tolerance_J), eta_h(eta_h),
-          eta_J(eta_J), alpha_h(alpha_h), alpha_J(alpha_J), gamma_h(gamma_h), gamma_J(gamma_J)
+        : core(core), q_val(q_val), maxIterations(maxIterations), tolerance_h(tolerance_h), tolerance_J(tolerance_J),
+          eta_h(eta_h), eta_J(eta_J), alpha_h(alpha_h), alpha_J(alpha_J), gamma_h(gamma_h), gamma_J(gamma_J)
     {
         int n                       = core.nspins;
         ntriplets                   = n * (n - 1) * (n - 2) / 6;
@@ -38,8 +39,6 @@ class FullEnsembleTrainer
 
         delta_h = arma::zeros<arma::Col<double>>(core.nspins);
         delta_J = arma::zeros<arma::Col<double>>(core.nedges);
-
-        m3_data.brief_print("m3_data");
     };
 
     // Main training function
@@ -47,6 +46,15 @@ class FullEnsembleTrainer
 
     // may be used by TemperatureDependence of the trained model
     void computeFullEnumerationAverages(double beta, bool triplets);
+
+    const arma::Col<double> &get_h() const
+    {
+        return core.h;
+    }
+    const arma::Col<double> &get_J() const
+    {
+        return core.J;
+    }
 
     const arma::Col<double> &get_m1_data() const
     {
@@ -71,7 +79,19 @@ class FullEnsembleTrainer
     }
     const arma::Col<double> &get_m3_model() const
     {
-        return m2_model;
+        return m3_model;
+    }
+    const double get_avg_energy() const
+    {
+        return avg_energy;
+    }
+    const double get_avg_energy_sq() const
+    {
+        return avg_energy_sq;
+    }
+    const size_t get_iter() const
+    {
+        return iter;
     }
 
   private:
@@ -81,6 +101,8 @@ class FullEnsembleTrainer
 
     // Training parameters
     size_t maxIterations;
+    size_t iter;
+
     double tolerance_h;
     double tolerance_J;
     double q_val;   // for exp_q(x,q) Tsallis q-exponential

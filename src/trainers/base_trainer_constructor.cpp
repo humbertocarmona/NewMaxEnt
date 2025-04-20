@@ -34,7 +34,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
     int n       = core.nspins;
     ntriplets   = n * (n - 1) * (n - 2) / 6;
 
-    logger->info("data_filename = {}", data_filename);
     if (utils::isFileType(data_filename, "csv"))
     {
         // reads raw data file

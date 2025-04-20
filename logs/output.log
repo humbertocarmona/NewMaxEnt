@@ -1,0 +1,18 @@
+[2025-04-20 19:42:38.900] [info] 1 Histogram flat → reducing f to 5.00e-01
+[2025-04-20 19:42:38.921] [info] 2 Histogram flat → reducing f to 2.50e-01
+[2025-04-20 19:42:38.943] [info] 3 Histogram flat → reducing f to 1.25e-01
+[2025-04-20 19:42:38.964] [info] 4 Histogram flat → reducing f to 6.25e-02
+[2025-04-20 19:42:39.008] [info] 6 Histogram flat → reducing f to 3.12e-02
+[2025-04-20 19:42:39.028] [info] 7 Histogram flat → reducing f to 1.56e-02
+[2025-04-20 19:42:39.090] [info] 10 Histogram flat → reducing f to 7.81e-03
+[2025-04-20 19:42:39.130] [info] 12 Histogram flat → reducing f to 3.91e-03
+[2025-04-20 19:42:39.151] [info] 13 Histogram flat → reducing f to 1.95e-03
+[2025-04-20 19:42:39.249] [info] 18 Histogram flat → reducing f to 9.77e-04
+[2025-04-20 19:42:39.996] [info] 57 Histogram flat → reducing f to 4.88e-04
+[2025-04-20 19:42:40.376] [info] 76 Histogram flat → reducing f to 2.44e-04
+[2025-04-20 19:42:57.834] [info] 891 Histogram flat → reducing f to 1.22e-04
+[2025-04-20 19:42:58.670] [info] 929 Histogram flat → reducing f to 6.10e-05
+[2025-04-20 19:43:14.386] [info] 1601 Histogram flat → reducing f to 3.05e-05
+[2025-04-20 19:43:24.255] [info] 2049 Histogram flat → reducing f to 1.53e-05
+[2025-04-20 19:44:49.185] [info] 5507 Histogram flat → reducing f to 7.63e-06
+[2025-04-20 19:44:49.185] [info] saving result after 5507 iterations with log_f = 7.63e-06

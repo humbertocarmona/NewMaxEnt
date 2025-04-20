@@ -22,6 +22,10 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     m2_model.zeros(nedges);
     m3_model.zeros(ntriplets);
 
+    avg_energy    = 0.0;
+    avg_energy_sq = 0.0;
+    avg_magnetization = 0.0;
+    
     // Random number generator setup
     // std::mt19937 rng(std::random_device{}());
     std::mt19937 rng(1);
@@ -83,6 +87,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             double E = energyAllPairs(s);
             avg_energy += E;
             avg_energy_sq += E;
+            avg_magnetization += arma::mean(arma::conv_to<arma::vec>::from(s));
 
             for (size_t i = 0; i < nspins; ++i)
             {
@@ -111,6 +116,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
                         }
                     }
                 }
+                replicas.row(samplesCollected) = s.t();
             }
             samplesCollected++;
         }
@@ -119,6 +125,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     // Normalize the averages
     avg_energy /= static_cast<double>(numSamples);
     avg_energy_sq /= static_cast<double>(numSamples);
+    avg_magnetization /= static_cast<double>(numSamples);
 
     m1_model /= static_cast<double>(numSamples);
     m2_model /= static_cast<double>(numSamples);

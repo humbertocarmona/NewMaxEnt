@@ -8,10 +8,15 @@ void fullEnsembleTrainingWorkflow(RunParameters params)
 {
     auto logger = getLogger();
 
+    auto data_filename = params.raw_data_file;
+    if (data_filename == "none")
+        data_filename = params.trained_model_file;
+        
     MaxEntCore core(params.nspins, params.runid);
+
     FullEnsembleTrainer model(core, params.q_val, params.maxIterations, params.tolerance_h,
                               params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
-                              params.alpha_J, params.gamma_h, params.gamma_J, params.raw_data_file);
+                              params.alpha_J, params.gamma_h, params.gamma_J, data_filename);
 
     model.train();
 

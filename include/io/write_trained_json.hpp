@@ -13,8 +13,8 @@ void writeTrainedModel(const RunParameters params,
     auto logger = getLogger();
 
     std::ostringstream fname;
-    fname << params.result_dir << "/final_"
-          << params.run_type <<"_" << params.runid << ".json";
+    fname << params.result_dir << "/final-"
+          << params.run_type <<"-" << params.runid << ".json";
 
     nlohmann::json obj;
     obj["type"] = model.get_type();

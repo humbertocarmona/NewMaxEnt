@@ -122,4 +122,18 @@ inline std::string brief(const arma::Col<double> &v)
     return out.str();
 }
 
+inline std::string colPrint(const arma::Col<double> &v)
+{
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < v.n_elem; ++i)
+    {
+        out << v(i);
+        if (i + 1 < v.n_elem)
+            out << ", ";
+    }
+    out << "]";
+    return out.str();
+}
+
 } // namespace utils

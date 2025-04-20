@@ -81,6 +81,9 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
     }
     else
     {
+        m1_data = arma::zeros<arma::Col<double>>(core.nspins);
+        m2_data = arma::zeros<arma::Col<double>>(core.nedges);
+        m3_data = arma::zeros<arma::Col<double>>(ntriplets);
         logger->warn("here now");
     }
 

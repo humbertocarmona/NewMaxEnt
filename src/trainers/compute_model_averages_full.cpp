@@ -2,6 +2,7 @@
 #include "utils/binary_permutations_sequence.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
+#include <armadillo>
 
 void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 {
@@ -16,6 +17,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 
     avg_energy    = 0.0;
     avg_energy_sq = 0.0;
+    avg_magnetization = 0.0;
 
     // arma::Col<int> s(nspins);
     double Z = 0.0;
@@ -31,6 +33,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         Z += P;
         avg_energy += P * E;
         avg_energy_sq += P * E * E;
+        avg_magnetization += P*arma::mean(arma::conv_to<arma::vec>::from(s));
 
         // First-order moments
         for (size_t i = 0; i < nspins; ++i)
@@ -65,6 +68,8 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 
     avg_energy /= Z;
     avg_energy_sq /= Z;
+    avg_magnetization /= Z;
+    
     m1_model /= Z;
     m2_model /= Z;
     if (triplets)

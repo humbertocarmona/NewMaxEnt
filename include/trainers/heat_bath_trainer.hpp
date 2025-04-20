@@ -32,21 +32,28 @@ class HeatBathTrainer : public BaseTrainer
 
     void configureMonteCarlo(size_t equilibrationSweeps, size_t samples, size_t interval)
     {
+        int nspins             = core.nspins;
         numEquilibrationSweeps = equilibrationSweeps;
         numSamples             = samples;
         sampleInterval         = interval;
+
+        replicas.set_size(numSamples, nspins);
+        replicas.fill(-1);
     }
 
     void computeModelAverages(double beta, bool triplets) override;
     void train() override;
 
-    // void computeTemperatureDependence(double betaStart, double betaEnd, double step) override {
-    // Implement temperature dependence logic here
-    // }
+    const arma::Mat<int> &get_replicas() const
+    {
+        return replicas;
+    }
+
   private:
     std::string className = "FullEnsembleTrainer";
 
     size_t numEquilibrationSweeps; // Number of equilibration sweeps
     size_t numSamples;             // Number of samples to collect
     size_t sampleInterval;         // Number of sweeps between samples
+    arma::Mat<int> replicas;
 };

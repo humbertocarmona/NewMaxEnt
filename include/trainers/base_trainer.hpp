@@ -76,6 +76,10 @@ class BaseTrainer
     {
         return avg_energy_sq;
     }
+    const double get_avg_magnetization() const
+    {
+        return avg_magnetization;
+    }
     const size_t get_iter() const
     {
         return iter;
@@ -110,6 +114,7 @@ class BaseTrainer
     // sample and model averages
     double avg_energy;
     double avg_energy_sq;
+    double avg_magnetization;
 
     // averages used for training
     arma::Col<double> m1_data;  // sample fist momentum: <s_i>

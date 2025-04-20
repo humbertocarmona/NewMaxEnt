@@ -8,10 +8,11 @@
 
 struct RunParameters
 {
-    std::string run_type      = "fun ensemble train";
-    std::string runid         = "testing";
-    std::string raw_data_file = "raw_data.csv"; // filename with raw data samples to compute means
-    std::string result_dir    = "./results"; // result_dir/runid/ is where all results will be saved
+    std::string run_type           = "fun ensemble train";
+    std::string runid              = "testing";
+    std::string raw_data_file      = "none"; // filename with raw data samples to compute means
+    std::string trained_model_file = "none"; // filename with trained model to compute means
+    std::string result_dir = "./results";    // result_dir/runid/ is where all results will be saved
 
     // needed by MaxEntCore
     int nspins   = 16;
@@ -31,6 +32,9 @@ struct RunParameters
     int numEquilibrationSweeps = 1000;
     int numSamples             = 1000;
     int sampleInterval         = 100;
+    std::vector<double> temperature_range = std::vector<double>();
+
+
 
     RunParameters() = default;
 
@@ -43,7 +47,10 @@ struct RunParameters
 
         logger->info("[{}] run_type               {}", caption, run_type);
         logger->info("[{}] runid                  {}", caption, runid);
-        logger->info("[{}] raw_data_file          {}", caption, raw_data_file);
+        if (raw_data_file != "none")
+            logger->info("[{}] raw_data_file          {}", caption, raw_data_file);
+        if (trained_model_file != "none")
+            logger->info("[{}] trained_model_file     {}", caption, trained_model_file);
         logger->info("[{}] result_dir             {}", caption, result_dir);
         logger->info("[{}] nspins                 {}", caption, nspins);
         logger->info("[{}] q_val                  {}", caption, q_val);
@@ -71,9 +78,12 @@ struct RunParameters
     {
         nlohmann::json obj;
 
-        obj["run_type"]      = run_type;
-        obj["runid"]         = runid;
-        obj["raw_data_file"] = raw_data_file;
+        obj["run_type"] = run_type;
+        obj["runid"]    = runid;
+        if (raw_data_file != "none")
+            obj["raw_data_file"] = raw_data_file;
+        if (trained_model_file != "none")
+            obj["trained_model_file"] = trained_model_file;
         obj["result_dir"]    = result_dir;
         obj["nspins"]        = nspins;
         obj["q_val"]         = q_val;

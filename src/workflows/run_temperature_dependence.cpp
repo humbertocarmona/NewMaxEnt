@@ -1,7 +1,7 @@
 #include "workflows/run_temperature_dependence.hpp"
-#include "io/read_core_json.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/heat_bath_trainer.hpp"
+#include "io/make_file_names.hpp"
 #include "utils/get_logger.hpp"
 
 #include <fstream>
@@ -36,13 +36,6 @@ void runTemperatureDependence(const RunParameters &params)
 {
     auto logger = getLogger();
 
-    std::ostringstream file_tdep, file_prefix_replica;
-    // clang-format off
-    file_tdep << params.result_dir << "/"
-             << params.run_type << "-" << params.runid << ".csv";
-    file_prefix_replica << params.result_dir << "/"
-             << "replicas-" << params.run_type << "-" << params.runid << "-";
-
     int nspins = params.nspins;
     MaxEntCore core(nspins, params.runid);
     FullEnsembleTrainer model_full(core, params.q_val, params.maxIterations, params.tolerance_h,
@@ -60,7 +53,9 @@ void runTemperatureDependence(const RunParameters &params)
     double energy;
     double specific_heat;
     double magnetization;
-    std::ofstream out(file_tdep.str());
+    auto file_tdep = io::make_tdep_filename(params);
+    logger->info("opening {}", file_tdep);
+    std::ofstream out(file_tdep);
     out << "T,beta,energy,specific_heat,magnetization\n";
     out << std::fixed << std::setprecision(6);
 
@@ -83,10 +78,8 @@ void runTemperatureDependence(const RunParameters &params)
             model_mc.computeModelAverages(beta, true);
             auto replicas = model_mc.get_replicas();
             
-            std::ostringstream oss; 
-            oss << "T_" << std::fixed << std::setprecision(2) << T << ".csv";
-            std::string file_replica = file_prefix_replica.str() + oss.str();
-            save_replicas_to_csv(replicas, file_replica);
+            auto file_replicas = io::make_replicas_filename(params, T);
+            save_replicas_to_csv(replicas, file_replicas);
         }
     }
     else
@@ -107,11 +100,7 @@ void runTemperatureDependence(const RunParameters &params)
 
             auto replicas = model_mc.get_replicas();
 
-            std::ostringstream oss; 
-            oss << "T-" << std::fixed << std::setprecision(2) << T << ".csv";
-            std::string label = oss.str();
-            std::replace(label.begin(), label.end(), '.', '_');
-            std::string file_replica = file_prefix_replica.str() + label;
+            auto file_replica = io::make_replicas_filename(params, T);
             save_replicas_to_csv(replicas, file_replica);
         }
     }

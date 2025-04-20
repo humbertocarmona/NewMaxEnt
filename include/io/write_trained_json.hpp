@@ -1,5 +1,7 @@
 #include "core/run_parameters.hpp"
 #include "utils/centered_moments.hpp"
+#include "io/make_file_names.hpp"
+
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
@@ -11,10 +13,6 @@ void writeTrainedModel(const RunParameters params,
                        const CenteredMoments m_model)
 {
     auto logger = getLogger();
-
-    std::ostringstream fname;
-    fname << params.result_dir << "/final-"
-          << params.run_type <<"-" << params.runid << ".json";
 
     nlohmann::json obj;
     obj["type"] = model.get_type();
@@ -39,8 +37,8 @@ void writeTrainedModel(const RunParameters params,
 
     obj["run_parameters"] = params.to_json();
 
-    std::filesystem::path output = utils::get_available_filename(fname.str());
+    auto output = io::make_trained_filename(params);
     std::ofstream out(output);
     out << obj.dump(2);
-    logger->info("[writeTrainedModel] saved {}", output.string());
+    logger->info("[writeTrainedModel] saved {}", output);
 };

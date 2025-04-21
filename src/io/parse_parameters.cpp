@@ -1,6 +1,6 @@
 #include "core/run_parameters.hpp"
-#include "utils/utilities.hpp"
 #include "utils/get_logger.hpp"
+#include "utils/utilities.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <sstream>
@@ -59,27 +59,30 @@ RunParameters parseParameters(const std::string &filename)
 
             for (double T = t_begin; T <= t_end + 1e-10; T += t_step)
                 p.temperature_range.push_back(T);
-            
+
             logger->info("[parseParameters] T range={}", utils::colPrint(p.temperature_range));
         }
         else
         {
             p.temperature_range = arr.get<std::vector<double>>();
         }
-    }else if(p.run_type == "Temperature_Dep"){
+    }
+    else if (p.run_type == "Temperature_Dep")
+    {
         throw std::runtime_error("JSON 'Temperature_Dep' require 'temperature_range': " + filename);
     }
 
     if (json_data.contains("Monte_Carlo"))
     {
-        auto mc                  = json_data["Monte_Carlo"];
-        p.numEquilibrationSweeps = mc.value("numEquilibrationSweeps", 1000);
-        p.numSamples             = mc.value("numSamples", 1000);
-        p.sampleInterval         = mc.value("sampleInterval", 100);
+        auto mc                = json_data["Monte_Carlo"];
+        p.equilibration_sweeps = mc.value("equilibration_sweeps", 1000);
+        p.numSamples           = mc.value("numSamples", 1000);
+        p.sampleInterval       = mc.value("sampleInterval", 100);
     }
     else if (p.run_type == "Monte_Carlo" || p.run_type == "Temperature_Dep")
     {
-        throw std::runtime_error("JSON Monte_Carlo  and Temperature_Dep need 'Monte_Carlo': " + filename);
+        throw std::runtime_error("JSON Monte_Carlo  and Temperature_Dep need 'Monte_Carlo': " +
+                                 filename);
     }
 
     if (p.trained_model_file == "none" && p.raw_data_file == "none")
@@ -90,6 +93,6 @@ RunParameters parseParameters(const std::string &filename)
     {
         throw std::runtime_error("JSON  Temperature_DepJSON need 'trained_model_file'");
     }
-    
+
     return p;
 }

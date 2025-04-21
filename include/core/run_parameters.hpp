@@ -20,21 +20,19 @@ struct RunParameters
     double beta  = 1.0;
 
     // needed by FullEnsembleTrainer
-    int maxIterations          = 1000;
-    double tolerance_h         = 1.0e-4;
-    double tolerance_J         = 1.0e-4;
-    double eta_h               = 0.1;
-    double eta_J               = 0.1;
-    double alpha_h             = 0.1;
-    double alpha_J             = 0.1;
-    double gamma_h             = 0.2;
-    double gamma_J             = 0.2;
-    int numEquilibrationSweeps = 1000;
-    int numSamples             = 1000;
-    int sampleInterval         = 100;
+    int maxIterations                     = 1000;
+    double tolerance_h                    = 1.0e-4;
+    double tolerance_J                    = 1.0e-4;
+    double eta_h                          = 0.1;
+    double eta_J                          = 0.1;
+    double alpha_h                        = 0.1;
+    double alpha_J                        = 0.1;
+    double gamma_h                        = 0.2;
+    double gamma_J                        = 0.2;
+    int equilibration_sweeps              = 1000;
+    int numSamples                        = 1000;
+    int sampleInterval                    = 100;
     std::vector<double> temperature_range = std::vector<double>();
-
-
 
     RunParameters() = default;
 
@@ -68,7 +66,7 @@ struct RunParameters
         logger->info("[{}] gamma_J                {}", caption, gamma_J);
         if (run_type == "Monte Carlo")
         {
-            logger->info("[{}] numEquilibrationSweeps {}", caption, numEquilibrationSweeps);
+            logger->info("[{}] equilibration_sweeps {}", caption, equilibration_sweeps);
             logger->info("[{}] numSamples             {}", caption, numSamples);
             logger->info("[{}] sampleInterval         {}", caption, sampleInterval);
         }
@@ -99,9 +97,9 @@ struct RunParameters
         obj["gamma_J"]       = gamma_J;
         if (run_type == "Monte Carlo")
         {
-            obj["numEquilibrationSweeps"] = numEquilibrationSweeps;
-            obj["numSamples"]             = numSamples;
-            obj["sampleInterval"]         = sampleInterval;
+            obj["equilibration_sweeps"] = equilibration_sweeps;
+            obj["numSamples"]           = numSamples;
+            obj["sampleInterval"]       = sampleInterval;
         }
         return obj;
     };

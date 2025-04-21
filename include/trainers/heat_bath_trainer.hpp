@@ -7,7 +7,7 @@ class HeatBathTrainer : public BaseTrainer
   public:
     HeatBathTrainer(MaxEntCore &core,
                     double q_val,
-                    size_t maxIterations,
+                    size_t max_iterations,
                     double tolerance_h,
                     double tolerance_J,
                     double eta_h,
@@ -19,7 +19,7 @@ class HeatBathTrainer : public BaseTrainer
                     const std::string &data_filename) :
         BaseTrainer(core,
                     q_val,
-                    maxIterations,
+                    max_iterations,
                     tolerance_h,
                     tolerance_J,
                     eta_h,
@@ -30,12 +30,12 @@ class HeatBathTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
-    void configureMonteCarlo(size_t equilibrationSweeps, size_t samples, size_t interval)
+    void configureMonteCarlo(size_t equilibration_sweeps, size_t samples, size_t interval)
     {
-        int nspins             = core.nspins;
-        numEquilibrationSweeps = equilibrationSweeps;
-        numSamples             = samples;
-        sampleInterval         = interval;
+        int nspins           = core.nspins;
+        equilibration_sweeps = equilibration_sweeps;
+        numSamples           = samples;
+        sampleInterval       = interval;
 
         replicas.set_size(numSamples, nspins);
         replicas.fill(-1);
@@ -52,8 +52,8 @@ class HeatBathTrainer : public BaseTrainer
   private:
     std::string className = "FullEnsembleTrainer";
 
-    size_t numEquilibrationSweeps; // Number of equilibration sweeps
-    size_t numSamples;             // Number of samples to collect
-    size_t sampleInterval;         // Number of sweeps between samples
+    size_t equilibration_sweeps; // Number of equilibration sweeps
+    size_t numSamples;           // Number of samples to collect
+    size_t sampleInterval;       // Number of sweeps between samples
     arma::Mat<int> replicas;
 };

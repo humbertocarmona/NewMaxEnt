@@ -47,7 +47,7 @@ void runTemperatureDependence(const RunParameters &params)
                              params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
                              params.alpha_J, params.gamma_h, params.gamma_J,
                              params.trained_model_file);
-    model_mc.configureMonteCarlo(params.numEquilibrationSweeps, params.numSamples,
+    model_mc.configureMonteCarlo(params.equilibration_sweeps, params.numSamples,
                                  params.sampleInterval);
 
     double energy;

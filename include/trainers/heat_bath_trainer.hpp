@@ -30,12 +30,12 @@ class HeatBathTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
-    void configureMonteCarlo(size_t equilibration_sweeps, size_t samples, size_t interval)
+    void configureMonteCarlo(size_t equilibration_weeps, size_t num_samples, size_t sample_interval)
     {
         int nspins           = core.nspins;
-        equilibration_sweeps = equilibration_sweeps;
-        numSamples           = samples;
-        sampleInterval       = interval;
+        equilibration_sweeps = equilibration_weeps;
+        numSamples           = num_samples;
+        sampleInterval       = sample_interval;
 
         replicas.set_size(numSamples, nspins);
         replicas.fill(-1);
@@ -51,6 +51,7 @@ class HeatBathTrainer : public BaseTrainer
 
   private:
     std::string className = "FullEnsembleTrainer";
+    int mc_seed = 1;
 
     size_t equilibration_sweeps; // Number of equilibration sweeps
     size_t numSamples;           // Number of samples to collect

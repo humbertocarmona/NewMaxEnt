@@ -83,7 +83,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
         m1_data = arma::zeros<arma::Col<double>>(core.nspins);
         m2_data = arma::zeros<arma::Col<double>>(core.nedges);
         m3_data = arma::zeros<arma::Col<double>>(ntriplets);
-        logger->warn("here now");
+        logger->warn("[BaseTrainer] initialized] check core.h, core.J");
     }
 
     m1_model = arma::zeros<arma::Col<double>>(core.nspins);
@@ -92,9 +92,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
 
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
-
 };
-
 
 // void BaseTrainer::train()
 // {

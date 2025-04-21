@@ -19,7 +19,7 @@ struct RunParameters
     double q_val = 1.0;
     double beta  = 1.0;
 
-    // needed by FullEnsembleTrainer
+    // model training parameters
     int maxIterations                     = 1000;
     double tolerance_h                    = 1.0e-4;
     double tolerance_J                    = 1.0e-4;
@@ -29,9 +29,12 @@ struct RunParameters
     double alpha_J                        = 0.1;
     double gamma_h                        = 0.2;
     double gamma_J                        = 0.2;
+    // Monte Carlo parameters
     int equilibration_sweeps              = 1000;
     int numSamples                        = 1000;
     int sampleInterval                    = 100;
+    
+    // post-processing temperature dependence
     std::vector<double> temperature_range = std::vector<double>();
 
     RunParameters() = default;

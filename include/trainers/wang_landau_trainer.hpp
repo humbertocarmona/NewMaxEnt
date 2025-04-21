@@ -32,6 +32,21 @@ class WangLandauTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
+    void configureWangLandau(size_t num_samples, size_t sample_interval)
+    {
+        if (num_samples == 0 || sample_interval == 0)
+            throw std::invalid_argument("numSamples and sampleInterval must be greater than zero.");
+
+        int nspins     = core.nspins;
+        numSamples     = num_samples;
+        sampleInterval = sample_interval;
+
+        replicas.set_size(numSamples, nspins);
+        replicas.fill(-1);
+        auto logger = getLogger();
+        logger->info("Wang-Landau configuration: {} samples, sampling every {} sweeps.", numSamples,
+                     sampleInterval);
+    }
     void computeModelAverages(double beta, bool triplets) override;
     void train() override;
 
@@ -40,22 +55,32 @@ class WangLandauTrainer : public BaseTrainer
         return replicas;
     }
 
-
-
   private:
     std::string className = "WangLandauTrainer";
     arma::Mat<int> replicas;
-    size_t max_trials = 100000;
-    double log_f_final = 1e-5;
-    double energy_bin = 0.2;
+    int wg_seed = 1;
+    size_t numSamples;     // Number of samples to collect
+    size_t sampleInterval; // Number of sweeps between samples
+    size_t max_trials         = 100000;
+    double log_f_final        = 1e-5;
+    double energy_bin         = 0.2;
+    double flatness_threshold = 0.8;
 
-    std::unordered_map<int, double> log_g;
-    std::unordered_map<int, int> H;
+    std::unordered_map<int, double> log_g_E; // ln(G(E) density of states
+    std::unordered_map<int, int> H;          // energy histogram
 
     void flip_random_spin(arma::Col<int> &s, std::mt19937 &rng);
 
-    bool is_flat(const std::unordered_map<int, int> &H, double flatness_threshold);
+    bool is_flat(const std::unordered_map<int, int> &H);
 
-    void densityOfStates();
+    void computeDensityOfStates();
 
+    inline double logsumexp(const std::vector<double> &vector_of_logs)
+    {
+        double max_log = *std::max_element(vector_of_logs.begin(), vector_of_logs.end());
+        double sum     = 0.0;
+        for (double x : vector_of_logs)
+            sum += std::exp(x - max_log);
+        return max_log + std::log(sum);
+    }
 };

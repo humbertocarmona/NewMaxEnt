@@ -2,7 +2,6 @@
 #include "workflows/training_workflow.hpp"
 #include "workflows/run_temperature_dependence.hpp"
 #include "utils/get_logger.hpp"
-#include "wg/wg.hpp"
 
 int main(int argc, char **argv)
 {

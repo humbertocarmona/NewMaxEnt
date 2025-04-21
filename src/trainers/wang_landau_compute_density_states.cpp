@@ -1,5 +1,6 @@
 #include "io/make_file_names.hpp"
 #include "trainers/wang_landau_trainer.hpp"
+#include "utils/get_logger.hpp"
 
 void WangLandauTrainer::computeDensityOfStates()
 {
@@ -87,5 +88,27 @@ void WangLandauTrainer::computeDensityOfStates()
     //     out << E * energy_bin << "," << val << "\n"; // energy bin center, log density
     // }
     // out.close();
-    logger->info("[computeDensityOfStates] Wang-Landau finished computing the DOS {:.22}", log_f);
+
+    logger->info("[computeDensityOfStates] Wang-Landau finished computing the DOS {:.2e}", log_f);
+
+    if (log_g_E.empty())
+    {
+        logger->info("[computeDensityOfStates] log_g_E is empty");
+    }
+    else
+    {
+        int min_E = std::numeric_limits<int>::max();
+        int max_E = std::numeric_limits<int>::min();
+
+        for (const auto &[E, logg] : log_g_E)
+        {
+            if (E < min_E)
+                min_E = E;
+            if (E > max_E)
+                max_E = E;
+        }
+
+        logger->info("[computeDensityOfStates] Number of bins: {}, E_min = {:.2e}, E_max = {:.2e}",
+                     log_g_E.size(), min_E*energy_bin, max_E*energy_bin);
+    }
 }

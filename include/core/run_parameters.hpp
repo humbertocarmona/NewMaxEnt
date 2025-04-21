@@ -90,13 +90,13 @@ struct RunParameters
         }
         if (run_type == "Wang_Landau")
         {
-            logger->info("pre_maxIterations           {}", caption, pre_maxIterations);
-            logger->info("pre_equilibration_sweeps    {}", caption, pre_equilibration_sweeps);
-            logger->info("pre_numSamples              {}", caption, pre_numSamples);
-            logger->info("pre_sampleInterval          {}", caption, pre_sampleInterval);
-            logger->info("log_f_final                 {}", caption, log_f_final);
-            logger->info("energy_bin                  {}", caption, energy_bin);
-            logger->info("flatness_threshold          {}", caption, flatness_threshold);
+            logger->info("[{}] pre_maxIterations           {}", caption, pre_maxIterations);
+            logger->info("[{}] pre_equilibration_sweeps    {}", caption, pre_equilibration_sweeps);
+            logger->info("[{}] pre_numSamples              {}", caption, pre_numSamples);
+            logger->info("[{}] pre_sampleInterval          {}", caption, pre_sampleInterval);
+            logger->info("[{}] log_f_final                 {}", caption, log_f_final);
+            logger->info("[{}] energy_bin                  {}", caption, energy_bin);
+            logger->info("[{}] flatness_threshold          {}", caption, flatness_threshold);
         }
     };
 

@@ -32,9 +32,12 @@ class WangLandauTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
-    void configureWangLandau(double log_f_final_, double energy_bin_, double flatness_threshold_,
-        size_t equilibrationSweeps, size_t num_samples, size_t sample_interval)
-    {
+    void configureWangLandau(double log_f_final_, 
+                             double energy_bin_, 
+                             double flatness_threshold_,
+                             size_t equilibrationSweeps, 
+                             size_t num_samples, 
+                             size_t sample_interval){
         if (num_samples == 0 || sample_interval == 0)
             throw std::invalid_argument("numSamples and sampleInterval must be greater than zero.");
 
@@ -51,6 +54,7 @@ class WangLandauTrainer : public BaseTrainer
         replicas.fill(-1);
         auto logger = getLogger();
     }
+    
     void computeModelAverages(double beta, bool triplets) override;
     void train() override;
 

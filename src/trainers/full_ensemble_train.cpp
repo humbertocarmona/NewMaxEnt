@@ -6,7 +6,7 @@
 void FullEnsembleTrainer::train()
 {
     auto logger = getLogger();
-    logger->info("[train] Starting full enumeration training q_val = {}", q_val);
+    logger->info("[f train] Starting full enumeration training q_val = {}", q_val);
     
     for (iter=iter; iter<maxIterations; ++iter){
         computeModelAverages(1.0, false); // beta = 1 for training, triplets=false don't need m3_model here
@@ -16,12 +16,12 @@ void FullEnsembleTrainer::train()
 
         if (cost.check_convergence(tolerance_h, tolerance_J))
         {
-            logger->info("[train] Full ensemble converged at iteration {}", iter);
+            logger->info("[f train] Full ensemble converged at iteration {}", iter);
              break;
         }
         if (iter % 10 == 0)
         {
-            logger->info("[train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}",
+            logger->info("[f train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}",
                          iter,
                          cost.cost_total,
                          cost.cost_m1,
@@ -30,5 +30,5 @@ void FullEnsembleTrainer::train()
     }
     computeModelAverages(1.0, true);
 
-    logger->debug("[train] Finished full enumeration training.");
+    logger->debug("[f train] Finished full enumeration training.");
 }

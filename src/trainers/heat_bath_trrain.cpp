@@ -6,7 +6,7 @@
 void HeatBathTrainer::train()
 {
     auto logger = getLogger();
-    logger->info("[train] Starting Monte Carlo training q_val = {}", q_val);
+    logger->info("[hb train] Starting Heat Bath training q_val = {}", q_val);
 
     for (iter = iter; iter < maxIterations; ++iter)
     {
@@ -18,16 +18,16 @@ void HeatBathTrainer::train()
 
         if (cost.check_convergence(tolerance_h, tolerance_J))
         {
-            logger->info("[train] Monte Carlo converged at iteration {}", iter);
+            logger->info("[hb train] Monte Carlo converged at iteration {}", iter);
             break;
         }
         if (iter % 10 == 0)
         {
-            logger->info("[train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}", iter,
+            logger->info("[hb train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}", iter,
                          cost.cost_total, cost.cost_m1, cost.cost_m2);
         }
     }
     computeModelAverages(1.0, true);
 
-    logger->debug("[train] Finished Monte Carlo training.");
+    logger->debug("[hb train] Finished Monte Carlo training.");
 }

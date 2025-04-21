@@ -1,7 +1,7 @@
 #include "workflows/run_temperature_dependence.hpp"
+#include "io/make_file_names.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/heat_bath_trainer.hpp"
-#include "io/make_file_names.hpp"
 #include "utils/get_logger.hpp"
 
 #include <fstream>
@@ -47,7 +47,7 @@ void runTemperatureDependence(const RunParameters &params)
                              params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
                              params.alpha_J, params.gamma_h, params.gamma_J,
                              params.trained_model_file);
-    model_mc.configureMonteCarlo(params.equilibration_sweeps, params.numSamples,
+    model_mc.configureMonteCarlo(params.equilibrationSweeps, params.numSamples,
                                  params.sampleInterval);
 
     double energy;
@@ -70,20 +70,20 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_full.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_full.get_avg_magnetization();
 
-            out << T << "," << beta << "," << energy << ","  << specific_heat << "," << magnetization
-            << "\n";
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", 
-                T, energy, specific_heat, magnetization);
+            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
+                << "\n";
+            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
+                         energy, specific_heat, magnetization);
 
             model_mc.computeModelAverages(beta, true);
             auto replicas = model_mc.get_replicas();
-            
+
             auto file_replicas = io::make_replicas_filename(params, T);
             save_replicas_to_csv(replicas, file_replicas);
         }
     }
     else
-    {   // have to do with the heat_bath already used to train the model
+    { // have to do with the heat_bath already used to train the model
         for (double T : params.temperature_range)
         {
             double beta = 1.0 / T;
@@ -93,10 +93,10 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_mc.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_mc.get_avg_magnetization();
 
-            out << T << "," << beta << "," << energy << ","  << specific_heat << "," << magnetization
-            << "\n";
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", 
-                T, energy, specific_heat, magnetization);
+            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
+                << "\n";
+            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
+                         energy, specific_heat, magnetization);
 
             auto replicas = model_mc.get_replicas();
 

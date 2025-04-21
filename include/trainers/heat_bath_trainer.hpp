@@ -32,10 +32,10 @@ class HeatBathTrainer : public BaseTrainer
 
     void configureMonteCarlo(size_t equilibration_weeps, size_t num_samples, size_t sample_interval)
     {
-        int nspins           = core.nspins;
-        equilibration_sweeps = equilibration_weeps;
-        numSamples           = num_samples;
-        sampleInterval       = sample_interval;
+        int nspins          = core.nspins;
+        equilibrationSweeps = equilibration_weeps;
+        numSamples          = num_samples;
+        sampleInterval      = sample_interval;
 
         replicas.set_size(numSamples, nspins);
         replicas.fill(-1);
@@ -51,10 +51,10 @@ class HeatBathTrainer : public BaseTrainer
 
   private:
     std::string className = "FullEnsembleTrainer";
-    int mc_seed = 1;
+    int mc_seed           = 1;
 
-    size_t equilibration_sweeps; // Number of equilibration sweeps
-    size_t numSamples;           // Number of samples to collect
-    size_t sampleInterval;       // Number of sweeps between samples
+    size_t equilibrationSweeps; // Number of equilibration sweeps
+    size_t numSamples;          // Number of samples to collect
+    size_t sampleInterval;      // Number of sweeps between samples
     arma::Mat<int> replicas;
 };

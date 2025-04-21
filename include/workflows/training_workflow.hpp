@@ -3,3 +3,4 @@
 
 void fullEnsembleTrainingWorkflow(RunParameters params);
 void heatBathTrainingWorkflow(RunParameters params);
+void WangLandauTrainingWorkflow(RunParameters params);

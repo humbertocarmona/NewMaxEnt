@@ -36,7 +36,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
     // todo: test later if replacing exp with exp_q gives Tsallis equilibrium
     // Perform equilibration sweeps (no data collection)
-    for (size_t sweep = 0; sweep < equilibration_sweeps; ++sweep)
+    for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
     {
         for (size_t i = 0; i < nspins; ++i)
         {

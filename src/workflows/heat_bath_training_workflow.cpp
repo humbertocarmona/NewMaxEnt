@@ -16,8 +16,7 @@ void heatBathTrainingWorkflow(RunParameters params)
                           params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
                           params.alpha_J, params.gamma_h, params.gamma_J, data_filename);
 
-    model.configureMonteCarlo(params.equilibration_sweeps, params.numSamples,
-                              params.sampleInterval);
+    model.configureMonteCarlo(params.equilibrationSweeps, params.numSamples, params.sampleInterval);
     model.train();
 
     CenteredMoments c_model =

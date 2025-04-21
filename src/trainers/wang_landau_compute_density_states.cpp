@@ -1,5 +1,5 @@
-#include "trainers/wang_landau_trainer.hpp"
 #include "io/make_file_names.hpp"
+#include "trainers/wang_landau_trainer.hpp"
 
 void WangLandauTrainer::computeDensityOfStates()
 {
@@ -25,6 +25,7 @@ void WangLandauTrainer::computeDensityOfStates()
     log_g_E.clear();
     H.clear();
 
+    logger->info("[computeDensityOfStates] Wang-Landau started computing the DOS");
     size_t iter = 0;
     while (log_f > log_f_final && iter < 10000)
     {
@@ -32,7 +33,7 @@ void WangLandauTrainer::computeDensityOfStates()
         H.clear(); // reset histogram for new round of sampling
 
         // Main Wang-Landau loop: perform a random walk
-        for (size_t sweep = 0; sweep < max_trials; ++sweep)
+        for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
         {
             arma::Col<int> s_new = s;
             flip_random_spin(s_new, rng); // propose a single-spin flip
@@ -66,10 +67,15 @@ void WangLandauTrainer::computeDensityOfStates()
         if (is_flat(H))
         {
             log_f /= 2.0; // reduce f multiplicatively (log(f) halves)
-            logger->info("{} Histogram flat → reducing f to {:.2e}", iter, log_f);
+            // logger->info("[computeDensityOfStates] {} Histogram flat → reducing f to {:.2e}",
+            // iter, log_f);
         }
     }
 
+    if (iter >= 10000)
+    {
+        logger->warn("[computeDensityOfStates] Consider increasing iter > {}", iter);
+    }
     // logger->info("saving result after {} iterations with log_f = {:.2e}", iter, log_f);
     // // Save log_g_E(E) to file (rescaled to original energy units)
     // auto output = io::make_DensOfStates_filename(params)
@@ -81,4 +87,5 @@ void WangLandauTrainer::computeDensityOfStates()
     //     out << E * energy_bin << "," << val << "\n"; // energy bin center, log density
     // }
     // out.close();
+    logger->info("[computeDensityOfStates] Wang-Landau finished computing the DOS {:.22}", log_f);
 }

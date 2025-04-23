@@ -2,8 +2,8 @@
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 #include <armadillo>
-#include <memory>
 #include <nlohmann/json.hpp>
+#include <string>
 
 // Constructor
 BaseTrainer::BaseTrainer(MaxEntCore &core,

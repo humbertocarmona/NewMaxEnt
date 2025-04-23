@@ -85,6 +85,11 @@ class BaseTrainer
         return iter;
     }
 
+    const size_t set_iter(size_t it)
+    {
+        iter = it;
+    }
+
     const std::string get_type() const
     {
         return className;

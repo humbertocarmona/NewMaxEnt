@@ -26,10 +26,13 @@ inline std::string make_tdep_filename(const RunParameters &params)
  */
 inline std::string make_replicas_filename(const RunParameters &params, double T)
 {
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
     std::ostringstream fname;
-    fname << params.result_dir << "/"
-          << "replicas-" << params.run_type << "-" << params.runid << "-T-" << std::fixed
-          << std::setprecision(2) << T << ".csv";
+    fname << "/replicas-" << params.runid << "-T-" << std::fixed << std::setprecision(2) << T
+          << ".csv";
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
     return output.string();
@@ -40,8 +43,13 @@ inline std::string make_replicas_filename(const RunParameters &params, double T)
  */
 inline std::string make_trained_filename(const RunParameters &params)
 {
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
     std::ostringstream fname;
-    fname << params.result_dir << "/final-" << params.run_type << "-" << params.runid << ".json";
+    fname << outdir.str() << "/final-" << params.runid << ".json";
+
     std::filesystem::path output = utils::get_available_filename(fname.str());
 
     return output.string();
@@ -49,8 +57,12 @@ inline std::string make_trained_filename(const RunParameters &params)
 
 inline std::string make_DensOfStates_filename(const RunParameters &params)
 {
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
     std::ostringstream fname;
-    fname << params.result_dir << "/log_g_E-" << params.run_type << "-" << params.runid << ".csv";
+    fname << "/log_g_E-" << "-" << params.runid << ".csv";
     std::filesystem::path output = utils::get_available_filename(fname.str());
 
     return output.string();

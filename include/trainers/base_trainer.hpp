@@ -85,7 +85,7 @@ class BaseTrainer
         return iter;
     }
 
-    const size_t set_iter(size_t it)
+    const void set_iter(size_t it)
     {
         iter = it;
     }

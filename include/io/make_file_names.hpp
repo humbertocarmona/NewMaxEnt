@@ -14,9 +14,12 @@ namespace io
  */
 inline std::string make_tdep_filename(const RunParameters &params)
 {
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
     std::ostringstream fname;
-    fname << params.result_dir << "/"
-          << "sweep-" << params.run_type << "-" << params.runid << ".csv";
+    fname << outdir.str() << "/sweep-" << params.runid << ".csv";
     std::filesystem::path output = utils::get_available_filename(fname.str());
     return output.string();
 }
@@ -31,8 +34,25 @@ inline std::string make_replicas_filename(const RunParameters &params, double T)
     utils::make_path(outdir.str());
 
     std::ostringstream fname;
-    fname << "/replicas-" << params.runid << "-T-" << std::fixed << std::setprecision(2) << T
-          << ".csv";
+    fname << outdir.str() << "/replicas-" << params.runid << "-T-" << std::fixed
+          << std::setprecision(2) << T << ".csv";
+
+    std::filesystem::path output = utils::get_available_filename(fname.str());
+    return output.string();
+}
+
+/**
+ * @brief Construct the filename for top-K replicas at a given temperature.
+ */
+inline std::string make_replicas_correlation_filename(const RunParameters &params, double T)
+{
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
+    std::ostringstream fname;
+    fname << outdir.str() << "/corr-" << params.runid << "-T-" << std::fixed
+          << std::setprecision(2) << T << ".csv";
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
     return output.string();

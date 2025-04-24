@@ -3,11 +3,29 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
+#include "utils/replica_correlation_histogram.hpp"
 
 #include <fstream>
 #include <iomanip>
 
 #include <fstream>
+void save_histogram_to_csv(const std::vector<double> &bin_centers,
+                           const std::vector<double> &hist_values,
+                           const std::string &filename)
+{
+    std::ofstream out(filename);
+    if (!out)
+    {
+        throw std::runtime_error("Could not open histogram file for writing: " + filename);
+    }
+
+    out << "P_ij,frequency\n";
+    out << std::fixed << std::setprecision(6);
+    for (size_t i = 0; i < bin_centers.size(); ++i)
+    {
+        out << bin_centers[i] << "," << hist_values[i] << "\n";
+    }
+}
 
 void save_replicas_to_csv(const arma::Mat<int> &replicas, const std::string &filename)
 {
@@ -54,9 +72,9 @@ void runTemperatureDependence(const RunParameters &params)
     double specific_heat;
     double magnetization;
     auto file_tdep = io::make_tdep_filename(params);
-    logger->info("opening {}", file_tdep);
     std::ofstream out(file_tdep);
-    out << "T,beta,energy,specific_heat,magnetization\n";
+    logger->info("[runTemperatureDependence] Saving to {}", file_tdep);
+    out << "T,beta,energy,specific_heat,magnetization,q_max\n";
     out << std::fixed << std::setprecision(6);
 
     if (nspins < 21)
@@ -70,20 +88,31 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_full.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_full.get_avg_magnetization();
 
-            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
-                << "\n";
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
-                         energy, specific_heat, magnetization);
+  
 
             model_mc.computeModelAverages(beta, true);
             auto replicas = model_mc.get_replicas();
 
+            auto [hist_values, bin_centers] = compute_ordered_overlap_histogram(replicas, true);
+
+            auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
+            size_t max_idx  = std::distance(hist_values.begin(), max_it);
+            double peak_bin = bin_centers[max_idx];
+            double peak_val = *max_it;
+
+            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, q_max={:.2f}, p_val={:.2f}", T,
+                            energy, specific_heat, magnetization, peak_bin, peak_val);
+            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization <<","<<
+                peak_bin<<","<< peak_val << "\n";
+
             auto file_replicas = io::make_replicas_filename(params, T);
-            save_replicas_to_csv(replicas, file_replicas);
+            auto file_corr     = io::make_replicas_correlation_filename(params, T);
+            // save_replicas_to_csv(replicas, file_replicas);
+            save_histogram_to_csv(bin_centers, hist_values, file_corr);
         }
     }
     else
-    { // have to do with the heat_bath already used to train the model
+    { // heat_bath already used to train the model
         for (double T : params.temperature_range)
         {
             double beta = 1.0 / T;

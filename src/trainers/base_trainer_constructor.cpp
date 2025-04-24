@@ -48,7 +48,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
     }
     else if (utils::isFileType(data_filename, "json"))
     {
-        logger->info("[BaseTrainer] I am here");
         // re-start from last run (more iterations)
         auto obj = readTrainedModel(data_filename);
         if (!obj.contains("type") || obj["type"] != className)

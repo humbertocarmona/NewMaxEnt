@@ -44,7 +44,7 @@ inline std::string make_replicas_filename(const RunParameters &params, double T)
 /**
  * @brief Construct the filename for top-K replicas at a given temperature.
  */
-inline std::string make_replicas_correlation_filename(const RunParameters &params, double T)
+inline std::string make_replica_correlation_filename(const RunParameters &params, double T)
 {
     std::ostringstream outdir;
     outdir << params.result_dir << "/" << params.run_type;

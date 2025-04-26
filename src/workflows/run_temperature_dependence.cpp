@@ -93,6 +93,7 @@ void runTemperatureDependence(const RunParameters &params)
 
             auto [bin_centers, hist_values] = correlation_histogram<int>(replicas, 2.0, true);
 
+
             auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
             size_t max_idx  = std::distance(hist_values.begin(), max_it);
             double q_max = bin_centers[max_idx];
@@ -100,17 +101,17 @@ void runTemperatureDependence(const RunParameters &params)
 
             logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
                          "q_max={:.2f}, p_q_max={:.2f}",
-                         T, energy, specific_heat, magnetization, q_max/nspins, p_q_max);
+                         T, energy, specific_heat, magnetization, q_max, p_q_max);
             out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
-                << "," << q_max/nspins << "," << p_q_max << "\n";
+                << "," << q_max << "\n";
 
-            if (T == 1.0)
+            if (std::abs(T - 1.0) < 1e-6 * std::max(1.0, std::abs(T)))
             {
                 auto file_replicas = io::make_replicas_filename(params, T);
                 auto file_corr     = io::make_replica_correlation_filename(params, T);
                 save_replicas_to_csv(replicas, file_replicas);
                 save_histogram_to_csv(bin_centers, hist_values, file_corr);
-            }
+            }  
         }
     }
     else
@@ -135,12 +136,10 @@ void runTemperatureDependence(const RunParameters &params)
 
             logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
                          "q_max={:.2f}, p_q_max={:.2f}",
-                         T, energy, specific_heat, magnetization, p_q_max, q_max);
+                         T, energy, specific_heat, magnetization, q_max, p_q_max);
             out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
-                << "," << q_max << "," << p_q_max << "\n";
+                << "," << q_max << "\n";
 
-            auto file_replica = io::make_replicas_filename(params, T);
-            save_replicas_to_csv(replicas, file_replica);
         }
     }
 }

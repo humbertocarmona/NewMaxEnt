@@ -34,8 +34,7 @@ inline std::shared_ptr<spdlog::logger> getLogger() {
 
         // Set the logging level and pattern if needed
         logger->set_level(spdlog::level::info); // Example: set default level to info
-        logger->set_pattern("[%Y-%m-%d %H:%M] [%l] %v");
-        // logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+        logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
 
         spdlog::register_logger(logger);
     }

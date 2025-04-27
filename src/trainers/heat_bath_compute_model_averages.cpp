@@ -27,100 +27,107 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     avg_magnetization = 0.0;
 
     // Random number generator setup
-    // std::mt19937 rng(std::random_device{}());
-    std::mt19937 rng(mc_seed);
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
     arma::Col<int> s(nspins);
-    s.fill(-1);
-
-    // todo: test later if replacing exp with exp_q gives Tsallis equilibrium
-    // Perform equilibration sweeps (no data collection)
-    for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
+    size_t n_repetitions  = 20;
+    size_t numSamples_rep = numSamples / n_repetitions;
+    replicas.fill(-1); // Initialize replicas to -1
+    int n_samples_collected = 0;
+    for (size_t n = 0; n < n_repetitions; ++n)
     {
-        for (size_t i = 0; i < nspins; ++i)
+        // std::mt19937 rng(std::random_device{}());
+        std::mt19937 rng(mc_seed + n);
+        s.fill(-1);
+ 
+        for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
         {
-            double h_i = h(i);
-            for (size_t j = 0; j < nspins; ++j)
-            {
-                int ij = edges(i, j);
-                if (ij != -1)
-                {
-                    h_i += J(ij) * s(j);
-                }
-            }
-            double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
-            double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
-            double prob_plus = exp_plus / (exp_plus + exp_minus);
-            double r         = dist(rng);
-            s(i)             = (r < prob_plus) ? 1 : -1;
-        }
-    }
-
-    // Collect samples to compute averages
-    size_t samplesCollected = 0;
-    for (size_t sweep = 0; samplesCollected < numSamples; ++sweep)
-    {
-        // Perform a sweep for each spin i
-        for (size_t i = 0; i < nspins; ++i)
-        {
-            double h_i = h(i);
-            for (size_t j = 0; j < nspins; ++j) // sum over neighbors
-            {
-
-                int ij = edges(i, j);
-                if (ij != -1)
-                {
-                    h_i += J(ij) * s(j);
-                }
-            }
-            double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
-            double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
-            double prob_plus = exp_plus / (exp_plus + exp_minus);
-            double r         = dist(rng);
-            s(i)             = (r < prob_plus) ? 1 : -1;
-        }
-
-        // Every sampleInterval sweeps, record the current configuration
-        if ((sweep % sampleInterval) == 0)
-        {
-            double E = energyAllPairs(s);
-            avg_energy += E;
-            avg_energy_sq += E * E;
-            avg_magnetization += arma::mean(arma::conv_to<arma::vec>::from(s));
-
             for (size_t i = 0; i < nspins; ++i)
             {
-                m1_model(i) += s(i);
-            }
-            size_t idx = 0;
-            for (size_t i = 0; i < nspins - 1; ++i)
-            {
-                for (size_t j = i + 1; j < nspins; ++j)
+                double h_i = h(i);
+                for (size_t j = 0; j < nspins; ++j)
                 {
-                    m2_model(idx++) += s(i) * s(j);
-                }
-            }
-
-            if (triplets)
-            {
-                // Third-order moments
-                idx = 0;
-                for (size_t i = 0; i < nspins - 2; ++i)
-                {
-                    for (size_t j = i + 1; j < nspins - 1; ++j)
+                    int ij = edges(i, j);
+                    if (ij != -1)
                     {
-                        for (size_t k = j + 1; k < nspins; ++k)
-                        {
-                            m3_model(idx++) += s(i) * s(j) * s(k);
-                        }
+                        h_i += J(ij) * s(j);
                     }
                 }
-                replicas.row(samplesCollected) = s.t();
+                double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
+                double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
+                double prob_plus = exp_plus / (exp_plus + exp_minus);
+                double r         = dist(rng);
+                s(i)             = (r < prob_plus) ? 1 : -1;
             }
-            samplesCollected++;
         }
-    }
+
+        // Collect samples to compute averages
+        size_t n_collected_rep = 0;
+        for (size_t sweep = 0; n_collected_rep < numSamples_rep; ++sweep)
+        {
+            // Perform a sweep for each spin i
+            for (size_t i = 0; i < nspins; ++i)
+            {
+                double h_i = h(i);
+                for (size_t j = 0; j < nspins; ++j) // sum over neighbors
+                {
+
+                    int ij = edges(i, j);
+                    if (ij != -1)
+                    {
+                        h_i += J(ij) * s(j);
+                    }
+                }
+                double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
+                double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
+                double prob_plus = exp_plus / (exp_plus + exp_minus);
+                double r         = dist(rng);
+                s(i)             = (r < prob_plus) ? 1 : -1;
+            }
+
+            // Every sampleInterval sweeps, record the current configuration
+            if ((sweep % sampleInterval) == 0)
+            {
+                double E = energyAllPairs(s);
+                avg_energy += E;
+                avg_energy_sq += E * E;
+                avg_magnetization += arma::mean(arma::conv_to<arma::vec>::from(s));
+
+                for (size_t i = 0; i < nspins; ++i)
+                {
+                    m1_model(i) += s(i);
+                }
+                size_t idx = 0;
+                for (size_t i = 0; i < nspins - 1; ++i)
+                {
+                    for (size_t j = i + 1; j < nspins; ++j)
+                    {
+                        m2_model(idx++) += s(i) * s(j);
+                    }
+                }
+
+                if (triplets)
+                {
+                    // Third-order moments
+                    idx = 0;
+                    for (size_t i = 0; i < nspins - 2; ++i)
+                    {
+                        for (size_t j = i + 1; j < nspins - 1; ++j)
+                        {
+                            for (size_t k = j + 1; k < nspins; ++k)
+                            {
+                                m3_model(idx++) += s(i) * s(j) * s(k);
+                            }
+                        }
+                    }
+                    replicas.row(n_samples_collected) = s.t();
+                }
+                n_collected_rep++;
+                n_samples_collected++;
+            }
+        }
+
+    } // end for loop repetitions
 
     // Normalize the averages
     avg_energy /= static_cast<double>(numSamples);

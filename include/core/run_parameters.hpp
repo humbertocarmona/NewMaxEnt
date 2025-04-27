@@ -33,12 +33,14 @@ struct RunParameters
     size_t equilibrationSweeps = 100000;
     size_t numSamples          = 1000;
     size_t sampleInterval      = 100;
-    size_t _trials             = 100000;
+    size_t numRepetitions      = 20;
     // Wang-Landau
     size_t pre_maxIterations        = 200;
     size_t pre_equilibration_sweeps = 1000;
     size_t pre_numSamples           = 1000;
     size_t pre_sampleInterval       = 100;
+    size_t pre_numRepetitions       = 20;
+
     double log_f_final              = 1.0e-6;
     double energy_bin               = 0.2;
     double flatness_threshold       = 0.8;
@@ -82,6 +84,7 @@ struct RunParameters
             logger->info("[{}] equilibrationSweeps    {}", caption, equilibrationSweeps);
             logger->info("[{}] numSamples             {}", caption, numSamples);
             logger->info("[{}] sampleInterval         {}", caption, sampleInterval);
+            logger->info("[{}] numRepetitions         {}", caption, numRepetitions);
         }
         if (run_type == "Temperature_Dep")
         {
@@ -94,6 +97,7 @@ struct RunParameters
             logger->info("[{}] pre_equilibration_sweeps    {}", caption, pre_equilibration_sweeps);
             logger->info("[{}] pre_numSamples              {}", caption, pre_numSamples);
             logger->info("[{}] pre_sampleInterval          {}", caption, pre_sampleInterval);
+            logger->info("[{}] pre_numRepetitions          {}", caption, pre_numRepetitions);
             logger->info("[{}] log_f_final                 {}", caption, log_f_final);
             logger->info("[{}] energy_bin                  {}", caption, energy_bin);
             logger->info("[{}] flatness_threshold          {}", caption, flatness_threshold);
@@ -129,6 +133,7 @@ struct RunParameters
             obj["equilibrationSweeps"] = equilibrationSweeps;
             obj["numSamples"]          = numSamples;
             obj["sampleInterval"]      = sampleInterval;
+            obj["numRepetitions"]      = numRepetitions;
         }
         if (run_type == "Temperature_Dep")
             obj["temperature_range"] = temperature_range;
@@ -139,6 +144,7 @@ struct RunParameters
             obj["pre_equilibration_sweeps"] = pre_equilibration_sweeps;
             obj["pre_numSamples"]           = pre_numSamples;
             obj["pre_sampleInterval"]       = pre_sampleInterval;
+            obj["pre_numRepetitions"]       = pre_numRepetitions;
             obj["log_f_final"]              = log_f_final;
             obj["energy_bin"]               = energy_bin;
             obj["flatness_threshold"]       = flatness_threshold;

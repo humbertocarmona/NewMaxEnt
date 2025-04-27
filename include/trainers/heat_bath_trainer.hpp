@@ -56,5 +56,6 @@ class HeatBathTrainer : public BaseTrainer
     size_t equilibrationSweeps; // Number of equilibration sweeps
     size_t numSamples;          // Number of samples to collect
     size_t sampleInterval;      // Number of sweeps between samples
+    size_t numRepetitions;      // Number of repetitions for averaging
     arma::Mat<int> replicas;
 };

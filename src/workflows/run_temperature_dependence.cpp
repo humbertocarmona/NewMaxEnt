@@ -3,7 +3,7 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
-#include "utils/replica_correlation_histogram.hpp"
+#include "utils/correlation_histogram.hpp"
 
 #include <fstream>
 #include <iomanip>
@@ -19,7 +19,7 @@ void save_histogram_to_csv(const std::vector<double> &bin_centers,
         throw std::runtime_error("Could not open histogram file for writing: " + filename);
     }
 
-    out << "P_ij,frequency\n";
+    out << "q,P_q\n";
     out << std::fixed << std::setprecision(6);
     for (size_t i = 0; i < bin_centers.size(); ++i)
     {
@@ -88,27 +88,30 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_full.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_full.get_avg_magnetization();
 
-  
-
             model_mc.computeModelAverages(beta, true);
             auto replicas = model_mc.get_replicas();
 
-            auto [hist_values, bin_centers] = compute_ordered_overlap_histogram(replicas, true);
+            auto [bin_centers, hist_values] = correlation_histogram<int>(replicas, 2.0, true);
+
 
             auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
             size_t max_idx  = std::distance(hist_values.begin(), max_it);
-            double peak_bin = bin_centers[max_idx];
-            double peak_val = *max_it;
+            double q_max = bin_centers[max_idx];
+            double p_q_max = hist_values[max_idx]; //*max_it;
 
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, q_max={:.2f}, p_val={:.2f}", T,
-                            energy, specific_heat, magnetization, peak_bin, peak_val);
-            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization <<","<<
-                peak_bin<<","<< peak_val << "\n";
+            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
+                         "q_max={:.2f}, p_q_max={:.2f}",
+                         T, energy, specific_heat, magnetization, q_max, p_q_max);
+            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
+                << "," << q_max << "\n";
 
-            auto file_replicas = io::make_replicas_filename(params, T);
-            auto file_corr     = io::make_replicas_correlation_filename(params, T);
-            // save_replicas_to_csv(replicas, file_replicas);
-            save_histogram_to_csv(bin_centers, hist_values, file_corr);
+            if (std::abs(T - 1.0) < 1e-6 * std::max(1.0, std::abs(T)))
+            {
+                auto file_replicas = io::make_replicas_filename(params, T);
+                auto file_corr     = io::make_replica_correlation_filename(params, T);
+                save_replicas_to_csv(replicas, file_replicas);
+                save_histogram_to_csv(bin_centers, hist_values, file_corr);
+            }  
         }
     }
     else
@@ -122,15 +125,31 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_mc.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_mc.get_avg_magnetization();
 
-            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
-                << "\n";
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
-                         energy, specific_heat, magnetization);
-
+        
             auto replicas = model_mc.get_replicas();
 
-            auto file_replica = io::make_replicas_filename(params, T);
-            save_replicas_to_csv(replicas, file_replica);
+            auto [bin_centers, hist_values] = correlation_histogram<int>(replicas, 2.0, true);
+
+
+            auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
+            size_t max_idx  = std::distance(hist_values.begin(), max_it);
+            double q_max = bin_centers[max_idx];
+            double p_q_max = hist_values[max_idx]; //*max_it;
+
+            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
+                         "q_max={:.2f}, p_q_max={:.2f}",
+                         T, energy, specific_heat, magnetization, q_max, p_q_max);
+            out << T << "," << beta << "," << energy << "," << specific_heat << "," << magnetization
+                << "," << q_max << "\n";
+
+            if (std::abs(T - 1.0) < 1e-6 * std::max(1.0, std::abs(T)))
+            {
+                auto file_replicas = io::make_replicas_filename(params, T);
+                auto file_corr     = io::make_replica_correlation_filename(params, T);
+                save_replicas_to_csv(replicas, file_replicas);
+                save_histogram_to_csv(bin_centers, hist_values, file_corr);
+            } 
+
         }
     }
 }

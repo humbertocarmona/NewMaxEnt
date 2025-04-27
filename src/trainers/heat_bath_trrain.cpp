@@ -3,6 +3,7 @@
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 
+
 void HeatBathTrainer::train()
 {
     auto logger = getLogger();

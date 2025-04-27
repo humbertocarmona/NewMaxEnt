@@ -34,7 +34,7 @@ void WangLandauTrainer::computeDensityOfStates()
         H.clear(); // reset histogram for new round of sampling
 
         // Main Wang-Landau loop: perform a random walk
-        for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
+        for (size_t sweep = 0; sweep < step_equilibration; ++sweep)
         {
             arma::Col<int> s_new = s;
             flip_random_spin(s_new, rng); // propose a single-spin flip
@@ -109,6 +109,6 @@ void WangLandauTrainer::computeDensityOfStates()
         }
 
         logger->info("[computeDensityOfStates] Number of bins: {}, E_min = {:.2e}, E_max = {:.2e}",
-                     log_g_E.size(), min_E*energy_bin, max_E*energy_bin);
+                     log_g_E.size(), min_E * energy_bin, max_E * energy_bin);
     }
 }

@@ -22,7 +22,8 @@ void WangLandauTrainingWorkflow(RunParameters params)
                             params.alpha_h, params.alpha_J, params.gamma_h, params.gamma_J,
                             data_filename);
     model.configureWangLandau(params.log_f_final, params.energy_bin, params.flatness_threshold,
-                              params.equilibrationSweeps, params.numSamples, params.sampleInterval);
+                              params.step_equilibration, params.num_samples, 
+                              params.step_correlation, params.number_repetitions);  
 
     model.train();
     CenteredMoments c_model =

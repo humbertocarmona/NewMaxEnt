@@ -29,21 +29,21 @@ struct RunParameters
     double gamma_h       = 0.2;
     double gamma_J       = 0.2;
     // Monte Carlo parameters
-    int rng_seed               = 1;
-    size_t equilibrationSweeps = 100000;
-    size_t numSamples          = 1000;
-    size_t sampleInterval      = 100;
-    size_t numRepetitions      = 20;
+    int rng_seed              = 1;
+    size_t step_equilibration = 100000;
+    size_t num_samples        = 1000;
+    size_t step_correlation   = 100;
+    size_t number_repetitions = 20;
     // Wang-Landau
-    size_t pre_maxIterations        = 200;
-    size_t pre_equilibration_sweeps = 1000;
-    size_t pre_numSamples           = 1000;
-    size_t pre_sampleInterval       = 100;
-    size_t pre_numRepetitions       = 20;
+    size_t pre_maxIterations      = 200;
+    size_t pre_step_equilibration = 1000;
+    size_t pre_num_samples        = 1000;
+    size_t pre_step_correlation   = 100;
+    size_t pre_number_repetitions = 10;
 
-    double log_f_final              = 1.0e-6;
-    double energy_bin               = 0.2;
-    double flatness_threshold       = 0.8;
+    double log_f_final        = 1.0e-6;
+    double energy_bin         = 0.2;
+    double flatness_threshold = 0.8;
 
     // post-processing temperature dependence
     std::vector<double> temperature_range = std::vector<double>();
@@ -81,10 +81,10 @@ struct RunParameters
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
             logger->info("[{}] rng_seed               {}", caption, rng_seed);
-            logger->info("[{}] equilibrationSweeps    {}", caption, equilibrationSweeps);
-            logger->info("[{}] numSamples             {}", caption, numSamples);
-            logger->info("[{}] sampleInterval         {}", caption, sampleInterval);
-            logger->info("[{}] numRepetitions         {}", caption, numRepetitions);
+            logger->info("[{}] step_equilibration    {}", caption, step_equilibration);
+            logger->info("[{}] num_samples             {}", caption, num_samples);
+            logger->info("[{}] step_correlation         {}", caption, step_correlation);
+            logger->info("[{}] number_repetitions         {}", caption, number_repetitions);
         }
         if (run_type == "Temperature_Dep")
         {
@@ -94,10 +94,11 @@ struct RunParameters
         if (run_type == "Wang_Landau")
         {
             logger->info("[{}] pre_maxIterations           {}", caption, pre_maxIterations);
-            logger->info("[{}] pre_equilibration_sweeps    {}", caption, pre_equilibration_sweeps);
-            logger->info("[{}] pre_numSamples              {}", caption, pre_numSamples);
-            logger->info("[{}] pre_sampleInterval          {}", caption, pre_sampleInterval);
-            logger->info("[{}] pre_numRepetitions          {}", caption, pre_numRepetitions);
+            logger->info("[{}] pre_step_equilibration    {}", caption, pre_step_equilibration);
+            logger->info("[{}] pre_num_samples              {}", caption, pre_num_samples);
+            logger->info("[{}] pre_step_correlation          {}", caption, pre_step_correlation);
+            logger->info("[{}] pre_number_repetitions          {}", caption,
+                         pre_number_repetitions);
             logger->info("[{}] log_f_final                 {}", caption, log_f_final);
             logger->info("[{}] energy_bin                  {}", caption, energy_bin);
             logger->info("[{}] flatness_threshold          {}", caption, flatness_threshold);
@@ -129,25 +130,25 @@ struct RunParameters
         obj["gamma_J"]       = gamma_J;
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
-            obj["rng_seed"]            = rng_seed;
-            obj["equilibrationSweeps"] = equilibrationSweeps;
-            obj["numSamples"]          = numSamples;
-            obj["sampleInterval"]      = sampleInterval;
-            obj["numRepetitions"]      = numRepetitions;
+            obj["rng_seed"]           = rng_seed;
+            obj["step_equilibration"] = step_equilibration;
+            obj["num_samples"]        = num_samples;
+            obj["step_correlation"]   = step_correlation;
+            obj["number_repetitions"] = number_repetitions;
         }
         if (run_type == "Temperature_Dep")
             obj["temperature_range"] = temperature_range;
 
         if (run_type == "Wang_Landau")
         {
-            obj["pre_maxIterations"]        = pre_maxIterations;
-            obj["pre_equilibration_sweeps"] = pre_equilibration_sweeps;
-            obj["pre_numSamples"]           = pre_numSamples;
-            obj["pre_sampleInterval"]       = pre_sampleInterval;
-            obj["pre_numRepetitions"]       = pre_numRepetitions;
-            obj["log_f_final"]              = log_f_final;
-            obj["energy_bin"]               = energy_bin;
-            obj["flatness_threshold"]       = flatness_threshold;
+            obj["pre_maxIterations"]      = pre_maxIterations;
+            obj["pre_step_equilibration"] = pre_step_equilibration;
+            obj["pre_num_samples"]        = pre_num_samples;
+            obj["pre_step_correlation"]   = pre_step_correlation;
+            obj["pre_number_repetitions"] = pre_number_repetitions;
+            obj["log_f_final"]            = log_f_final;
+            obj["energy_bin"]             = energy_bin;
+            obj["flatness_threshold"]     = flatness_threshold;
         }
 
         return obj;

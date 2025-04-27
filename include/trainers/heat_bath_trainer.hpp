@@ -30,18 +30,25 @@ class HeatBathTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
-    void configureMonteCarlo(size_t equilibration_weeps, size_t num_samples, size_t sample_interval)
+    void configureMonteCarlo(size_t step_equilibration_,
+                             size_t num_samples_,
+                             size_t step_correlation_,
+                             int number_repetitions_)
     {
-        int nspins          = core.nspins;
-        equilibrationSweeps = equilibration_weeps;
-        numSamples          = num_samples;
-        sampleInterval      = sample_interval;
+        step_equilibration   = step_equilibration_;
+        step_correlation     = step_correlation_;
+        num_samples          = num_samples_;
+        number_repetitions   = number_repetitions_;
+        total_number_samples = num_samples * number_repetitions;
 
-        replicas.set_size(numSamples, nspins);
+        int nspins = core.nspins;
+        replicas.set_size(total_number_samples, nspins);
         replicas.fill(-1);
     }
 
     void computeModelAverages(double beta, bool triplets) override;
+    void computeModelAverages1(double beta, bool triplets);
+
     void train() override;
 
     const arma::Mat<int> &get_replicas() const
@@ -53,9 +60,10 @@ class HeatBathTrainer : public BaseTrainer
     std::string className = "FullEnsembleTrainer";
     int mc_seed           = 1;
 
-    size_t equilibrationSweeps; // Number of equilibration sweeps
-    size_t numSamples;          // Number of samples to collect
-    size_t sampleInterval;      // Number of sweeps between samples
-    size_t numRepetitions;      // Number of repetitions for averaging
+    size_t step_equilibration;   // Number of equilibration sweeps
+    size_t step_correlation;     // Number of sweeps between samples
+    size_t num_samples;          // Number of samples to collect
+    size_t number_repetitions;   // Number of repetitions for averaging
+    size_t total_number_samples; // Total number of samples
     arma::Mat<int> replicas;
 };

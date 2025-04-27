@@ -26,6 +26,7 @@ find_package(spdlog REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(OpenMP REQUIRED) # <--- 🔥 ADD THIS LINE
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -43,6 +44,7 @@ target_link_libraries(maxent_lib
     Boost::program_options
     spdlog::spdlog
     fmt::fmt
+    OpenMP::OpenMP_CXX     # <--- 🔥 ADD OpenMP here
 )
 
 # Build the test executable
@@ -84,6 +86,8 @@ target_link_libraries(maxent_main
     Boost::program_options
     spdlog::spdlog
     fmt::fmt
+    OpenMP::OpenMP_CXX     # <--- 🔥 Also link OpenMP here
+
 )
 
 set_target_properties(maxent_main PROPERTIES

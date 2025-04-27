@@ -34,8 +34,8 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
     int E_bin = static_cast<int>(std::round(E / energy_bin)); // assign energy to bin
 
     size_t samplesCollected = 0;
-    std::vector<double> log_weights(numSamples, 0.0);
-    for (size_t sweep = 0; samplesCollected < numSamples; ++sweep)
+    std::vector<double> log_weights(num_samples, 0.0);
+    for (size_t sweep = 0; samplesCollected < num_samples; ++sweep)
     {
         arma::Col<int> s_trial = s;
         flip_random_spin(s_trial, rng); // propose a single-spin flip
@@ -69,7 +69,7 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
             E_bin = E_trial_bin;
         }
 
-        if ((sweep % sampleInterval) == 0)
+        if ((sweep % step_correlation) == 0)
         {
             double log_P_E                = -beta * E - log_g_E[E_bin];
             double P_E                    = std::exp(log_P_E);

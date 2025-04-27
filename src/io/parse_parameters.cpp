@@ -108,22 +108,28 @@ RunParameters parseParameters(const std::string &filename)
 
     if (json_data.contains("Monte_Carlo"))
     {
-        auto mc               = json_data["Monte_Carlo"];
-        p.equilibrationSweeps = mc.value("equilibrationSweeps", 1000);
-        p.numSamples          = mc.value("numSamples", 1000);
-        p.sampleInterval      = mc.value("sampleInterval", 100);
+        auto mc              = json_data["Monte_Carlo"];
+        p.step_equilibration = mc.value("step_equilibration", 1000);
+        p.num_samples         = mc.value("num_samples", 1000);
+        p.step_correlation     = mc.value("step_correlation", 100);
+        p.number_repetitions   = mc.value("num_repetitions", 20);
+        p.rng_seed            = mc.value("rng_seed", 1);
     }
 
     if (json_data.contains("Wang_Landau"))
     {
         auto wl                    = json_data["Wang_Landau"];
-        p.pre_maxIterations        = wl.value("pre_maxIterations", 200);
-        p.pre_equilibration_sweeps = wl.value("equilibrationSweeps", 1000);
-        p.pre_numSamples           = wl.value("numSamples", 1000);
-        p.pre_sampleInterval       = wl.value("sampleInterval", 100);
+        p.pre_maxIterations        = wl.value("maxIterations", 200);
+        p.pre_step_equilibration = wl.value("step_equilibration", 1000);
+        p.pre_step_correlation       = wl.value("step_correlation", 100);
+        p.pre_num_samples           = wl.value("num_samples", 1000);
+        p.pre_number_repetitions   = wl.value("num_repetitions", 10);
         p.log_f_final              = wl.value("log_f_final", 1e-6);
         p.energy_bin               = wl.value("energy_bin", 0.2);
         p.flatness_threshold       = wl.value("flatness_threshold", 0.8);
+        if(p.rng_seed ==1){
+            p.rng_seed = wl.value("rng_seed", 1);
+        }
     }
 
     // adjust result dir

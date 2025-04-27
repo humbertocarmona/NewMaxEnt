@@ -30,17 +30,16 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
     arma::Col<int> s(nspins);
-    size_t n_repetitions  = 20;
-    size_t numSamples_rep = numSamples / n_repetitions;
+
     replicas.fill(-1); // Initialize replicas to -1
     int n_samples_collected = 0;
-    for (size_t n = 0; n < n_repetitions; ++n)
+    for (size_t n = 0; n < number_repetitions; ++n)
     {
         // std::mt19937 rng(std::random_device{}());
         std::mt19937 rng(mc_seed + n);
         s.fill(-1);
- 
-        for (size_t sweep = 0; sweep < equilibrationSweeps; ++sweep)
+
+        for (size_t sweep = 0; sweep < step_equilibration; ++sweep)
         {
             for (size_t i = 0; i < nspins; ++i)
             {
@@ -63,7 +62,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
         // Collect samples to compute averages
         size_t n_collected_rep = 0;
-        for (size_t sweep = 0; n_collected_rep < numSamples_rep; ++sweep)
+        for (size_t sweep = 0; n_collected_rep < num_samples; ++sweep)
         {
             // Perform a sweep for each spin i
             for (size_t i = 0; i < nspins; ++i)
@@ -86,7 +85,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             }
 
             // Every sampleInterval sweeps, record the current configuration
-            if ((sweep % sampleInterval) == 0)
+            if ((sweep % step_correlation) == 0)
             {
                 double E = energyAllPairs(s);
                 avg_energy += E;
@@ -122,6 +121,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
                     }
                     replicas.row(n_samples_collected) = s.t();
                 }
+                
                 n_collected_rep++;
                 n_samples_collected++;
             }
@@ -129,13 +129,14 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
     } // end for loop repetitions
 
+    
     // Normalize the averages
-    avg_energy /= static_cast<double>(numSamples);
-    avg_energy_sq /= static_cast<double>(numSamples);
-    avg_magnetization /= static_cast<double>(numSamples);
+    avg_energy /= static_cast<double>(total_number_samples);
+    avg_energy_sq /= static_cast<double>(total_number_samples);
+    avg_magnetization /= static_cast<double>(total_number_samples);
 
-    m1_model /= static_cast<double>(numSamples);
-    m2_model /= static_cast<double>(numSamples);
+    m1_model /= static_cast<double>(total_number_samples);
+    m2_model /= static_cast<double>(total_number_samples);
     if (triplets)
-        m3_model /= static_cast<double>(numSamples);
+        m3_model /= static_cast<double>(total_number_samples);
 }

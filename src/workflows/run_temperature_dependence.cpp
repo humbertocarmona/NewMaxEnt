@@ -2,8 +2,8 @@
 #include "io/make_file_names.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
 #include "trainers/heat_bath_trainer.hpp"
-#include "utils/get_logger.hpp"
 #include "utils/correlation_histogram.hpp"
+#include "utils/get_logger.hpp"
 
 #include <fstream>
 #include <iomanip>
@@ -65,8 +65,8 @@ void runTemperatureDependence(const RunParameters &params)
                              params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
                              params.alpha_J, params.gamma_h, params.gamma_J,
                              params.trained_model_file);
-    model_mc.configureMonteCarlo(params.equilibrationSweeps, params.numSamples,
-                                 params.sampleInterval);
+    model_mc.configureMonteCarlo(params.step_equilibration, params.num_samples,
+                                 params.step_correlation, params.number_repetitions);
 
     double energy;
     double specific_heat;
@@ -93,10 +93,9 @@ void runTemperatureDependence(const RunParameters &params)
 
             auto [bin_centers, hist_values] = correlation_histogram<int>(replicas, 2.0, true);
 
-
-            auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
-            size_t max_idx  = std::distance(hist_values.begin(), max_it);
-            double q_max = bin_centers[max_idx];
+            auto max_it    = std::max_element(hist_values.begin(), hist_values.end());
+            size_t max_idx = std::distance(hist_values.begin(), max_it);
+            double q_max   = bin_centers[max_idx];
             double p_q_max = hist_values[max_idx]; //*max_it;
 
             logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
@@ -111,7 +110,7 @@ void runTemperatureDependence(const RunParameters &params)
                 auto file_corr     = io::make_replica_correlation_filename(params, T);
                 save_replicas_to_csv(replicas, file_replicas);
                 save_histogram_to_csv(bin_centers, hist_values, file_corr);
-            }  
+            }
         }
     }
     else
@@ -125,15 +124,13 @@ void runTemperatureDependence(const RunParameters &params)
             specific_heat = (model_mc.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             magnetization = model_mc.get_avg_magnetization();
 
-        
             auto replicas = model_mc.get_replicas();
 
             auto [bin_centers, hist_values] = correlation_histogram<int>(replicas, 2.0, true);
 
-
-            auto max_it     = std::max_element(hist_values.begin(), hist_values.end());
-            size_t max_idx  = std::distance(hist_values.begin(), max_it);
-            double q_max = bin_centers[max_idx];
+            auto max_it    = std::max_element(hist_values.begin(), hist_values.end());
+            size_t max_idx = std::distance(hist_values.begin(), max_it);
+            double q_max   = bin_centers[max_idx];
             double p_q_max = hist_values[max_idx]; //*max_it;
 
             logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
@@ -148,8 +145,7 @@ void runTemperatureDependence(const RunParameters &params)
                 auto file_corr     = io::make_replica_correlation_filename(params, T);
                 save_replicas_to_csv(replicas, file_replicas);
                 save_histogram_to_csv(bin_centers, hist_values, file_corr);
-            } 
-
+            }
         }
     }
 }

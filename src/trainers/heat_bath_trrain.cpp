@@ -2,12 +2,16 @@
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
+#include <chrono> // Add at the top of your file
 
 
 void HeatBathTrainer::train()
 {
     auto logger = getLogger();
     logger->info("[hb train] Starting Heat Bath training q_val = {}", q_val);
+    
+    using clock = std::chrono::high_resolution_clock;
+    auto last_log_time = clock::now(); // 🔥 Start the timer
 
     for (iter = iter; iter < maxIterations; ++iter)
     {
@@ -24,8 +28,12 @@ void HeatBathTrainer::train()
         }
         if (iter % 10 == 0)
         {
-            logger->info("[hb train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f}", iter,
-                         cost.cost_total, cost.cost_m1, cost.cost_m2);
+            auto now = clock::now();
+            double elapsed = std::chrono::duration<double>(now - last_log_time).count();
+            last_log_time = now;
+
+            logger->info("[hb train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f} | Δt = {:.3f} s", iter,
+                         cost.cost_total, cost.cost_m1, cost.cost_m2, elapsed);
         }
     }
     computeModelAverages(1.0, true);

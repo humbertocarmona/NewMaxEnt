@@ -32,29 +32,34 @@ class WangLandauTrainer : public BaseTrainer
                     gamma_J,
                     data_filename) {};
 
-    void configureWangLandau(double log_f_final_, 
-                             double energy_bin_, 
+    void configureWangLandau(double log_f_final_,
+                             double energy_bin_,
                              double flatness_threshold_,
-                             size_t equilibrationSweeps, 
-                             size_t num_samples, 
-                             size_t sample_interval){
+                             size_t equilibration_weeps,
+                             size_t num_samples,
+                             size_t sample_interval,
+                             size_t n_repetitions)
+    {
         if (num_samples == 0 || sample_interval == 0)
-            throw std::invalid_argument("numSamples and sampleInterval must be greater than zero.");
+            throw std::invalid_argument(
+                "num_samples and step_correlation must be greater than zero.");
 
-        int nspins          = core.nspins;
-        equilibrationSweeps = equilibrationSweeps;
-        numSamples          = num_samples;
-        sampleInterval      = sample_interval;
+        step_equilibration   = equilibration_weeps;
+        step_correlation     = sample_interval;
+        num_samples          = num_samples;
+        number_repetitions   = n_repetitions;
+        total_number_samples = num_samples * number_repetitions;
+        
+        int nspins = core.nspins;
+        replicas.set_size(total_number_samples, nspins);
+        replicas.fill(-1);
 
-        log_f_final = log_f_final_;
-        energy_bin = energy_bin_;
+        log_f_final        = log_f_final_;
+        energy_bin         = energy_bin_;
         flatness_threshold = flatness_threshold_;
 
-        replicas.set_size(numSamples, nspins);
-        replicas.fill(-1);
-        auto logger = getLogger();
     }
-    
+
     void computeModelAverages(double beta, bool triplets) override;
     void train() override;
 
@@ -65,11 +70,15 @@ class WangLandauTrainer : public BaseTrainer
 
   private:
     std::string className = "WangLandauTrainer";
+    int wg_seed           = 1;
+
+    size_t step_equilibration;
+    size_t step_correlation;     // Number of sweeps between samples
+    size_t num_samples;          // Number of samples to collect
+    size_t number_repetitions;   // Number of repetitions for averaging
+    size_t total_number_samples; // Total number of samples
     arma::Mat<int> replicas;
-    int wg_seed = 1;
-    size_t numSamples;     // Number of samples to collect
-    size_t sampleInterval; // Number of sweeps between samples
-    size_t equilibrationSweeps;
+
     double log_f_final;
     double energy_bin;
     double flatness_threshold;

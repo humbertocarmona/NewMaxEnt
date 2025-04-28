@@ -32,7 +32,7 @@ void HeatBathTrainer::train()
             double elapsed = std::chrono::duration<double>(now - last_log_time).count();
             last_log_time = now;
 
-            logger->info("[hb train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f} | Δt = {:.3f} s", iter,
+            logger->info("[hb train] Iter {} | Cost: {:.6f} | M1: {:.6f} | M2: {:.6f} | elapsed: {:.3f} s", iter,
                          cost.cost_total, cost.cost_m1, cost.cost_m2, elapsed);
         }
     }

@@ -26,10 +26,11 @@ inline std::shared_ptr<spdlog::logger> getLogger() {
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
         // Create a file sink
-        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/output.log", true);
+        // auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/output.log", true);
 
         // Combine the sinks into a single logger
-        std::vector<spdlog::sink_ptr> sinks = {console_sink, file_sink};
+        // std::vector<spdlog::sink_ptr> sinks = {console_sink, file_sink};
+        std::vector<spdlog::sink_ptr> sinks = {console_sink};
         logger = std::make_shared<spdlog::logger>("MaxEnt", begin(sinks), end(sinks));
 
         // Set the logging level and pattern if needed

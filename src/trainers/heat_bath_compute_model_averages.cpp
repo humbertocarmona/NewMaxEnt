@@ -6,7 +6,7 @@
 #include <random>
 
 // Perform Heat-Bath sampling and compute model averages
-void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
+void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 {
 
     auto logger   = getLogger();
@@ -36,7 +36,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     for (size_t n = 0; n < number_repetitions; ++n)
     {
         // std::mt19937 rng(std::random_device{}());
-        std::mt19937 rng(mc_seed + n);
+        std::mt19937 rng(mc_seed + n); // each repetition has a determined  seed
         s.fill(-1);
 
         for (size_t sweep = 0; sweep < step_equilibration; ++sweep)

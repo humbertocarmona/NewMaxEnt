@@ -7,7 +7,7 @@
 #include <random>
 
 // Perform Heat-Bath sampling and compute model averages
-void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
+void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 {
     auto logger   = getLogger();
     size_t nspins = core.nspins;
@@ -35,9 +35,9 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
         int thread_id   = omp_get_thread_num();
         int num_threads = omp_get_num_threads();
 
-        if (thread_id == 0)
+        if (iter == 1 && thread_id == 0)
         {
-            logger->debug("Running with {} threads.", num_threads);
+            logger->info("[computeAverages] Running with {} threads.", num_threads);
         }
 
         size_t samples_per_thread =
@@ -56,11 +56,9 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
         double local_avg_magnetization = 0.0;
 
         // Thread-local random number generator
-        std::random_device rd;
-        std::mt19937 rng(rd() + omp_get_thread_num());
+        // std::random_device rd;
+        // std::mt19937 rng(rd() + omp_get_thread_num());
         std::uniform_real_distribution<double> dist(0.0, 1.0);
-
-        
 
         // Local replicas collection (only if triplets are needed)
         arma::Mat<int> local_replicas;
@@ -72,6 +70,8 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 #pragma omp for
         for (size_t n = 0; n < number_repetitions; ++n)
         {
+            std::mt19937 rng(mc_seed + n);
+
             arma::Col<int> s(nspins, arma::fill::ones);
             s *= -1; // Initialize spins to -1
 
@@ -157,7 +157,8 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 
 #pragma omp critical
         {
-            logger->debug("thread: {} local_sample_count = {} /{}", thread_id, local_sample_count, samples_per_thread);
+            logger->debug("thread: {} local_sample_count = {} /{}", thread_id, local_sample_count,
+                          samples_per_thread);
 
             my_start_index = global_sample_count;
             global_sample_count += local_sample_count;

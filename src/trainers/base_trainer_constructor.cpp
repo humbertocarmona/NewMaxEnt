@@ -42,8 +42,12 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
         m2_data                     = res.m2_data;
         m3_data                     = res.m3_data;
 
-        core.h.fill(0);
         core.J.fill(0);
+        // initialize h[i] to match magnetization
+        for (int i = 0; i < n; i++)
+        {
+            core.h[i] = m1_data[i];
+        }
         iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))

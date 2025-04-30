@@ -30,9 +30,14 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         core.J.fill(0);
         // initialize h[i] to match magnetization
         for (int i = 0; i < n; i++)
-        {
             core.h[i] = m1_data[i];
-        }
+
+        // std::mt19937 rng(params.rng_seed);
+
+        // std::normal_distribution<double> J_dist(0.0, 1.0 / std::sqrt(core.nspins));
+        // for (size_t i = 0; i < core.J.n_elem; ++i)
+        //     core.J(i) = J_dist(rng);
+
         iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))

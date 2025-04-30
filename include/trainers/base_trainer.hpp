@@ -126,6 +126,8 @@ class BaseTrainer
     // Private helper functions
 
     void updateModelParameters(size_t t);
+    void sequentialUpdateModel(size_t t);
+
     double energyAllPairs(arma::Col<int> s);
 
   private:

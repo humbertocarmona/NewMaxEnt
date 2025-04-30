@@ -1,6 +1,10 @@
 #pragma once
 
 #include "base_trainer.hpp"
+#include "io/make_file_names.hpp"
+#include "io/write_json.hpp"
+#include "utils/centered_moments.hpp"
+
 #include <armadillo>
 #include <random>
 
@@ -26,17 +30,25 @@ class WangLandauTrainer : public BaseTrainer
         int nspins = core.nspins;
         replicas.set_size(total_number_samples, nspins);
         replicas.fill(-1);
-
-
     }
 
     void computeModelAverages(double beta=1.0, bool triplets=false) override;
+    void computeModelAverages1(double beta=1.0, bool triplets=false);
     void train() override;
+    void saveModel(std::string prefix) const;
+
 
     const arma::Mat<int> &get_replicas() const
     {
         return replicas;
     }
+
+    const std::unordered_map<int, double> &get_log_g_E() const
+    {
+        return log_g_E;
+    }
+    
+    void computeDensityOfStates();
 
   private:
     std::string className = "WangLandauTrainer";
@@ -53,7 +65,6 @@ class WangLandauTrainer : public BaseTrainer
     bool is_flat(const std::unordered_map<int, int> &H, 
                  double flatness_threshold = 0.8);
 
-    void computeDensityOfStates();
 
     inline double logsumexp(const std::vector<double> &vector_of_logs)
     {

@@ -5,6 +5,7 @@
 #include "utils/centered_moments.hpp"
 #include "utils/get_logger.hpp"
 #include "workflows/training_workflow.hpp"
+#include <fstream>
 
 void WangLandauTrainingWorkflow(RunParameters params)
 {
@@ -17,15 +18,22 @@ void WangLandauTrainingWorkflow(RunParameters params)
     pretrain_with_heatbath(core, params, data_filename);
 
     WangLandauTrainer model(core, params, data_filename);
-    
+
+    // model.computeDensityOfStates();
+
+    // auto log_g_E = model.get_log_g_E();
+
+    // std::map<int, double> sorted_log_g_E(log_g_E.begin(), log_g_E.end());
+
+    // std::ofstream out("log_g_E.csv");
+
+    // out << "E,G\n";
+    // for (const auto &pair : sorted_log_g_E)
+    // {
+    //     out << pair.first*params.energy_bin << "," << pair.second << "\n";
+    // }
+    // out.close();
+
     model.train();
-    CenteredMoments c_model =
-        computeCenteredMoments(model.get_m1_model(), model.get_m2_model(), model.get_m3_model());
-
-    CenteredMoments c_data =
-        computeCenteredMoments(model.get_m1_data(), model.get_m2_data(), model.get_m3_data());
-    writeTrainedModel<WangLandauTrainer>(model, c_data, c_model);
-
-    spdlog::info("[WL] Finished. Norm h = {:.4e}, Norm J = {:.4e}", arma::norm(core.h),
-                 arma::norm(core.J));
+    // model.saveModel("final");
 }

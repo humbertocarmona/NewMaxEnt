@@ -106,6 +106,7 @@ inline double exp_q(double x, double q, double q_inv)
     return (y > 0.0) ? std::pow(y, q_inv) : 0.0;
 }
 
+
 inline std::string brief(const arma::Col<double> &v)
 {
     std::ostringstream out;
@@ -122,7 +123,8 @@ inline std::string brief(const arma::Col<double> &v)
     return out.str();
 }
 
-inline std::string colPrint(const arma::Col<double> &v)
+template <typename T>
+inline std::string colPrint(const arma::Col<T> &v)
 {
     std::ostringstream out;
     out << "[";

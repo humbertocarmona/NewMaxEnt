@@ -119,11 +119,11 @@ RunParameters parseParameters(const std::string &filename)
     if (json_data.contains("Wang_Landau"))
     {
         auto wl                    = json_data["Wang_Landau"];
-        p.pre_maxIterations        = wl.value("maxIterations", 200);
-        p.pre_step_equilibration = wl.value("step_equilibration", 1000);
-        p.pre_step_correlation       = wl.value("step_correlation", 100);
-        p.pre_num_samples           = wl.value("num_samples", 1000);
-        p.pre_number_repetitions   = wl.value("num_repetitions", 10);
+        p.pre_maxIterations        = wl.value("pre_maxIterations", 200);
+        p.pre_step_equilibration = wl.value("pre_step_equilibration", 1000);
+        p.pre_step_correlation       = wl.value("pre_step_correlation", 100);
+        p.pre_num_samples           = wl.value("pre_num_samples", 1000);
+        p.pre_number_repetitions   = wl.value("pre_num_repetitions", 10);
         p.log_f_final              = wl.value("log_f_final", 1e-6);
         p.energy_bin               = wl.value("energy_bin", 0.2);
         p.flatness_threshold       = wl.value("flatness_threshold", 0.8);

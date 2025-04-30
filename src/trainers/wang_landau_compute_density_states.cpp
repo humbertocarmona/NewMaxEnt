@@ -21,16 +21,16 @@ void WangLandauTrainer::computeDensityOfStates()
 
     double log_f  = 1.0;               // initial modification factor f = e^1
     double E_real = energyAllPairs(s); // compute energy of current config
-    int E_bin     = static_cast<int>(std::round(E_real / params.energy_bin)); // assign energy to bin
+    int E_bin = static_cast<int>(std::round(E_real / params.energy_bin)); // assign energy to bin
 
     log_g_E.clear();
     H.clear();
 
-    logger->info("[computeDensityOfStates] Wang-Landau started computing the DOS");
-    size_t iter = 0;
-    while (log_f > params.log_f_final && iter < 10000)
+    logger->debug("[computeDensityOfStates] Wang-Landau started computing the DOS");
+    size_t wl_iter = 0;
+    while (log_f > params.log_f_final && wl_iter < 10000)
     {
-        ++iter;
+        ++wl_iter;
         H.clear(); // reset histogram for new round of sampling
 
         // Main Wang-Landau loop: perform a random walk
@@ -69,15 +69,15 @@ void WangLandauTrainer::computeDensityOfStates()
         {
             log_f /= 2.0; // reduce f multiplicatively (log(f) halves)
             // logger->info("[computeDensityOfStates] {} Histogram flat → reducing f to {:.2e}",
-            // iter, log_f);
+            // wl_iter, log_f);
         }
     }
 
-    if (iter >= 10000)
+    if (wl_iter >= 10000)
     {
-        logger->warn("[computeDensityOfStates] Consider increasing iter > {}", iter);
+        logger->warn("[computeDensityOfStates] Consider increasing wl_iter > {}", wl_iter);
     }
-    // logger->info("saving result after {} iterations with log_f = {:.2e}", iter, log_f);
+    // logger->info("saving result after {} iterations with log_f = {:.2e}", wl_iter, log_f);
     // // Save log_g_E(E) to file (rescaled to original energy units)
     // auto output = io::make_DensOfStates_filename(params)
     // std::ofstream out("log_g_E.csv");
@@ -89,11 +89,11 @@ void WangLandauTrainer::computeDensityOfStates()
     // }
     // out.close();
 
-    logger->info("[computeDensityOfStates] Wang-Landau finished computing the DOS {:.2e}", log_f);
+    logger->debug("[computeDensityOfStates] Wang-Landau finished computing the DOS {:.2e}", log_f);
 
     if (log_g_E.empty())
     {
-        logger->info("[computeDensityOfStates] log_g_E is empty");
+        logger->error("[computeDensityOfStates] log_g_E is empty");
     }
     else
     {
@@ -108,7 +108,8 @@ void WangLandauTrainer::computeDensityOfStates()
                 max_E = E;
         }
 
-        logger->info("[computeDensityOfStates] Number of bins: {}, E_min = {:.2e}, E_max = {:.2e}",
-                     log_g_E.size(), min_E * params.energy_bin, max_E * params.energy_bin);
+        logger->debug(
+            "[computeDensityOfStates] wl_iter {:03d} | bins= {:03d} | E_min = {:5.2e} | E_max = {:5.2e}", iter,
+            log_g_E.size(), min_E * params.energy_bin, max_E * params.energy_bin);
     }
 }

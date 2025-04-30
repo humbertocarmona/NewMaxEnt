@@ -72,8 +72,8 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
         core.h  = utils::jsonToArmaCol<double>(obj["h"]);
         core.J  = utils::jsonToArmaCol<double>(obj["J"]);
-        // will run with the new run_parameters
-        //
+        
+        // if commented, will run with the new run_parameters
         // q_val       = obj["run_parameters"]["q_val"];
         // tolerance_h = obj["run_parameters"]["tolerance_h"];
         // tolerance_J = obj["run_parameters"]["tolerance_J"];
@@ -86,10 +86,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
     }
     else
     {
-        m1_data = arma::zeros<arma::Col<double>>(core.nspins);
-        m2_data = arma::zeros<arma::Col<double>>(core.nedges);
-        m3_data = arma::zeros<arma::Col<double>>(ntriplets);
-        logger->warn("[BaseTrainer] initialized] check core.h, core.J");
+        throw std::runtime_error("Invalid data file type");
     }
 
     m1_model = arma::zeros<arma::Col<double>>(core.nspins);
@@ -99,8 +96,3 @@ BaseTrainer::BaseTrainer(MaxEntCore &core,
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
 };
-
-// void BaseTrainer::train()
-// {
-//     // Provide a default or empty implementation if not overridden.
-// }

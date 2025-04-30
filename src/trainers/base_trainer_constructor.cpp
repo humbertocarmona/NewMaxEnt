@@ -16,6 +16,9 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     int n       = core.nspins;
     ntriplets   = n * (n - 1) * (n - 2) / 6;
 
+    eta_h_t = params.eta_h;
+    eta_J_t = params.eta_J;
+
     if (utils::isFileType(data_filename, "csv"))
     {
         // reads raw data file
@@ -54,7 +57,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
         core.h  = utils::jsonToArmaCol<double>(obj["h"]);
         core.J  = utils::jsonToArmaCol<double>(obj["J"]);
-        
+
         // if commented, will run with the new run_parameters
         // q_val       = obj["run_parameters"]["q_val"];
         // tolerance_h = obj["run_parameters"]["tolerance_h"];

@@ -85,7 +85,8 @@ class BaseTrainer
         return className;
     }
 
-    const RunParameters& get_params() const {
+    const RunParameters &get_params() const
+    {
         return params;
     }
 
@@ -95,11 +96,17 @@ class BaseTrainer
 
     // Training parameters
     size_t iter;
+    double eta_h_t;
+    double eta_J_t;
 
     RunParameters params;
 
     arma::Col<double> delta_h; // training momentum alpha_h * delta_h(i)
     arma::Col<double> delta_J; // training momentum alpha_J * delta_J(idx)
+
+    // for adaptive learning rate
+    double last_grad_norm_h = std::numeric_limits<double>::infinity();
+    double last_grad_norm_J = std::numeric_limits<double>::infinity();
 
     // sample and model averages
     double avg_energy;

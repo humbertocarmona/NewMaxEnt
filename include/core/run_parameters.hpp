@@ -19,15 +19,26 @@ struct RunParameters
     double beta            = 1.0;
 
     // model training parameters
-    size_t maxIterations = 1000;
-    double tolerance_h   = 1.0e-4;
-    double tolerance_J   = 1.0e-4;
-    double eta_h         = 0.1;
-    double eta_J         = 0.1;
-    double alpha_h       = 0.1;
-    double alpha_J       = 0.1;
-    double gamma_h       = 0.2;
-    double gamma_J       = 0.2;
+    size_t maxIterations       = 1000;
+    double tolerance_h         = 1.0e-4;
+    double tolerance_J         = 1.0e-4;
+    double eta_h               = 0.1;
+    double eta_J               = 0.1;
+    double alpha_h             = 0.1;
+    double alpha_J             = 0.1;
+    double gamma_h             = 0.2;
+    double gamma_J             = 0.2;
+    
+    // for adaptive learning rate
+    double eta_h_min            = 1.0e-6;
+    double eta_J_min            = 1.0e-6;
+    double grad_drop_threshold  = 1.0e-4;
+    double decay_factor_h       = 0.9;
+    double decay_factor_J       = 0.9;
+    bool adaptive_eta_h         = true;
+    bool adaptive_eta_J         = true;
+    // -------------------------------
+
     // Monte Carlo parameters
     int rng_seed              = 1;
     size_t step_equilibration = 100000;

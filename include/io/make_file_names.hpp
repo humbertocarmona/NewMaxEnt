@@ -51,15 +51,15 @@ inline std::string make_replica_correlation_filename(const RunParameters &params
     utils::make_path(outdir.str());
 
     std::ostringstream fname;
-    fname << outdir.str() << "/corr-" << params.runid << "-T-" << std::fixed
-          << std::setprecision(2) << T << ".csv";
+    fname << outdir.str() << "/corr-" << params.runid << "-T-" << std::fixed << std::setprecision(2)
+          << T << ".csv";
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
     return output.string();
 }
 
 /**
- * @brief Construct the filename for full enumeration run.
+ * @brief Construct the filename for saving trained model.
  */
 inline std::string make_trained_filename(const RunParameters &params)
 {
@@ -69,6 +69,23 @@ inline std::string make_trained_filename(const RunParameters &params)
 
     std::ostringstream fname;
     fname << outdir.str() << "/final-" << params.runid << ".json";
+
+    std::filesystem::path output = utils::get_available_filename(fname.str());
+
+    return output.string();
+}
+
+/**
+ * @brief Construct the filename.
+ */
+inline std::string make_filename(const RunParameters &params, std::string prefix)
+{
+    std::ostringstream outdir;
+    outdir << params.result_dir << "/" << params.run_type;
+    utils::make_path(outdir.str());
+
+    std::ostringstream fname;
+    fname << outdir.str() << "/" << prefix << "-" << params.runid << ".json";
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
 

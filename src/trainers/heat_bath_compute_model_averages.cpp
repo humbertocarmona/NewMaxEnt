@@ -26,6 +26,7 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
     avg_energy_sq     = 0.0;
     avg_magnetization = 0.0;
 
+
     // Random number generator setup
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
@@ -33,13 +34,13 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 
     replicas.fill(-1); // Initialize replicas to -1
     int n_samples_collected = 0;
-    for (size_t n = 0; n < number_repetitions; ++n)
+    for (size_t n = 0; n < params.number_repetitions; ++n)
     {
         // std::mt19937 rng(std::random_device{}());
         std::mt19937 rng(mc_seed + n); // each repetition has a determined  seed
         s.fill(-1);
 
-        for (size_t sweep = 0; sweep < step_equilibration; ++sweep)
+        for (size_t sweep = 0; sweep < params.step_equilibration; ++sweep)
         {
             for (size_t i = 0; i < nspins; ++i)
             {
@@ -52,9 +53,11 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
                         h_i += J(ij) * s(j);
                     }
                 }
-                double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
-                double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
-                double prob_plus = exp_plus / (exp_plus + exp_minus);
+                // double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
+                // double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
+                // double prob_plus = exp_plus / (exp_plus + exp_minus);
+                double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+
                 double r         = dist(rng);
                 s(i)             = (r < prob_plus) ? 1 : -1;
             }
@@ -62,7 +65,7 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 
         // Collect samples to compute averages
         size_t n_collected_rep = 0;
-        for (size_t sweep = 0; n_collected_rep < num_samples; ++sweep)
+        for (size_t sweep = 0; n_collected_rep < params.num_samples; ++sweep)
         {
             // Perform a sweep for each spin i
             for (size_t i = 0; i < nspins; ++i)
@@ -77,15 +80,17 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
                         h_i += J(ij) * s(j);
                     }
                 }
-                double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
-                double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
-                double prob_plus = exp_plus / (exp_plus + exp_minus);
+                // double exp_plus  = std::exp(beta * h_i);  // weight for s(i) = -1
+                // double exp_minus = std::exp(-beta * h_i); // weight for s(i) = +1
+                // double prob_plus = exp_plus / (exp_plus + exp_minus);
+                double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+
                 double r         = dist(rng);
                 s(i)             = (r < prob_plus) ? 1 : -1;
             }
 
             // Every sampleInterval sweeps, record the current configuration
-            if ((sweep % step_correlation) == 0)
+            if ((sweep % params.step_correlation) == 0)
             {
                 double E = energyAllPairs(s);
                 avg_energy += E;

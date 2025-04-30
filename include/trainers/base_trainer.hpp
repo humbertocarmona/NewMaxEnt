@@ -1,5 +1,6 @@
 #pragma once
 #include "core/max_ent_core.hpp" // minimal core class header
+#include "core/run_parameters.hpp"
 #include "io/read_trained_json.hpp"
 #include "utils/compute_data_statistics.hpp"
 #include "utils/get_logger.hpp"
@@ -11,23 +12,12 @@
 class BaseTrainer
 {
   public:
-    BaseTrainer(MaxEntCore &core,
-                double q_val,
-                size_t maxIterations,
-                double tolerance_h,
-                double tolerance_J,
-                double eta_h,
-                double eta_J,
-                double alpha_h,
-                double alpha_J,
-                double gamma_h,
-                double gamma_J,
-                const std::string &data_filename);
+    BaseTrainer(MaxEntCore &core, RunParameters &params, const std::string &data_filename);
 
     virtual ~BaseTrainer() = default;
 
     // This method will be overridden by each specific trainer
-    virtual void computeModelAverages(double beta, bool triplets = false) = 0;
+    virtual void computeModelAverages(double beta = 1.0, bool triplets = false) = 0;
 
     // Other common tasks (e.g., compute temperature dependence)
     // virtual void computeTemperatureDependence(double betaStart, double betaEnd, double step) = 0;
@@ -95,23 +85,18 @@ class BaseTrainer
         return className;
     }
 
+    const RunParameters& get_params() const {
+        return params;
+    }
+
   protected:
     MaxEntCore &core;
     int ntriplets;
 
     // Training parameters
-    size_t maxIterations;
     size_t iter;
 
-    double tolerance_h;
-    double tolerance_J;
-    double q_val;   // for exp_q(x,q) Tsallis q-exponential
-    double eta_h;   // training rate for h
-    double eta_J;   // training rate for J
-    double alpha_h; // training momentum alpha_h * delta_h
-    double alpha_J; // training momentum alpha_J * delta_J
-    double gamma_h; // training momentum alpha_h * delta_h
-    double gamma_J; // training momentum alpha_J * delta_J
+    RunParameters params;
 
     arma::Col<double> delta_h; // training momentum alpha_h * delta_h(i)
     arma::Col<double> delta_J; // training momentum alpha_J * delta_J(idx)

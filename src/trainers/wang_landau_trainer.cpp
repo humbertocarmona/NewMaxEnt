@@ -27,7 +27,8 @@ void WangLandauTrainer::flip_random_spin(arma::Col<int> &s, std::mt19937 &rng)
  * @param flatness_threshold Threshold ratio (default is 0.8) to determine flatness.
  * @return true if the histogram is flat, false otherwise.
  */
-bool WangLandauTrainer::is_flat(const std::unordered_map<int, int> &H)
+bool WangLandauTrainer::is_flat(const std::unordered_map<int, int> &H, 
+                                double flatness_threshold)
 {
     int min_H = std::numeric_limits<int>::max();
     int max_H = 0;
@@ -41,7 +42,7 @@ bool WangLandauTrainer::is_flat(const std::unordered_map<int, int> &H)
 
 
 
-int howTouseIt()
+int howToUseIt()
 {
     // main.cpp
     std::mt19937 rng(1);

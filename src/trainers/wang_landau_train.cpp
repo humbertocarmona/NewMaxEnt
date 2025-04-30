@@ -6,9 +6,9 @@
 void WangLandauTrainer::train()
 {
     auto logger = getLogger();
-    logger->info("[wl train] Starting Wang Landau training q_val = {}", q_val);
+    logger->info("[wl train] Starting Wang Landau training q_val = {}", params.q_val);
 
-    for (iter = iter; iter < maxIterations; ++iter)
+    for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeDensityOfStates();
         computeModelAverages(1.0, false);
@@ -16,7 +16,7 @@ void WangLandauTrainer::train()
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
-        if (cost.check_convergence(tolerance_h, tolerance_J))
+        if (cost.check_convergence(params.tolerance_h, params.tolerance_J))
         {
             logger->info("[wl train] Wang Landau converged at iteration {}", iter);
             break;
@@ -27,7 +27,6 @@ void WangLandauTrainer::train()
                          cost.cost_total, cost.cost_m1, cost.cost_m2);
         }
     }
-    computeModelAverages(1.0, true);
 
     logger->debug("[wl train] Finished Wang Landau training.");
 }

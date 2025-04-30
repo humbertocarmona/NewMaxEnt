@@ -1,3 +1,5 @@
+#pragma once
+
 #include "core/run_parameters.hpp"
 #include "utils/centered_moments.hpp"
 #include "io/make_file_names.hpp"
@@ -7,10 +9,10 @@
 #include <string>
 
 template <typename T>
-void writeTrainedModel(const RunParameters params,
-                       const T &model,
+void writeTrainedModel(const T &model,
                        const CenteredMoments m_data,
-                       const CenteredMoments m_model)
+                       const CenteredMoments m_model,
+                    std::string prefix = "final")
 {
     auto logger = getLogger();
 
@@ -35,9 +37,9 @@ void writeTrainedModel(const RunParameters params,
     obj["m2_model_centered"] = m_model.centered_moment_2;
     obj["m3_model_centered"] = m_model.centered_moment_3;
 
-    obj["run_parameters"] = params.to_json();
+    obj["run_parameters"] = model.get_params().to_json();
 
-    auto output = io::make_trained_filename(params);
+    auto output = io::make_filename(model.get_params(), prefix);
     std::ofstream out(output);
     out << obj.dump(2);
     logger->info("[writeTrainedModel] saved {}", output);

@@ -39,9 +39,9 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
         {
             logger->info("[computeAverages] Running with {} threads.", num_threads);
         }
-
+        
         size_t samples_per_thread =
-            (number_repetitions * num_samples + num_threads - 1) / num_threads; // ceil division
+            (total_number_samples + num_threads - 1) / num_threads; // ceil division
         size_t start_index = thread_id * samples_per_thread;
 
         // Local accumulators per thread
@@ -68,7 +68,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
         size_t local_sample_count = 0;
 
 #pragma omp for
-        for (size_t n = 0; n < number_repetitions; ++n)
+        for (size_t n = 0; n < params.number_repetitions; ++n)
         {
             std::mt19937 rng(mc_seed + n);
 
@@ -76,7 +76,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             s *= -1; // Initialize spins to -1
 
             // Equilibration sweeps
-            for (size_t sweep = 0; sweep < step_equilibration; ++sweep)
+            for (size_t sweep = 0; sweep < params.step_equilibration; ++sweep)
             {
                 for (size_t i = 0; i < nspins; ++i)
                 {
@@ -100,7 +100,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             // Sampling phase
             size_t n_collected = 0;
             size_t sweep       = 0;
-            while (n_collected < num_samples)
+            while (n_collected < params.num_samples)
             {
                 for (size_t i = 0; i < nspins; ++i)
                 {
@@ -111,14 +111,16 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
                         if (ij != -1)
                             h_i += J(ij) * s(j);
                     }
-                    double exp_plus  = std::exp(beta * h_i);
-                    double exp_minus = std::exp(-beta * h_i);
-                    double prob_plus = exp_plus / (exp_plus + exp_minus);
+                    // double exp_plus  = std::exp( beta * h_i);
+                    // double exp_minus = std::exp(- beta * h_i);
+                    // double prob_plus = exp_plus / (exp_plus + exp_minus);
+                    double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+
                     double r         = dist(rng);
                     s(i)             = (r < prob_plus) ? 1 : -1;
                 }
 
-                if ((sweep % step_correlation) == 0)
+                if ((sweep % params.step_correlation) == 0)
                 {
                     double E = energyAllPairs(s);
                     local_avg_energy += E;

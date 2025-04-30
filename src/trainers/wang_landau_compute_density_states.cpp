@@ -21,26 +21,26 @@ void WangLandauTrainer::computeDensityOfStates()
 
     double log_f  = 1.0;               // initial modification factor f = e^1
     double E_real = energyAllPairs(s); // compute energy of current config
-    int E_bin     = static_cast<int>(std::round(E_real / energy_bin)); // assign energy to bin
+    int E_bin     = static_cast<int>(std::round(E_real / params.energy_bin)); // assign energy to bin
 
     log_g_E.clear();
     H.clear();
 
     logger->info("[computeDensityOfStates] Wang-Landau started computing the DOS");
     size_t iter = 0;
-    while (log_f > log_f_final && iter < 10000)
+    while (log_f > params.log_f_final && iter < 10000)
     {
         ++iter;
         H.clear(); // reset histogram for new round of sampling
 
         // Main Wang-Landau loop: perform a random walk
-        for (size_t sweep = 0; sweep < step_equilibration; ++sweep)
+        for (size_t sweep = 0; sweep < params.step_equilibration; ++sweep)
         {
             arma::Col<int> s_new = s;
             flip_random_spin(s_new, rng); // propose a single-spin flip
 
             double E_trial  = energyAllPairs(s_new);
-            int E_trial_bin = static_cast<int>(std::round(E_trial / energy_bin));
+            int E_trial_bin = static_cast<int>(std::round(E_trial / params.energy_bin));
 
             // Read log_g_E values for current and proposed energies
             // Note: if not previously visited, default-initialized to 0.0
@@ -109,6 +109,6 @@ void WangLandauTrainer::computeDensityOfStates()
         }
 
         logger->info("[computeDensityOfStates] Number of bins: {}, E_min = {:.2e}, E_max = {:.2e}",
-                     log_g_E.size(), min_E * energy_bin, max_E * energy_bin);
+                     log_g_E.size(), min_E * params.energy_bin, max_E * params.energy_bin);
     }
 }

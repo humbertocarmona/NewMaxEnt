@@ -6,29 +6,11 @@
 #include <string>
 
 // Constructor
-BaseTrainer::BaseTrainer(MaxEntCore &core,
-                         double q_val,
-                         size_t maxIterations,
-                         double tolerance_h,
-                         double tolerance_J,
-                         double eta_h,
-                         double eta_J,
-                         double alpha_h,
-                         double alpha_J,
-                         double gamma_h,
-                         double gamma_J,
+BaseTrainer::BaseTrainer(MaxEntCore &core_,
+                         RunParameters &params_,
                          const std::string &data_filename) :
-    core(core),
-    q_val(q_val),
-    maxIterations(maxIterations),
-    tolerance_h(tolerance_h),
-    tolerance_J(tolerance_J),
-    eta_h(eta_h),
-    eta_J(eta_J),
-    alpha_h(alpha_h),
-    alpha_J(alpha_J),
-    gamma_h(gamma_h),
-    gamma_J(gamma_J)
+    core(core_),
+    params(params_)
 {
     auto logger = getLogger();
     int n       = core.nspins;

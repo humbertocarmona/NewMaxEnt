@@ -14,19 +14,19 @@
 void HeatBathTrainer::train()
 {
     auto logger = getLogger();
-    logger->info("[hb train] Starting Heat Bath training q_val = {}", q_val);
+    logger->info("[hb train] Starting Heat Bath training q_val = {}", params.q_val);
 
     using clock        = std::chrono::high_resolution_clock;
     auto last_log_time = clock::now(); // 🔥 Start the timer
 
-    for (iter = iter; iter < maxIterations; ++iter)
+    for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
         updateModelParameters(iter);
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
-        if (cost.check_convergence(tolerance_h, tolerance_J))
+        if (cost.check_convergence(params.tolerance_h, params.tolerance_J))
         {
             logger->info("[hb train] Monte Carlo converged at iteration {}", iter);
             break;
@@ -43,8 +43,12 @@ void HeatBathTrainer::train()
                 "[hb train] Iter {:5d} |h_mean: {:5.2f}| |h_max: {:5.2f}| M1: {:9.6f} | M2: {:9.6f} | elapsed: {:5.2f}",
                 iter, h_mean, h_max, cost.cost_m1, cost.cost_m2, elapsed);
         }
+        if (iter % 100 == 0)
+        {
+            saveModel("checkpoint");
+        }
     }
-    computeModelAverages(1.0, true);
+    
 
     logger->debug("[hb train] Finished Monte Carlo training.");
 }

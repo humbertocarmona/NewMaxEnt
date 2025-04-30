@@ -50,24 +50,16 @@ void save_replicas_to_csv(const arma::Mat<int> &replicas, const std::string &fil
     out.close();
 }
 
-void runTemperatureDependence(const RunParameters &params)
+void runTemperatureDependence(RunParameters &params)
 {
     auto logger = getLogger();
 
     int nspins = params.nspins;
     MaxEntCore core(nspins, params.runid);
-    FullEnsembleTrainer model_full(core, params.q_val, params.maxIterations, params.tolerance_h,
-                                   params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
-                                   params.alpha_J, params.gamma_h, params.gamma_J,
-                                   params.trained_model_file);
+    FullEnsembleTrainer model_full(core, params,params.trained_model_file);
 
-    HeatBathTrainer model_mc(core, params.q_val, params.maxIterations, params.tolerance_h,
-                             params.tolerance_J, params.eta_h, params.eta_J, params.alpha_h,
-                             params.alpha_J, params.gamma_h, params.gamma_J,
-                             params.trained_model_file);
-    model_mc.configureMonteCarlo(params.step_equilibration, params.num_samples,
-                                 params.step_correlation, params.number_repetitions);
-
+    HeatBathTrainer model_mc(core, params, params.trained_model_file);
+    
     double energy;
     double specific_heat;
     double magnetization;

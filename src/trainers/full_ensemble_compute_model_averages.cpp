@@ -12,11 +12,10 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     m1_model.zeros(nspins);
     m2_model.zeros(core.nedges);
     m3_model.zeros(ntriplets);
-    double q_inv = (q_val != 1) ? 1.0 / (1.0 - q_val) : 0.0;
+    double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
 
-
-    avg_energy    = 0.0;
-    avg_energy_sq = 0.0;
+    avg_energy        = 0.0;
+    avg_energy_sq     = 0.0;
     avg_magnetization = 0.0;
 
     // arma::Col<int> s(nspins);
@@ -28,12 +27,12 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     for (const auto &s : sequence)
     {
         E = energyAllPairs(s);
-        P = utils::exp_q(-beta * E, q_val, q_inv);
+        P = utils::exp_q(-beta * E, params.q_val, q_inv);
 
         Z += P;
         avg_energy += P * E;
         avg_energy_sq += P * E * E;
-        avg_magnetization += P*arma::mean(arma::conv_to<arma::vec>::from(s));
+        avg_magnetization += P * arma::mean(arma::conv_to<arma::vec>::from(s));
 
         // First-order moments
         for (size_t i = 0; i < nspins; ++i)
@@ -69,12 +68,12 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     avg_energy /= Z;
     avg_energy_sq /= Z;
     avg_magnetization /= Z;
-    
+
     m1_model /= Z;
     m2_model /= Z;
     if (triplets)
         m3_model /= Z;
 
-    // logger->warn("[computeFullEnumerationAverages] ntriplets = {} {}",ntriplets, m3_model.n_elem);
-
+    // logger->warn("[computeFullEnumerationAverages] ntriplets = {} {}",ntriplets,
+    // m3_model.n_elem);
 }

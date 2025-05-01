@@ -2,10 +2,13 @@
 #include "utils/get_logger.hpp"
 #include "workflows/run_temperature_dependence.hpp"
 #include "workflows/training_workflow.hpp"
+#include "utils/binary_permutations_sequence.hpp"
+#include "utils/utilities.hpp"
 
 int main(int argc, char **argv)
 {
     auto logger = getLogger();
+
 
     if (argc < 2)
     {

@@ -4,20 +4,19 @@
 #include "utils/utilities.hpp"
 #include <chrono> // Add at the top of your file
 
-
 void WangLandauTrainer::train()
 {
-    auto logger = getLogger();
+    auto logger        = getLogger();
     using clock        = std::chrono::high_resolution_clock;
     auto last_log_time = clock::now(); // 🔥 Start the timer
-    
+
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeDensityOfStates();
 
         computeModelAverages(1.0, false);
 
-        updateModelParameters(iter);
+        parallelUpdateModel(iter);
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
@@ -31,9 +30,9 @@ void WangLandauTrainer::train()
             auto now       = clock::now();
             double elapsed = std::chrono::duration<double>(now - last_log_time).count();
             last_log_time  = now;
-            double h_mean = arma::mean(core.h);
-            double J_mean = arma::mean(core.J);
-            double h_max = arma::max(arma::abs(core.h));
+            double h_mean  = arma::mean(core.h);
+            double J_mean  = arma::mean(core.J);
+            double h_max   = arma::max(arma::abs(core.h));
 
             logger->info("[hb train] Iter {:5d} |h_mean: {:5.2f}| |h_max: {:5.2f}| M1: {:9.6f} | "
                          "M2: {:9.6f} | elapsed: {:5.2f}",

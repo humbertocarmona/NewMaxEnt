@@ -108,6 +108,13 @@ class BaseTrainer
     double last_grad_norm_h = std::numeric_limits<double>::infinity();
     double last_grad_norm_J = std::numeric_limits<double>::infinity();
 
+    // for secant gradient descent // need to initialize wisely
+    arma::Col<double> grad_h;
+    arma::Col<double> grad_J;
+    arma::Col<double> h_p;
+    arma::Col<double> J_p;
+
+
     // sample and model averages
     double avg_energy;
     double avg_energy_sq;
@@ -125,9 +132,10 @@ class BaseTrainer
 
     // Private helper functions
 
-    void updateModelParameters(size_t t);
+    void parallelUpdateModel(size_t t);
     void sequentialUpdateModel(size_t t);
     void oldUpdateModel(size_t t);
+    void secantUpdateModel(size_t);
 
     double energyAllPairs(arma::Col<int> s);
 

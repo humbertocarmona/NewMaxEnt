@@ -4,7 +4,7 @@
 #include "utils/utilities.hpp"
 #include <armadillo>
 
-void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
+void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
 {
     // auto logger = getLogger();
 

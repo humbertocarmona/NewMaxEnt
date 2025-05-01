@@ -19,6 +19,21 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
 
+    delta_h = arma::zeros<arma::vec>(core.nspins);
+    delta_J = arma::zeros<arma::vec>(core.nedges);
+    
+    grad_h  = arma::zeros<arma::vec>(core.nspins);
+    grad_J  = arma::zeros<arma::vec>(core.nedges);
+    
+    h_p     = arma::zeros<arma::vec>(core.nspins);
+    J_p     = arma::zeros<arma::vec>(core.nedges);
+    
+    last_grad_norm_h = 0.0;
+    last_grad_norm_J = 0.0;
+    
+    eta_h_t = params.eta_h;
+    eta_J_t = params.eta_J;
+
     if (utils::isFileType(data_filename, "csv"))
     {
         // reads raw data file
@@ -28,16 +43,17 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         m3_data                     = res.m3_data;
 
         core.J.fill(0);
+        core.h.fill(0);
         // initialize h[i] to match magnetization
-        for (int i = 0; i < n; i++)
-            core.h[i] = m1_data[i];
+        // for (int i = 0; i < n; i++)
+        //     core.h[i] = m1_data[i];
 
         // std::mt19937 rng(params.rng_seed);
 
         // std::normal_distribution<double> J_dist(0.0, 1.0 / std::sqrt(core.nspins));
         // for (size_t i = 0; i < core.J.n_elem; ++i)
         //     core.J(i) = J_dist(rng);
-
+        logger->info("h=",utils::brief(core.h));
         iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))

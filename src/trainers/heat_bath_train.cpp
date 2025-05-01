@@ -22,7 +22,8 @@ void HeatBathTrainer::train()
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
-        updateModelParameters(iter);
+        // updateModelParameters(iter);
+        oldUpdateModel(iter);
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 

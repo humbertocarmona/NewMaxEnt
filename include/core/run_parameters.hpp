@@ -118,7 +118,7 @@ struct RunParameters
 
     nlohmann::json to_json() const
     {
-        nlohmann::json obj;
+        nlohmann::json obj, tr, mc, wl;
 
         obj["run_type"] = run_type;
         obj["runid"]    = runid;
@@ -130,36 +130,42 @@ struct RunParameters
         obj["nspins"]        = nspins;
         obj["q_val"]         = q_val;
         obj["beta"]          = beta;
-        obj["maxIterations"] = maxIterations;
-        obj["tolerance_h"]   = tolerance_h;
-        obj["tolerance_J"]   = tolerance_J;
-        obj["eta_h"]         = eta_h;
-        obj["eta_J"]         = eta_J;
-        obj["alpha_h"]       = alpha_h;
-        obj["alpha_J"]       = alpha_J;
-        obj["gamma_h"]       = gamma_h;
-        obj["gamma_J"]       = gamma_J;
+
+        
+        tr["maxIterations"] = maxIterations;
+        tr["tolerance_h"]   = tolerance_h;
+        tr["tolerance_J"]   = tolerance_J;
+        tr["eta_h"]         = eta_h;
+        tr["eta_J"]         = eta_J;
+        tr["alpha_h"]       = alpha_h;
+        tr["alpha_J"]       = alpha_J;
+        tr["gamma_h"]       = gamma_h;
+        tr["gamma_J"]       = gamma_J;
+        obj["training"] = tr;
+
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
-            obj["rng_seed"]           = rng_seed;
-            obj["step_equilibration"] = step_equilibration;
-            obj["num_samples"]        = num_samples;
-            obj["step_correlation"]   = step_correlation;
-            obj["number_repetitions"] = number_repetitions;
+            mc["rng_seed"]           = rng_seed;
+            mc["step_equilibration"] = step_equilibration;
+            mc["num_samples"]        = num_samples;
+            mc["step_correlation"]   = step_correlation;
+            mc["number_repetitions"] = number_repetitions;
+            obj["Monte_Carlo"] = mc;
         }
         if (run_type == "Temperature_Dep")
             obj["temperature_range"] = temperature_range;
 
         if (run_type == "Wang_Landau")
         {
-            obj["pre_maxIterations"]      = pre_maxIterations;
-            obj["pre_step_equilibration"] = pre_step_equilibration;
-            obj["pre_num_samples"]        = pre_num_samples;
-            obj["pre_step_correlation"]   = pre_step_correlation;
-            obj["pre_number_repetitions"] = pre_number_repetitions;
-            obj["log_f_final"]            = log_f_final;
-            obj["energy_bin"]             = energy_bin;
-            obj["flatness_threshold"]     = flatness_threshold;
+            wl["pre_maxIterations"]      = pre_maxIterations;
+            wl["pre_step_equilibration"] = pre_step_equilibration;
+            wl["pre_num_samples"]        = pre_num_samples;
+            wl["pre_step_correlation"]   = pre_step_correlation;
+            wl["pre_number_repetitions"] = pre_number_repetitions;
+            wl["log_f_final"]            = log_f_final;
+            wl["energy_bin"]             = energy_bin;
+            wl["flatness_threshold"]     = flatness_threshold;
+            obj["Wang_Landau"] = wl;
         }
 
         return obj;

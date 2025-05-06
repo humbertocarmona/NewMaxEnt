@@ -12,5 +12,8 @@ double BaseTrainer::energyAllPairs(arma::Col<int> s)
         for (int j = i + 1; j < core.nspins; ++j)
             En += core.J(idx++) * s(i) * s(j);
 
+    int k = static_cast<int>(arma::sum(s + 1) / 2);
+    En += core.K[k];
+
     return -En;
 }

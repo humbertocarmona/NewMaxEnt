@@ -54,6 +54,10 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // for (size_t i = 0; i < core.J.n_elem; ++i)
         //     core.J(i) = J_dist(rng);
 
+        // k-pairwise
+        pK_data = res.pK_data;
+        core.K.fill(0);
+
         iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))
@@ -89,6 +93,16 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // alpha_J     = obj["run_parameters"]["alpha_J"];
         // gamma_h     = obj["run_parameters"]["gamma_h"];
         // gamma_J     = obj["run_parameters"]["gamma_J"];
+
+
+        // k-pairwise
+        if (obj.contains("pK_data")){
+            pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
+        }
+        if (obj.contains("K")){
+            core.K = utils::jsonToArmaCol<double>(obj["K"]);
+        }
+
     }
     else
     {
@@ -101,4 +115,9 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
 
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
+
+    //k-pairwise
+    pK_model = arma::zeros<arma::Col<double>>(core.nspins+1);
+    delta_K = arma::zeros<arma::Col<double>>(core.nspins+1);
+
 };

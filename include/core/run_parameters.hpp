@@ -19,24 +19,20 @@ struct RunParameters
     double beta            = 1.0;
 
     // model training parameters
-    size_t maxIterations       = 1000;
-    double tolerance_h         = 1.0e-4;
-    double tolerance_J         = 1.0e-4;
-    double eta_h               = 0.1;
-    double eta_J               = 0.1;
-    double alpha_h             = 0.1;
-    double alpha_J             = 0.1;
-    double gamma_h             = 0.2;
-    double gamma_J             = 0.2;
-    
+    size_t maxIterations = 1000;
+    double tolerance_h   = 1.0e-4;
+    double tolerance_J   = 1.0e-4;
+    double eta_h         = 0.1;
+    double eta_J         = 0.1;
+    double alpha_h       = 0.1;
+    double alpha_J       = 0.1;
+    double gamma_h       = 0.2;
+    double gamma_J       = 0.2;
+
     // for adaptive learning rate
-    double eta_h_min            = 1.0e-6;
-    double eta_J_min            = 1.0e-6;
-    double grad_drop_threshold  = 1.0e-4;
-    double decay_factor_h       = 0.9;
-    double decay_factor_J       = 0.9;
-    bool adaptive_eta_h         = true;
-    bool adaptive_eta_J         = true;
+    double eta_h_min           = 1.0e-4;
+    double eta_J_min           = 1.0e-4;
+    double grad_drop_threshold = 1.0e-3;
     // -------------------------------
 
     // Monte Carlo parameters
@@ -126,12 +122,11 @@ struct RunParameters
             obj["raw_data_file"] = raw_data_file;
         if (trained_model_file != "none")
             obj["trained_model_file"] = trained_model_file;
-        obj["result_dir"]    = result_dir;
-        obj["nspins"]        = nspins;
-        obj["q_val"]         = q_val;
-        obj["beta"]          = beta;
+        obj["result_dir"] = result_dir;
+        obj["nspins"]     = nspins;
+        obj["q_val"]      = q_val;
+        obj["beta"]       = beta;
 
-        
         tr["maxIterations"] = maxIterations;
         tr["tolerance_h"]   = tolerance_h;
         tr["tolerance_J"]   = tolerance_J;
@@ -141,7 +136,7 @@ struct RunParameters
         tr["alpha_J"]       = alpha_J;
         tr["gamma_h"]       = gamma_h;
         tr["gamma_J"]       = gamma_J;
-        obj["training"] = tr;
+        obj["training"]     = tr;
 
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
@@ -150,7 +145,7 @@ struct RunParameters
             mc["num_samples"]        = num_samples;
             mc["step_correlation"]   = step_correlation;
             mc["number_repetitions"] = number_repetitions;
-            obj["Monte_Carlo"] = mc;
+            obj["Monte_Carlo"]       = mc;
         }
         if (run_type == "Temperature_Dep")
             obj["temperature_range"] = temperature_range;
@@ -165,7 +160,7 @@ struct RunParameters
             wl["log_f_final"]            = log_f_final;
             wl["energy_bin"]             = energy_bin;
             wl["flatness_threshold"]     = flatness_threshold;
-            obj["Wang_Landau"] = wl;
+            obj["Wang_Landau"]           = wl;
         }
 
         return obj;

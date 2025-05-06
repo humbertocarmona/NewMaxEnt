@@ -31,8 +31,9 @@ void FullEnsembleTrainer::train()
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
             logger->info("[full train] Iter {:5d} | elapsed: {:5.2f} | eta_h: {:5.3f} | eta_J: {:5.3f} | M1: {:9.6f} | "
-                         "M2: {:9.6f}",
-                         iter, elapsed,  eta_h_t, eta_J_t, cost.cost_m1, cost.cost_m2);
+                         "M2: {:9.6f} grad_h: {:9.6f} grad_J: {:9.6f}",
+                         iter, elapsed,  eta_h_t, eta_J_t, cost.cost_m1, cost.cost_m2, 
+                         last_grad_norm_h, last_grad_norm_J);
         }
         if (iter % 500 == 0)
         {

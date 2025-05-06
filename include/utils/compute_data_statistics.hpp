@@ -10,9 +10,14 @@ struct DataStatisticsBreakdown
     arma::Col<double> m2_data; // sample second momentum: <s_i*s_j>;
     arma::Col<double> m3_data; // sample third momentum: <s_i*s_j*s_j>
 
-    DataStatisticsBreakdown(size_t n)
-        : m1_data(n, arma::fill::zeros), m2_data(n * (n - 1) / 2, arma::fill::zeros),
-          m3_data(n * (n - 1) * (n - 2) / 6, arma::fill::zeros)
+    // k-pairwise
+    arma::Col<double> pK_data; // sample third momentum: <s_i*s_j*s_j>
+
+    DataStatisticsBreakdown(size_t n) :
+        m1_data(n, arma::fill::zeros),
+        m2_data(n * (n - 1) / 2, arma::fill::zeros),
+        m3_data(n * (n - 1) * (n - 2) / 6, arma::fill::zeros),
+        pK_data(n + 1, arma::fill::zeros)
     {
     }
 };

@@ -54,6 +54,14 @@ DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
         }
     }
 
+    res.pK_data.fill(0);
+    for(int n=0; n<nsamples; ++n){
+        auto s = raw_data.row(n);
+        int k = static_cast<int>(arma::sum(s + 1) / 2); 
+        res.pK_data(k) += 1.0;
+    }
+    res.pK_data /= nsamples;
+
     logger->debug("[compute_data_statistics] Computed moments 1 (size {}), 2 (size {}), 3 (size {})",
                   res.m1_data.n_elem,
                   res.m2_data.n_elem,

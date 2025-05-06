@@ -26,6 +26,8 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
     avg_energy_sq     = 0.0;
     avg_magnetization = 0.0;
 
+    // k-pairwise
+    pK_model.zeros(nspins + 1);
 
     // Random number generator setup
     std::uniform_real_distribution<double> dist(0.0, 1.0);
@@ -58,8 +60,8 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
                 // double prob_plus = exp_plus / (exp_plus + exp_minus);
                 double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
 
-                double r         = dist(rng);
-                s(i)             = (r < prob_plus) ? 1 : -1;
+                double r = dist(rng);
+                s(i)     = (r < prob_plus) ? 1 : -1;
             }
         }
 
@@ -85,8 +87,8 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
                 // double prob_plus = exp_plus / (exp_plus + exp_minus);
                 double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
 
-                double r         = dist(rng);
-                s(i)             = (r < prob_plus) ? 1 : -1;
+                double r = dist(rng);
+                s(i)     = (r < prob_plus) ? 1 : -1;
             }
 
             // Every sampleInterval sweeps, record the current configuration
@@ -126,7 +128,11 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
                     }
                     replicas.row(n_samples_collected) = s.t();
                 }
-                
+
+                // k-pairwise
+                int k = static_cast<int>(arma::sum(s + 1) / 2);
+                pK_model(k) += 1.0;
+
                 n_collected_rep++;
                 n_samples_collected++;
             }
@@ -134,7 +140,6 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
 
     } // end for loop repetitions
 
-    
     // Normalize the averages
     avg_energy /= static_cast<double>(total_number_samples);
     avg_energy_sq /= static_cast<double>(total_number_samples);
@@ -144,4 +149,7 @@ void HeatBathTrainer::computeModelAverages1(double beta, bool triplets)
     m2_model /= static_cast<double>(total_number_samples);
     if (triplets)
         m3_model /= static_cast<double>(total_number_samples);
+
+    // k-pairwise
+    pK_model /= static_cast<double>(total_number_samples);
 }

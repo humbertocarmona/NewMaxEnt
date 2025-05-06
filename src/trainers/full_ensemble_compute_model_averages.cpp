@@ -14,6 +14,10 @@ void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
     m3_model.zeros(ntriplets);
     double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
 
+
+    // k-pairwise
+    pK_model.zeros(nspins+1);
+
     avg_energy        = 0.0;
     avg_energy_sq     = 0.0;
     avg_magnetization = 0.0;
@@ -63,6 +67,10 @@ void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
                 }
             }
         }
+
+        // k-pairwise
+        int k = static_cast<int>(arma::sum(s + 1) / 2);
+        pK_model(k) += P; 
     }
 
     avg_energy /= Z;
@@ -73,7 +81,9 @@ void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
     m2_model /= Z;
     if (triplets)
         m3_model /= Z;
-
+    // k-pairwise
+    pK_model /= Z;
+    
     // logger->warn("[computeFullEnumerationAverages] ntriplets = {} {}",ntriplets,
     // m3_model.n_elem);
 }

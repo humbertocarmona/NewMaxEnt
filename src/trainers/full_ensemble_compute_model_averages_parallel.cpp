@@ -17,6 +17,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     m3_model.zeros(ntriplets);
     double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
 
+    // k-pairwise
+    pK_model.zeros(nspins + 1);
+
     avg_energy         = 0.0;
     avg_energy_sq      = 0.0;
     avg_magnetization  = 0.0;
@@ -44,6 +47,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             local_m3_model.set_size(ntriplets);
             local_m3_model.zeros();
         }
+
+        // k-pairwise
+        arma::Col<double> local_pK_model(nspins + 1, arma::fill::zeros);
 
         double E = 0.0, P = 0.0;
 
@@ -91,6 +97,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
                     }
                 }
             }
+            // k-pairwise
+            int k = static_cast<int>(arma::sum(s + 1) / 2);
+            local_pK_model(k) += P;
         }
 
 #pragma omp critical
@@ -103,6 +112,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             Z_partition += local_Z;
             if (triplets)
                 m3_model += local_m3_model;
+
+            // k-pairwise
+            pK_model += local_pK_model;
         }
     } // End of parallel block
 
@@ -115,4 +127,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     m2_model /= Z_partition;
     if (triplets)
         m3_model /= Z_partition;
+
+    // k-pairwise
+    pK_model /= Z_partition;
 }

@@ -23,6 +23,9 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     if (triplets)
         m3_model.zeros(ntriplets);
 
+    // k-pairwise
+    pK_model.zeros(nspins + 1);
+
     avg_energy        = 0.0;
     avg_energy_sq     = 0.0;
     avg_magnetization = 0.0;
@@ -39,7 +42,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
         {
             logger->info("[computeAverages] Running with {} threads.", num_threads);
         }
-        
+
         size_t samples_per_thread =
             (total_number_samples + num_threads - 1) / num_threads; // ceil division
         size_t start_index = thread_id * samples_per_thread;
@@ -50,6 +53,9 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
         arma::Col<double> local_m3_model;
         if (triplets)
             local_m3_model.set_size(ntriplets), local_m3_model.zeros();
+
+        // k-pairwise
+        arma::Col<double> local_pK_model(nspins + 1, arma::fill::zeros);
 
         double local_avg_energy        = 0.0;
         double local_avg_energy_sq     = 0.0;
@@ -116,8 +122,8 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
                     // double prob_plus = exp_plus / (exp_plus + exp_minus);
                     double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
 
-                    double r         = dist(rng);
-                    s(i)             = (r < prob_plus) ? 1 : -1;
+                    double r = dist(rng);
+                    s(i)     = (r < prob_plus) ? 1 : -1;
                 }
 
                 if ((sweep % params.step_correlation) == 0)
@@ -145,6 +151,10 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
                         local_replicas.row(local_sample_count) = s.t();
                     }
+                    // k-pairwise
+                    int k = static_cast<int>(arma::sum(s + 1) / 2);
+                    local_pK_model(k) += 1.0;
+
                     ++local_sample_count; // because a thread may not collect all samples or collect
                                           // more
 
@@ -173,6 +183,9 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             if (triplets)
                 m3_model += local_m3_model;
 
+            // k-pairwise
+            pK_model += local_pK_model;
+
             if (triplets)
             {
                 for (size_t i = 0; i < local_sample_count; ++i)
@@ -192,4 +205,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     m2_model /= static_cast<double>(global_sample_count);
     if (triplets)
         m3_model /= static_cast<double>(global_sample_count);
+
+    // k-pairwise
+    pK_model /= static_cast<double>(global_sample_count);
 }

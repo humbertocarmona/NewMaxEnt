@@ -42,6 +42,9 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
     m2_model.zeros(nedges);
     m3_model.zeros(ntriplets);
 
+    // k-pairwise
+    pK_model.zeros(nspins + 1);
+
     // RNG for spin updates
     std::mt19937 rng(wg_seed);
 
@@ -70,7 +73,16 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
     std::vector<arma::Col<double>> m1_list(params.num_samples, arma::Col<double>(nspins));
     std::vector<arma::Col<double>> m2_list(params.num_samples, arma::Col<double>(nedges));
     std::vector<arma::Col<double>> m3_list(params.num_samples, arma::Col<double>(ntriplets));
-    ;
+
+    // k-pairwise
+    std::vector<arma::Col<double>> pK_list(params.num_samples, arma::Col<double>(nspins+1));
+    arma::Col<double> pK(nspins+1);
+    pK.zeros();
+
+    for (auto& pk : pK_list) {
+        pk.zeros();  // Sets all elements in the arma::Col<double> to zero
+    }
+
 
     size_t n_accepted = 0;
     size_t n_rejected = 0;
@@ -144,10 +156,16 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
                 replicas.row(samplesCollected) = s.t();
             }
 
+            // k-pairwise
+            int k = static_cast<int>(arma::sum(s + 1) / 2);
+            pK_list[samplesCollected][k] += 1;
+
             logger->debug("[wl train] ...................................");
-            logger->debug("[wl train]  sweep {}  E: {} E_bin: {} p: {} r: {}", sweep, E, E_bin, p, r);
+            logger->debug("[wl train]  sweep {}  E: {} E_bin: {} p: {} r: {}", sweep, E, E_bin, p,
+                          r);
             logger->debug("[wl train] s: {}", utils::colPrint<int>(s));
-            logger->debug("[wl train] sample {} n_accepted: {} n_rejected: {} ", samplesCollected, n_accepted, n_rejected);
+            logger->debug("[wl train] sample {} n_accepted: {} n_rejected: {} ", samplesCollected,
+                          n_accepted, n_rejected);
             logger->debug("[wl train] log_P_E: {}", log_P_E);
             logger->debug("[wl train] ...................................");
 
@@ -170,6 +188,9 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
         m2_model += weight * m2_list[i];
         if (triplets)
             m3_model += weight * m3_list[i];
+
+        // k-pairwise
+        pK_model += weight*pK_list[i];
     }
 
     logger->debug("[wl train] Averages computed from {} samples", samplesCollected);
@@ -177,5 +198,4 @@ void WangLandauTrainer::computeModelAverages(double beta, bool triplets)
     logger->debug("[wl train] avg_magnetization: {}", avg_magnetization);
     logger->debug("[wl train] m1_model: {}", utils::colPrint<double>(m1_model));
     logger->debug("[wl train] m1_data: {}", utils::colPrint<double>(m1_data));
-
 }

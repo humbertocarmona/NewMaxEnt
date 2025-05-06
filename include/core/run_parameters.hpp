@@ -33,7 +33,14 @@ struct RunParameters
     double eta_h_min           = 1.0e-4;
     double eta_J_min           = 1.0e-4;
     double grad_drop_threshold = 1.0e-3;
-    // -------------------------------
+
+    // k-pairwise (force P(K))
+    bool k_pairwise = true;
+    double tolerance_k   = 1.0e-4;
+    double eta_k         = 0.1;
+    double alpha_k       = 0.1;
+    double gamma_k       = 0.2;
+
 
     // Monte Carlo parameters
     int rng_seed              = 1;
@@ -47,10 +54,9 @@ struct RunParameters
     size_t pre_num_samples        = 1000;
     size_t pre_step_correlation   = 100;
     size_t pre_number_repetitions = 10;
-
-    double log_f_final        = 1.0e-6;
-    double energy_bin         = 0.2;
-    double flatness_threshold = 0.8;
+    double log_f_final            = 1.0e-6;
+    double energy_bin             = 0.2;
+    double flatness_threshold     = 0.8;
 
     // post-processing temperature dependence
     std::vector<double> temperature_range = std::vector<double>();

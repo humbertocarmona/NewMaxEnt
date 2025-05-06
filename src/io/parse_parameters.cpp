@@ -71,6 +71,17 @@ RunParameters parseParameters(const std::string &filename)
         p.gamma_J       = tr.value("gamma_J", 0.2);
     }
 
+    if (json_data.contains("k-pairwise"))
+    {
+        auto pw = json_data["k-pairwise"];
+
+        p.k_pairwise  = pw.value("k_pairwise", true);
+        p.tolerance_k = pw.value("tolerance_k", 1.0e-4);
+        p.eta_k       = pw.value("eta_k", 0.1);
+        p.alpha_k     = pw.value("alpha_k", 0.1);
+        p.gamma_k     = pw.value("gamma_k", 0.2);
+    }
+
     if (isTdep && p.trained_model_file == "none")
     {
         throw std::runtime_error(p.run_type + " requires 'trained_model_file' in " + filename);
@@ -110,24 +121,25 @@ RunParameters parseParameters(const std::string &filename)
     {
         auto mc              = json_data["Monte_Carlo"];
         p.step_equilibration = mc.value("step_equilibration", 1000);
-        p.num_samples         = mc.value("num_samples", 1000);
-        p.step_correlation     = mc.value("step_correlation", 100);
-        p.number_repetitions   = mc.value("num_repetitions", 20);
-        p.rng_seed            = mc.value("rng_seed", 1);
+        p.num_samples        = mc.value("num_samples", 1000);
+        p.step_correlation   = mc.value("step_correlation", 100);
+        p.number_repetitions = mc.value("num_repetitions", 20);
+        p.rng_seed           = mc.value("rng_seed", 1);
     }
 
     if (json_data.contains("Wang_Landau"))
     {
-        auto wl                    = json_data["Wang_Landau"];
-        p.pre_maxIterations        = wl.value("pre_maxIterations", 200);
+        auto wl                  = json_data["Wang_Landau"];
+        p.pre_maxIterations      = wl.value("pre_maxIterations", 200);
         p.pre_step_equilibration = wl.value("pre_step_equilibration", 1000);
-        p.pre_step_correlation       = wl.value("pre_step_correlation", 100);
-        p.pre_num_samples           = wl.value("pre_num_samples", 1000);
-        p.pre_number_repetitions   = wl.value("pre_num_repetitions", 10);
-        p.log_f_final              = wl.value("log_f_final", 1e-6);
-        p.energy_bin               = wl.value("energy_bin", 0.2);
-        p.flatness_threshold       = wl.value("flatness_threshold", 0.8);
-        if(p.rng_seed ==1){
+        p.pre_step_correlation   = wl.value("pre_step_correlation", 100);
+        p.pre_num_samples        = wl.value("pre_num_samples", 1000);
+        p.pre_number_repetitions = wl.value("pre_num_repetitions", 10);
+        p.log_f_final            = wl.value("log_f_final", 1e-6);
+        p.energy_bin             = wl.value("energy_bin", 0.2);
+        p.flatness_threshold     = wl.value("flatness_threshold", 0.8);
+        if (p.rng_seed == 1)
+        {
             p.rng_seed = wl.value("rng_seed", 1);
         }
     }

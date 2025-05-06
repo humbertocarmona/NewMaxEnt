@@ -40,6 +40,7 @@ struct RunParameters
     double eta_k         = 0.1;
     double alpha_k       = 0.1;
     double gamma_k       = 0.2;
+    double eta_K_min           = 1.0e-4;
 
 
     // Monte Carlo parameters

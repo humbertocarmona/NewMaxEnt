@@ -8,53 +8,70 @@ void BaseTrainer::parallelUpdateModel(size_t t)
     auto logger = getLogger();
 
     auto &h = core.h;
-    auto &J = core.J;
-
-    auto &alpha_h = params.alpha_h;
-    auto &alpha_J = params.alpha_J;
-
-    // compute the gradients
-    grad_h = m1_data - m1_model;
-    grad_J = m2_data - m2_model;
-
+    double alpha_h = params.alpha_h;
+    grad_h = m1_data - m1_model;// compute the gradients
     double grad_norm_h = arma::norm(grad_h);
-    double grad_norm_J = arma::norm(grad_J);
     // > 0.01 means large drop (keep), < 0 means increase norm (decrease)
     double delta_grad_h = std::abs(last_grad_norm_h - grad_norm_h) / last_grad_norm_h;
-    double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
-
-    if (t % 10 == 0)
-        logger->info("delta_grad_h={}", delta_grad_h);
-
     if (delta_grad_h < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
         double fac = params.gamma_h * grad_norm_h / (1.0 + params.gamma_h * grad_norm_h);
         eta_h_t    = params.eta_h * fac;
         eta_h_t    = std::max(eta_h_t, params.eta_h_min);
     }
-    if (delta_grad_J < params.grad_drop_threshold) // only decrease if small drop, or negative
-    {
-        double fac = params.gamma_J * grad_norm_J / (1.0 + params.gamma_J * grad_norm_J);
-        eta_J_t    = params.eta_J * fac;
-        eta_J_t    = std::max(eta_J_t, params.eta_J_min);
-    }
-
     for (size_t i = 0; i < core.nspins; i++)
     {
         double delta_h_t = eta_h_t * grad_h(i);
         h(i)             = h(i) + delta_h_t + alpha_h * delta_h(i);
         delta_h(i)       = delta_h_t;
     }
+    last_grad_norm_h = grad_norm_h;
 
+    
+    auto &J = core.J;
+    double alpha_J = params.alpha_J;
+    grad_J = m2_data - m2_model; // compute the gradients
+    double grad_norm_J = arma::norm(grad_J);
+    double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
+    if (delta_grad_J < params.grad_drop_threshold) // only decrease if small drop, or negative
+    {
+        double fac = params.gamma_J * grad_norm_J / (1.0 + params.gamma_J * grad_norm_J);
+        eta_J_t    = params.eta_J * fac;
+        eta_J_t    = std::max(eta_J_t, params.eta_J_min);
+    }
     for (size_t i = 0; i < core.nedges; i++)
     {
         double delta_J_t = eta_J_t * grad_J(i);
         J(i)             = J(i) + delta_J_t + alpha_J * delta_J(i);
         delta_J(i)       = delta_J_t;
     }
-
-    last_grad_norm_h = grad_norm_h;
     last_grad_norm_J = grad_norm_J;
+
+    // k-pairwise
+    if (params.k_pairwise)
+    {
+        auto &K             = core.K;
+        double alpha_k      = params.alpha_k;
+        grad_K              = pK_data - pK_model;
+        double grad_norm_K  = arma::norm(grad_K);
+        double delta_grad_K = std::abs(last_grad_norm_K - grad_norm_K) / last_grad_norm_K;
+        if (t % 10 == 0)
+            logger->info("[parallelUpdateModel] delta_grad_K={}", delta_grad_K);
+
+        if (delta_grad_K < params.grad_drop_threshold) // only decrease if small drop, or negative
+        {
+            double fac = params.gamma_k * grad_norm_K / (1.0 + params.gamma_k * grad_norm_K);
+            eta_K_t    = params.eta_k * fac;
+            eta_K_t    = std::max(eta_K_t, params.eta_K_min);
+        }
+        for (size_t i = 0; i < core.nspins + 1; i++)
+        {
+            double delta_k_t = eta_K_t * grad_K(i);
+            K(i)             = K(i) + delta_k_t + alpha_k * delta_K(i);
+            delta_K(i)       = delta_k_t;
+        }
+        last_grad_norm_K = grad_norm_K;
+    }
 }
 
 void BaseTrainer::sequentialUpdateModel(size_t t)

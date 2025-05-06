@@ -13,6 +13,9 @@ class MaxEntCore
     arma::Col<double> J;
     arma::Mat<int> edges;
 
+    // k-pairwise
+    arma::Col<double> K;
+
     MaxEntCore(size_t n, const std::string &runid_) : nspins(n), runid(runid_)
     {
         nedges = nspins * (nspins - 1) / 2;
@@ -30,5 +33,9 @@ class MaxEntCore
                 edges(i, j) = edges(j, i) = idx++;
             }
         }
+
+        // k-pairwise
+        K.set_size(nspins+1);
+        K.fill(0);
     };
 };

@@ -114,7 +114,6 @@ class BaseTrainer
     arma::Col<double> h_p;
     arma::Col<double> J_p;
 
-
     // sample and model averages
     double avg_energy;
     double avg_energy_sq;
@@ -129,6 +128,18 @@ class BaseTrainer
     // averages used to compare predictions
     arma::Col<double> m3_data;  // sample third momentum: <s_i*s_j*s_j>
     arma::Col<double> m3_model; // model's third momentum: <s_i*s_j*s_j>
+
+
+
+    // k-pairwise
+    double eta_K_t;
+    arma::Col<double> delta_K; // training momentum alpha_k * delta_k(i)
+    double last_grad_norm_K = std::numeric_limits<double>::infinity();
+    arma::Col<double> grad_K;
+    arma::Col<double> K_p;
+    arma::Col<double> pK_data;  // sample fist momentum: <s_i>
+    arma::Col<double> pK_model; // model's fist momentum: <s_i>
+
 
     // Private helper functions
 

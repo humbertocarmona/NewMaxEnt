@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/run_parameters.hpp"
-#include "utils/centered_moments.hpp"
 #include "io/make_file_names.hpp"
+#include "utils/centered_moments.hpp"
 
 #include <nlohmann/json.hpp>
 #include <sstream>
@@ -12,7 +12,7 @@ template <typename T>
 void writeTrainedModel(const T &model,
                        const CenteredMoments m_data,
                        const CenteredMoments m_model,
-                    std::string prefix = "final")
+                       std::string prefix = "final")
 {
     auto logger = getLogger();
 
@@ -36,6 +36,11 @@ void writeTrainedModel(const T &model,
     obj["m3_model"]          = model.get_m3_model();
     obj["m2_model_centered"] = m_model.centered_moment_2;
     obj["m3_model_centered"] = m_model.centered_moment_3;
+
+    // k-pairwise
+    obj["K"] = model.get_K();
+    obj["pK_data"]  = model.get_pK_data();
+    obj["pK_model"] = model.get_pK_model();
 
     obj["run_parameters"] = model.get_params().to_json();
 

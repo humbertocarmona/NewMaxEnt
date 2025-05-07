@@ -20,6 +20,7 @@ struct RunParameters
 
     // model training parameters
     size_t maxIterations = 1000;
+    size_t save_checkpoint =  10000;
     double tolerance_h   = 1.0e-4;
     double tolerance_J   = 1.0e-4;
     double eta_h         = 0.1;
@@ -83,6 +84,7 @@ struct RunParameters
         logger->info("[{}] beta                   {}", caption, beta);
 
         logger->info("[{}] maxIterations          {}", caption, maxIterations);
+        logger->info("[{}] save_checkpoint          {}", caption, save_checkpoint);
         logger->info("[{}] tolerance_h            {}", caption, tolerance_h);
         logger->info("[{}] tolerance_J            {}", caption, tolerance_J);
 
@@ -117,11 +119,20 @@ struct RunParameters
             logger->info("[{}] energy_bin                  {}", caption, energy_bin);
             logger->info("[{}] flatness_threshold          {}", caption, flatness_threshold);
         }
+
+        if (k_pairwise){
+            logger->info("[{}] k_pairwise                  {}",caption,k_pairwise);
+            logger->info("[{}] tolerance_k                 {}",caption,tolerance_k);
+            logger->info("[{}] eta_k                       {}",caption,eta_k);
+            logger->info("[{}] alpha_k                     {}",caption,alpha_k);
+            logger->info("[{}] gamma_k                     {}",caption,gamma_k);
+            logger->info("[{}] eta_K_min                   {}",caption,eta_K_min);   
+        }
     };
 
     nlohmann::json to_json() const
     {
-        nlohmann::json obj, tr, mc, wl;
+        nlohmann::json obj, tr, mc, wl, pw;
 
         obj["run_type"] = run_type;
         obj["runid"]    = runid;
@@ -135,6 +146,7 @@ struct RunParameters
         obj["beta"]       = beta;
 
         tr["maxIterations"] = maxIterations;
+        tr["save_checkpoint"] = save_checkpoint;
         tr["tolerance_h"]   = tolerance_h;
         tr["tolerance_J"]   = tolerance_J;
         tr["eta_h"]         = eta_h;
@@ -169,6 +181,14 @@ struct RunParameters
             wl["flatness_threshold"]     = flatness_threshold;
             obj["Wang_Landau"]           = wl;
         }
+
+        pw["k_pairwise"]     = k_pairwise;
+        pw["tolerance_k"]    = tolerance_k;
+        pw["eta_k"]          = eta_k;
+        pw["alpha_k"]        = alpha_k;
+        pw["gamma_k"]        = gamma_k;
+        pw["eta_K_min"]      = eta_K_min;
+        obj["k-pairwise"]    = pw;
 
         return obj;
     };

@@ -22,8 +22,8 @@ void HeatBathTrainer::train()
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
-        // parallelUpdateModel(iter);
-        oldUpdateModel(iter);
+        parallelUpdateModel(iter);
+        //oldUpdateModel(iter);
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
@@ -45,7 +45,7 @@ void HeatBathTrainer::train()
                          iter, h_mean, h_max, cost.cost_m1, cost.cost_m2, elapsed, eta_h_t,
                          eta_J_t);
         }
-        if (iter % 500 == 0)
+        if (iter % params.save_checkpoint == 0)
         {
             saveModel("checkpoint");
         }

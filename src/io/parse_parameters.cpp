@@ -61,6 +61,7 @@ RunParameters parseParameters(const std::string &filename)
     {
         auto tr         = json_data["training"];
         p.maxIterations = tr.value("maxIterations", 1000);
+        p.save_checkpoint = tr.value("save_checkpoint", 10000);
         p.tolerance_h   = tr.value("tolerance_h", 1.0e-4);
         p.tolerance_J   = tr.value("tolerance_J", 1.0e-4);
         p.eta_h         = tr.value("eta_h", 0.1);

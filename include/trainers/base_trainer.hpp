@@ -58,6 +58,19 @@ class BaseTrainer
     {
         return m3_model;
     }
+    const arma::Col<double> &get_K() const
+    {
+        return core.K;
+    }
+    const arma::Col<double> &get_pK_data() const
+    {
+        return pK_data;
+    }
+    const arma::Col<double> &get_pK_model() const
+    {
+        return pK_model;
+    }
+    
     const double get_avg_energy() const
     {
         return avg_energy;

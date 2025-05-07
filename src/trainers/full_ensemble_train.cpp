@@ -35,7 +35,7 @@ void FullEnsembleTrainer::train()
                          iter, elapsed,  eta_h_t, eta_J_t, cost.cost_m1, cost.cost_m2, 
                          last_grad_norm_h, last_grad_norm_J);
         }
-        if (iter % 500 == 0)
+        if (iter % params.save_checkpoint == 0)
         {
             saveModel("checkpoint");
         }

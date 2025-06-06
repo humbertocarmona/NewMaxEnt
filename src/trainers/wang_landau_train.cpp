@@ -45,9 +45,8 @@ void WangLandauTrainer::train()
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
 
-            logger->info("[hb train] Iter {:5d} |h_mean: {:5.2f}| |h_max: {:5.2f}| M1: {:9.6f} | "
-                         "M2: {:9.6f} | elapsed: {:5.2f}",
-                         iter, h_mean, h_max, cost.cost_m1, cost.cost_m2, elapsed);
+            logger->info("[hb train] Iter {:5d} | M1: {:9.6f} | M2: {:9.6f} | elapsed: {:5.2f} | eta_h_t: {:4.2e} | eta_J_t: {:4.2e}",
+                         iter, cost.cost_m1, cost.cost_m2, elapsed, eta_h_t, eta_J_t);
         }
     }
 

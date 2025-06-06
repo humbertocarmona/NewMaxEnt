@@ -76,7 +76,13 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
             throw std::runtime_error("Wrong number of spins");
         }
-        iter    = obj["iter"].get<int>();
+
+        if (params.iter < 1)
+            iter = obj["iter"].get<int>();
+        else
+        {
+            iter = params.iter;
+        }
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
@@ -94,15 +100,15 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // gamma_h     = obj["run_parameters"]["gamma_h"];
         // gamma_J     = obj["run_parameters"]["gamma_J"];
 
-
         // k-pairwise
-        if (obj.contains("pK_data")){
+        if (obj.contains("pK_data"))
+        {
             pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
         }
-        if (obj.contains("K")){
+        if (obj.contains("K"))
+        {
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
         }
-
     }
     else
     {
@@ -116,8 +122,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
 
-    //k-pairwise
-    pK_model = arma::zeros<arma::Col<double>>(core.nspins+1);
-    delta_K = arma::zeros<arma::Col<double>>(core.nspins+1);
-
+    // k-pairwise
+    pK_model = arma::zeros<arma::Col<double>>(core.nspins + 1);
+    delta_K  = arma::zeros<arma::Col<double>>(core.nspins + 1);
 };

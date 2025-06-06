@@ -23,6 +23,6 @@ inline CostBreakdown compute_cost(const arma::Col<double> &m1_data,
 
     double cost1 = arma::accu(arma::square(m1_model - m1_data));
     double cost2 = arma::accu(arma::square(m2_model - m2_data));
-        
+
     return {cost1 + cost2, cost1, cost2};
 }

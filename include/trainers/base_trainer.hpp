@@ -70,7 +70,7 @@ class BaseTrainer
     {
         return pK_model;
     }
-    
+
     const double get_avg_energy() const
     {
         return avg_energy;
@@ -142,8 +142,6 @@ class BaseTrainer
     arma::Col<double> m3_data;  // sample third momentum: <s_i*s_j*s_j>
     arma::Col<double> m3_model; // model's third momentum: <s_i*s_j*s_j>
 
-
-
     // k-pairwise
     double eta_K_t;
     arma::Col<double> delta_K; // training momentum alpha_k * delta_k(i)
@@ -153,12 +151,11 @@ class BaseTrainer
     arma::Col<double> pK_data;  // sample fist momentum: <s_i>
     arma::Col<double> pK_model; // model's fist momentum: <s_i>
 
-
     // Private helper functions
 
-    void parallelUpdateModel(size_t t);
-    void sequentialUpdateModel(size_t t);
-    void oldUpdateModel(size_t t);
+    void gradUpdateModel(size_t t);
+    void gradUpdateModelSeq(size_t t);
+    void plawUpdateModel(size_t t);
     void secantUpdateModel(size_t);
 
     double energyAllPairs(arma::Col<int> s);

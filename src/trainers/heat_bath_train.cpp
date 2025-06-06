@@ -22,8 +22,21 @@ void HeatBathTrainer::train()
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
-        parallelUpdateModel(iter);
-        //oldUpdateModel(iter);
+        if (params.updateType == 'g')
+        {
+            // logger->info("gradient update");
+            gradUpdateModel(iter);
+        }
+        else if (params.updateType == 's')
+        {
+            // logger->info("sequential gradient update");
+            gradUpdateModelSeq(iter);
+        }
+        else
+        {
+            // logger->info("power law update");
+            plawUpdateModel(iter);
+        }
 
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
@@ -40,10 +53,8 @@ void HeatBathTrainer::train()
             double h_mean  = arma::mean(core.h);
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
-            logger->info("[hb train] Iter {:5d} |h_mean: {:5.2f}| |h_max: {:5.2f}| M1: {:9.6f} | "
-                         "M2: {:9.6f} | elapsed: {:5.2f} {:4.2e} {:4.2e}",
-                         iter, h_mean, h_max, cost.cost_m1, cost.cost_m2, elapsed, eta_h_t,
-                         eta_J_t);
+            logger->info("[hb train] Iter {:5d} | M1: {:9.6f} | M2: {:9.6f} | elapsed: {:5.2f} | eta_h_t: {:4.2e} | eta_J_t: {:4.2e}",
+                         iter, cost.cost_m1, cost.cost_m2, elapsed, eta_h_t, eta_J_t);
         }
         if (iter % params.save_checkpoint == 0)
         {

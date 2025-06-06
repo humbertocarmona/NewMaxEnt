@@ -36,6 +36,7 @@ RunParameters parseParameters(const std::string &filename)
     p.nspins             = json_data.value("nspins", 16);
     p.q_val              = json_data.value("q_val", 1.0);
     p.beta               = json_data.value("beta", 1.0);
+    p.iter               = json_data.value("iter", 1);
 
     bool isTraining =
         p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";
@@ -59,17 +60,19 @@ RunParameters parseParameters(const std::string &filename)
 
     if (json_data.contains("training"))
     {
-        auto tr         = json_data["training"];
-        p.maxIterations = tr.value("maxIterations", 1000);
+        auto tr           = json_data["training"];
+        p.maxIterations   = tr.value("maxIterations", 1000);
         p.save_checkpoint = tr.value("save_checkpoint", 10000);
-        p.tolerance_h   = tr.value("tolerance_h", 1.0e-4);
-        p.tolerance_J   = tr.value("tolerance_J", 1.0e-4);
-        p.eta_h         = tr.value("eta_h", 0.1);
-        p.eta_J         = tr.value("eta_J", 0.1);
-        p.alpha_h       = tr.value("alpha_h", 0.1);
-        p.alpha_J       = tr.value("alpha_J", 0.1);
-        p.gamma_h       = tr.value("gamma_h", 0.2);
-        p.gamma_J       = tr.value("gamma_J", 0.2);
+        p.tolerance_h     = tr.value("tolerance_h", 1.0e-4);
+        p.tolerance_J     = tr.value("tolerance_J", 1.0e-4);
+        p.eta_h           = tr.value("eta_h", 0.1);
+        p.eta_J           = tr.value("eta_J", 0.1);
+        p.alpha_h         = tr.value("alpha_h", 0.1);
+        p.alpha_J         = tr.value("alpha_J", 0.1);
+        p.gamma_h         = tr.value("gamma_h", 0.2);
+        p.gamma_J         = tr.value("gamma_J", 0.2);
+        p.updateType =
+            tr.value("update_type", 'p'); // 'p' power law, 'g' gradient 's' gradient sequential
     }
 
     if (json_data.contains("k-pairwise"))
@@ -81,6 +84,7 @@ RunParameters parseParameters(const std::string &filename)
         p.eta_k       = pw.value("eta_k", 0.1);
         p.alpha_k     = pw.value("alpha_k", 0.1);
         p.gamma_k     = pw.value("gamma_k", 0.2);
+        logger->info("[parseParameters] p.k_pairwise = {}", p.k_pairwise);
     }
 
     if (isTdep && p.trained_model_file == "none")

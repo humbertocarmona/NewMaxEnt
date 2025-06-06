@@ -17,18 +17,19 @@ struct RunParameters
     int nspins             = 16;
     double q_val           = 1.0;
     double beta            = 1.0;
-
+    int iter               = 1;
     // model training parameters
-    size_t maxIterations = 1000;
-    size_t save_checkpoint =  10000;
-    double tolerance_h   = 1.0e-4;
-    double tolerance_J   = 1.0e-4;
-    double eta_h         = 0.1;
-    double eta_J         = 0.1;
-    double alpha_h       = 0.1;
-    double alpha_J       = 0.1;
-    double gamma_h       = 0.2;
-    double gamma_J       = 0.2;
+    size_t maxIterations   = 1000;
+    size_t save_checkpoint = 10000;
+    double tolerance_h     = 1.0e-4;
+    double tolerance_J     = 1.0e-4;
+    char updateType        = 'p'; // 'p' power law, 'g' gradient 's' gradient sequential
+    double eta_h           = 0.1;
+    double eta_J           = 0.1;
+    double alpha_h         = 0.1;
+    double alpha_J         = 0.1;
+    double gamma_h         = 0.2;
+    double gamma_J         = 0.2;
 
     // for adaptive learning rate
     double eta_h_min           = 1.0e-4;
@@ -36,13 +37,12 @@ struct RunParameters
     double grad_drop_threshold = 1.0e-3;
 
     // k-pairwise (force P(K))
-    bool k_pairwise = true;
-    double tolerance_k   = 1.0e-4;
-    double eta_k         = 0.1;
-    double alpha_k       = 0.1;
-    double gamma_k       = 0.2;
-    double eta_K_min           = 1.0e-4;
-
+    bool k_pairwise    = true;
+    double tolerance_k = 1.0e-4;
+    double eta_k       = 0.1;
+    double alpha_k     = 0.1;
+    double gamma_k     = 0.2;
+    double eta_K_min   = 1.0e-4;
 
     // Monte Carlo parameters
     int rng_seed              = 1;
@@ -120,13 +120,14 @@ struct RunParameters
             logger->info("[{}] flatness_threshold          {}", caption, flatness_threshold);
         }
 
-        if (k_pairwise){
-            logger->info("[{}] k_pairwise                  {}",caption,k_pairwise);
-            logger->info("[{}] tolerance_k                 {}",caption,tolerance_k);
-            logger->info("[{}] eta_k                       {}",caption,eta_k);
-            logger->info("[{}] alpha_k                     {}",caption,alpha_k);
-            logger->info("[{}] gamma_k                     {}",caption,gamma_k);
-            logger->info("[{}] eta_K_min                   {}",caption,eta_K_min);   
+        if (k_pairwise)
+        {
+            logger->info("[{}] k_pairwise                  {}", caption, k_pairwise);
+            logger->info("[{}] tolerance_k                 {}", caption, tolerance_k);
+            logger->info("[{}] eta_k                       {}", caption, eta_k);
+            logger->info("[{}] alpha_k                     {}", caption, alpha_k);
+            logger->info("[{}] gamma_k                     {}", caption, gamma_k);
+            logger->info("[{}] eta_K_min                   {}", caption, eta_K_min);
         }
     };
 
@@ -145,17 +146,17 @@ struct RunParameters
         obj["q_val"]      = q_val;
         obj["beta"]       = beta;
 
-        tr["maxIterations"] = maxIterations;
+        tr["maxIterations"]   = maxIterations;
         tr["save_checkpoint"] = save_checkpoint;
-        tr["tolerance_h"]   = tolerance_h;
-        tr["tolerance_J"]   = tolerance_J;
-        tr["eta_h"]         = eta_h;
-        tr["eta_J"]         = eta_J;
-        tr["alpha_h"]       = alpha_h;
-        tr["alpha_J"]       = alpha_J;
-        tr["gamma_h"]       = gamma_h;
-        tr["gamma_J"]       = gamma_J;
-        obj["training"]     = tr;
+        tr["tolerance_h"]     = tolerance_h;
+        tr["tolerance_J"]     = tolerance_J;
+        tr["eta_h"]           = eta_h;
+        tr["eta_J"]           = eta_J;
+        tr["alpha_h"]         = alpha_h;
+        tr["alpha_J"]         = alpha_J;
+        tr["gamma_h"]         = gamma_h;
+        tr["gamma_J"]         = gamma_J;
+        obj["training"]       = tr;
 
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
@@ -182,13 +183,13 @@ struct RunParameters
             obj["Wang_Landau"]           = wl;
         }
 
-        pw["k_pairwise"]     = k_pairwise;
-        pw["tolerance_k"]    = tolerance_k;
-        pw["eta_k"]          = eta_k;
-        pw["alpha_k"]        = alpha_k;
-        pw["gamma_k"]        = gamma_k;
-        pw["eta_K_min"]      = eta_K_min;
-        obj["k-pairwise"]    = pw;
+        pw["k_pairwise"]  = k_pairwise;
+        pw["tolerance_k"] = tolerance_k;
+        pw["eta_k"]       = eta_k;
+        pw["alpha_k"]     = alpha_k;
+        pw["gamma_k"]     = gamma_k;
+        pw["eta_K_min"]   = eta_K_min;
+        obj["k-pairwise"] = pw;
 
         return obj;
     };

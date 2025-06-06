@@ -16,8 +16,19 @@ void WangLandauTrainer::train()
 
         computeModelAverages(1.0, false);
 
-        parallelUpdateModel(iter);
-
+        if (params.updateType == 'g')
+        {
+            gradUpdateModel(iter);
+        }
+        else if (params.updateType == 's')
+        {
+            gradUpdateModelSeq(iter);
+        }
+        else
+        {
+            plawUpdateModel(iter);
+        }
+        
         auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
 
         if (cost.check_convergence(params.tolerance_h, params.tolerance_J))

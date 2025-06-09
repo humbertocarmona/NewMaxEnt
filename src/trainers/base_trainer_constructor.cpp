@@ -34,6 +34,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
 
+    iter = 1;
     if (utils::isFileType(data_filename, "csv"))
     {
         // reads raw data file
@@ -57,8 +58,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // k-pairwise
         pK_data = res.pK_data;
         core.K.fill(0);
-
-        iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))
     {

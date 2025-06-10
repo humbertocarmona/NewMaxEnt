@@ -15,6 +15,7 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
     auto &h     = core.h;
     auto &J     = core.J;
+    auto &K     = core.K;
     auto &edges = core.edges;
 
     // Initialize global averages to zero
@@ -31,7 +32,6 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
     avg_magnetization = 0.0;
 
     size_t global_sample_count = 0; // shared across threads
-
 // Parallel block
 #pragma omp parallel
     {
@@ -80,24 +80,43 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
 
             arma::Col<int> s(nspins, arma::fill::ones);
             s *= -1; // Initialize spins to -1
+            double prob_plus;
 
             // Equilibration sweeps
             for (size_t sweep = 0; sweep < params.step_equilibration; ++sweep)
             {
+                int ki = static_cast<int>(arma::sum(s + 1) / 2);
                 for (size_t i = 0; i < nspins; ++i)
                 {
                     double h_i = h(i);
+
                     for (size_t j = 0; j < nspins; ++j)
                     {
                         int ij = edges(i, j);
                         if (ij != -1)
                             h_i += J(ij) * s(j);
                     }
-                    // double exp_plus  = std::exp(beta * h_i);
-                    // double exp_minus = std::exp(-beta * h_i);
-                    // double prob_plus = exp_plus / (exp_plus + exp_minus);
-                    double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+                    if (params.k_pairwise)
+                    {
 
+                        double exp_plus  = std::exp(beta * h_i);
+                        double exp_minus = std::exp(-beta * h_i);
+                        if (s(i) == -1)
+                        {
+                            exp_plus += K(ki + 1); // will increase ki by +1
+                            exp_minus += K(ki);    // keep the same
+                        }
+                        else
+                        {
+                            exp_plus += K(ki);      // keep the same
+                            exp_minus += K(ki - 1); // decrease ki by 1
+                        }
+                        prob_plus = exp_plus / (exp_plus + exp_minus);
+                    }
+                    else
+                    {
+                        prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+                    }
                     double r = dist(rng);
                     s(i)     = (r < prob_plus) ? 1 : -1;
                 }
@@ -108,6 +127,8 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
             size_t sweep       = 0;
             while (n_collected < params.num_samples)
             {
+                int ki = static_cast<int>(arma::sum(s + 1) / 2);
+
                 for (size_t i = 0; i < nspins; ++i)
                 {
                     double h_i = h(i);
@@ -117,11 +138,26 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
                         if (ij != -1)
                             h_i += J(ij) * s(j);
                     }
-                    // double exp_plus  = std::exp( beta * h_i);
-                    // double exp_minus = std::exp(- beta * h_i);
-                    // double prob_plus = exp_plus / (exp_plus + exp_minus);
-                    double prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
-
+                    if (params.k_pairwise)
+                    {
+                        double exp_plus  = std::exp(beta * h_i);
+                        double exp_minus = std::exp(-beta * h_i);
+                        if (s(i) == -1)
+                        {
+                            exp_plus += K(ki + 1); // will increase ki by +1
+                            exp_minus += K(ki);    // keep the same
+                        }
+                        else
+                        {
+                            exp_plus += K(ki);      // keep the same
+                            exp_minus += K(ki - 1); // decrease ki by 1
+                        }
+                        prob_plus = exp_plus / (exp_plus + exp_minus);
+                    }
+                    else
+                    {
+                        prob_plus = 1.0 / (1.0 + std::exp(-2.0 * beta * h_i));
+                    }
                     double r = dist(rng);
                     s(i)     = (r < prob_plus) ? 1 : -1;
                 }

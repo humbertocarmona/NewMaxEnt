@@ -141,7 +141,7 @@ void BaseTrainer::gradUpdateModelSeq(size_t t)
 void BaseTrainer::plawUpdateModel(size_t t)
 {
 
-    // auto logger = getLogger();
+    auto logger = getLogger();
 
     auto &h = core.h;
     auto &J = core.J;
@@ -172,7 +172,7 @@ void BaseTrainer::plawUpdateModel(size_t t)
     if (params.k_pairwise)
     {
         auto &K          = core.K;
-        eta_K_t          = params.eta_J * std::pow(t, -params.gamma_k);
+        eta_K_t          = params.eta_k * std::pow(t, -params.gamma_k);
         grad_K           = pK_data - pK_model;
         double delta_k_t = 0.0;
         for (size_t i = 0; i < core.nspins + 1; i++)

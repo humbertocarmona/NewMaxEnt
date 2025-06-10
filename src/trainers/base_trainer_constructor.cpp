@@ -76,12 +76,12 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             throw std::runtime_error("Wrong number of spins");
         }
 
-        if (params.iter < 1)
-            iter = obj["iter"].get<int>();
-        else
-        {
-            iter = params.iter;
-        }
+        // if (params.iter < 1)
+        //     iter = obj["iter"].get<int>();
+        // else
+        // {
+        //     iter = params.iter;
+        // }
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
@@ -108,6 +108,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         {
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
         }
+        core.K = arma::zeros<arma::Col<double>>(core.nspins + 1);
     }
     else
     {

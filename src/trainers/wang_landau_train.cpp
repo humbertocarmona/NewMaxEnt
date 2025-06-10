@@ -28,8 +28,8 @@ void WangLandauTrainer::train()
         {
             plawUpdateModel(iter);
         }
-        
-        auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model);
+
+        auto cost = compute_cost(m1_data, m1_model, m2_data, m2_model, pK_data, pK_model);
 
         if (cost.check_convergence(params.tolerance_h, params.tolerance_J))
         {
@@ -44,9 +44,9 @@ void WangLandauTrainer::train()
             double h_mean  = arma::mean(core.h);
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
-
-            logger->info("[hb train] Iter {:5d} | M1: {:9.6f} | M2: {:9.6f} | elapsed: {:5.2f} | eta_h_t: {:4.2e} | eta_J_t: {:4.2e}",
-                         iter, cost.cost_m1, cost.cost_m2, elapsed, eta_h_t, eta_J_t);
+            logger->info("[wl train] Iter {:5d} | M1: {:9.6f} | M2: {:9.6f} | pk: {:9.6f} | "
+                         "eta_t: {:4.2e}",
+                         iter, cost.cost_m1, cost.cost_m2, cost.cost_pk, eta_h_t);
         }
     }
 

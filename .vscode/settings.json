@@ -4,6 +4,7 @@
         "logg",
         "magnetizations",
         "maxent",
+        "plaw",
         "pretrain",
         "Tsallis"
     ],

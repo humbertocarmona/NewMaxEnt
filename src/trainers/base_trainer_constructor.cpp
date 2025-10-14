@@ -34,6 +34,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
 
+    iter = 1;
     if (utils::isFileType(data_filename, "csv"))
     {
         // reads raw data file
@@ -57,8 +58,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // k-pairwise
         pK_data = res.pK_data;
         core.K.fill(0);
-
-        iter = 1;
     }
     else if (utils::isFileType(data_filename, "json"))
     {
@@ -76,7 +75,13 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
             throw std::runtime_error("Wrong number of spins");
         }
-        iter    = obj["iter"].get<int>();
+
+        // if (params.iter < 1)
+        //     iter = obj["iter"].get<int>();
+        // else
+        // {
+        //     iter = params.iter;
+        // }
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
@@ -94,15 +99,16 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // gamma_h     = obj["run_parameters"]["gamma_h"];
         // gamma_J     = obj["run_parameters"]["gamma_J"];
 
-
         // k-pairwise
-        if (obj.contains("pK_data")){
+        if (obj.contains("pK_data"))
+        {
             pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
         }
-        if (obj.contains("K")){
+        if (obj.contains("K"))
+        {
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
         }
-
+        core.K = arma::zeros<arma::Col<double>>(core.nspins + 1);
     }
     else
     {
@@ -116,8 +122,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     delta_h = arma::zeros<arma::Col<double>>(core.nspins);
     delta_J = arma::zeros<arma::Col<double>>(core.nedges);
 
-    //k-pairwise
-    pK_model = arma::zeros<arma::Col<double>>(core.nspins+1);
-    delta_K = arma::zeros<arma::Col<double>>(core.nspins+1);
-
+    // k-pairwise
+    pK_model = arma::zeros<arma::Col<double>>(core.nspins + 1);
+    delta_K  = arma::zeros<arma::Col<double>>(core.nspins + 1);
 };

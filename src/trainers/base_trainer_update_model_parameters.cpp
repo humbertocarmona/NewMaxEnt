@@ -1,15 +1,14 @@
 #include "trainers/base_trainer.hpp"
 #include "utils/get_logger.hpp"
-#include "utils/utilities.hpp"
 
-void BaseTrainer::parallelUpdateModel(size_t t)
+void BaseTrainer::gradUpdateModel(size_t t)
 {
 
     auto logger = getLogger();
 
-    auto &h = core.h;
-    double alpha_h = params.alpha_h;
-    grad_h = m1_data - m1_model;// compute the gradients
+    auto &h            = core.h;
+    double alpha_h     = params.alpha_h;
+    grad_h             = m1_data - m1_model; // compute the gradients
     double grad_norm_h = arma::norm(grad_h);
     // > 0.01 means large drop (keep), < 0 means increase norm (decrease)
     double delta_grad_h = std::abs(last_grad_norm_h - grad_norm_h) / last_grad_norm_h;
@@ -27,11 +26,10 @@ void BaseTrainer::parallelUpdateModel(size_t t)
     }
     last_grad_norm_h = grad_norm_h;
 
-    
-    auto &J = core.J;
-    double alpha_J = params.alpha_J;
-    grad_J = m2_data - m2_model; // compute the gradients
-    double grad_norm_J = arma::norm(grad_J);
+    auto &J             = core.J;
+    double alpha_J      = params.alpha_J;
+    grad_J              = m2_data - m2_model; // compute the gradients
+    double grad_norm_J  = arma::norm(grad_J);
     double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
     if (delta_grad_J < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
@@ -74,7 +72,7 @@ void BaseTrainer::parallelUpdateModel(size_t t)
     }
 }
 
-void BaseTrainer::sequentialUpdateModel(size_t t)
+void BaseTrainer::gradUpdateModelSeq(size_t t)
 {
     auto logger = getLogger();
 
@@ -140,21 +138,24 @@ void BaseTrainer::sequentialUpdateModel(size_t t)
     last_grad_norm_J = grad_norm_J;
 }
 
-void BaseTrainer::oldUpdateModel(size_t t)
+void BaseTrainer::plawUpdateModel(size_t t)
 {
 
-    // auto logger = getLogger();
+    auto logger = getLogger();
 
     auto &h = core.h;
     auto &J = core.J;
 
-    double eta_h_t = params.eta_h * std::pow(t, -params.gamma_h);
-    double eta_J_t = params.eta_J * std::pow(t, -params.gamma_J);
+    eta_h_t = params.eta_h * std::pow(t, -params.gamma_h);
+    eta_J_t = params.eta_J * std::pow(t, -params.gamma_J);
+
+    grad_h = m1_data - m1_model;
+    grad_J = m2_data - m2_model;
 
     double delta_h_t = 0.0;
     for (size_t i = 0; i < core.nspins; i++)
     {
-        delta_h_t  = eta_h_t * (m1_data(i) - m1_model(i));
+        delta_h_t  = eta_h_t * grad_h(i);
         h(i)       = h(i) + delta_h_t + params.alpha_h * delta_h(i);
         delta_h(i) = delta_h_t;
     }
@@ -162,9 +163,24 @@ void BaseTrainer::oldUpdateModel(size_t t)
     double delta_J_t = 0.0;
     for (size_t i = 0; i < core.nedges; i++)
     {
-        delta_J_t  = params.eta_J * (m2_data(i) - m2_model(i));
+        delta_J_t  = params.eta_J * grad_J(i);
         J(i)       = J(i) + delta_J_t + params.alpha_J * delta_J(i);
         delta_J(i) = delta_J_t;
+    }
+
+    // k-pairwise
+    if (params.k_pairwise)
+    {
+        auto &K          = core.K;
+        eta_K_t          = params.eta_k * std::pow(t, -params.gamma_k);
+        grad_K           = pK_data - pK_model;
+        double delta_k_t = 0.0;
+        for (size_t i = 0; i < core.nspins + 1; i++)
+        {
+            delta_k_t  = eta_K_t * grad_K(i);
+            K(i)       = K(i) + delta_k_t + params.alpha_k * delta_K(i);
+            delta_K(i) = delta_k_t;
+        }
     }
 }
 

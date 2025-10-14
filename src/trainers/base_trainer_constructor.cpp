@@ -82,6 +82,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         // {
         //     iter = params.iter;
         // }
+        
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);

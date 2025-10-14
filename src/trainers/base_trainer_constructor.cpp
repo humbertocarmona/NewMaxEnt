@@ -14,6 +14,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
 {
     auto logger = getLogger();
     int n       = core.nspins;
+    auto run_type = params.run_type;
     ntriplets   = n * (n - 1) * (n - 2) / 6;
 
     eta_h_t = params.eta_h;
@@ -35,7 +36,15 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     eta_J_t = params.eta_J;
 
     iter = 1;
-    if (utils::isFileType(data_filename, "csv"))
+    // run_type == Full_Ensemble (Full) or Heat_Bath (MC)
+    bool train = (run_type=="Full" || run_type=="Full_Ensemble");
+    train = train || (run_type=="MC" || run_type=="Heat_Bath");
+    bool read_raw_data = train && utils::isFileType(data_filename, "csv");
+    bool read_model = train && utils::isFileType(data_filename, "json");
+    bool read_model_gen = (run_type=="Gen_Full" || run_type=="Gen_MC");
+    read_model_gen = read_model_gen && utils::isFileType(data_filename, "json");
+
+    if (read_raw_data)
     {
         // reads raw data file
         DataStatisticsBreakdown res = compute_data_statistics(data_filename);
@@ -59,10 +68,10 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         pK_data = res.pK_data;
         core.K.fill(0);
     }
-    else if (utils::isFileType(data_filename, "json"))
+    else if (read_model)
     {
         // re-start from last run (more iterations)
-        auto obj = readTrainedModel(data_filename);
+        auto obj = readJSONData(data_filename);
         if (!obj.contains("type") || obj["type"] != className)
         {
             logger->error("Incorrect or missing object type in JSON");
@@ -110,6 +119,39 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
         }
         core.K = arma::zeros<arma::Col<double>>(core.nspins + 1);
+    }
+    else if (read_model_gen){
+        auto obj = readJSONData(data_filename);
+
+        if (!obj.contains("nspins"))
+        {
+            logger->error("JSON data need field 'nspins'");
+            throw std::runtime_error("'nspins' required");
+        }
+
+        if (!obj.contains("h"))
+        {
+            logger->error("JSON data need field 'h'");
+            throw std::runtime_error("'h' required");
+        }
+                if (!obj.contains("J"))
+        {
+            logger->error("JSON data need field 'J'");
+            throw std::runtime_error("'J' required");
+        }
+        int n = obj["run_parameters"]["nspins"];
+        if (n != core.nspins)
+        {
+            logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
+            throw std::runtime_error("Wrong number of spins");
+        }
+        core.h  = utils::jsonToArmaCol<double>(obj["h"]);
+        core.J  = utils::jsonToArmaCol<double>(obj["J"]);
+
+        m1_data = arma::zeros<arma::Col<double>>(core.nspins);
+        m2_data = arma::zeros<arma::Col<double>>(core.nedges);
+        m3_data = arma::zeros<arma::Col<double>>(ntriplets);
+        pK_data = arma::zeros<arma::Col<double>>(core.nspins + 1);
     }
     else
     {

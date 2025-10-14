@@ -8,12 +8,17 @@ void generateSyntheticWorkflow(RunParameters params)
 {
     auto logger = getLogger();
 
+    // here need to make sure that the trained_model_file has:
+    // h, J, q, nspins, runid
     auto data_filename = params.trained_model_file;
+
 
     MaxEntCore core(params.nspins, params.runid);
 
     FullEnsembleTrainer model(core, params, data_filename);
+    // compute model averages in parallel
+    model.computeModelAverages(1.0, true);
+    model.copySyntheticMeans();
 
-    //model.train();
     model.saveModel("gen_final");
 }

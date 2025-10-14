@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-inline nlohmann::json readTrainedModel(const std::string &filepath)
+inline nlohmann::json readJSONData(const std::string &filepath)
 {
     std::ifstream in(filepath);
     if (!in.is_open())

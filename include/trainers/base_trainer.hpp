@@ -103,6 +103,13 @@ class BaseTrainer
         return params;
     }
 
+    const void copySyntheticMeans() {
+        m1_data = m1_model;
+        m2_data = m2_model;
+        m3_data = m3_model;
+        pK_data = pK_model;
+    };
+
   protected:
     MaxEntCore &core;
     int ntriplets;

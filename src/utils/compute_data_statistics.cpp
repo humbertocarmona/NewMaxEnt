@@ -24,6 +24,7 @@ DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
     int nspins                 = data_dbl.n_cols;
     int nsamples               = data_dbl.n_rows;
 
+    // initialize the DataStatisticsBreakdown structure column vectors
     DataStatisticsBreakdown res(nspins);
 
     // First moment: average magnetization of each spin

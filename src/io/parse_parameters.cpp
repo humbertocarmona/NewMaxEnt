@@ -16,13 +16,17 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error("Could not open parameter file: " + filename);
     }
 
-    std::set<std::string> valid_run_types = {"Full_Ensemble", "Heat_Bath", "Wang_Landau",
-                                             "Temperature_Dep"};
+    std::set<std::string> valid_run_types = {"Full_Ensemble", "Full", "Heat_Bath","MC",
+                                             "Temperature_Dep", "TDep", "Gen_Full", "Gen_MC"};
 
     nlohmann::json json_data;
     infile >> json_data;
 
-    p.run_type = json_data.value("run_type", "");
+    if(!json_data.contains("run_type")){
+        throw std::runtime_error("run_type is required ");
+    }
+
+    p.run_type = json_data.value("run_type","");
     if (valid_run_types.count(p.run_type) == 0)
     {
         throw std::runtime_error("Invalid run_type in " + filename + ": " + p.run_type);
@@ -39,7 +43,7 @@ RunParameters parseParameters(const std::string &filename)
     p.iter               = json_data.value("iter", 1);
 
     bool isTraining =
-        p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";
+        p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath";
     bool isMc   = p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";
     bool isTdep = p.run_type == "Temperature_Dep";
 
@@ -160,6 +164,6 @@ RunParameters parseParameters(const std::string &filename)
     utils::make_path(p.result_dir);
     logger->info("[parseParameters] result_dir set to '{}'", p.result_dir);
 
-    p.loginfo("parseParameters");
+    p.loginfo("parsedParameters");
     return p;
 }

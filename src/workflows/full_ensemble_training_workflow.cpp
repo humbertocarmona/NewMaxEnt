@@ -15,7 +15,7 @@ void fullEnsembleTrainingWorkflow(RunParameters params)
     MaxEntCore core(params.nspins, params.runid);
 
     FullEnsembleTrainer model(core, params, data_filename);
-
+    std::cout << "updateType=" << params.updateType << std::endl;
     model.train();
     model.saveModel("final");
 }

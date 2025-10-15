@@ -164,6 +164,6 @@ RunParameters parseParameters(const std::string &filename)
     utils::make_path(p.result_dir);
     logger->info("[parseParameters] result_dir set to '{}'", p.result_dir);
 
-    p.loginfo("parseParameters");
+    p.loginfo("parsedParameters");
     return p;
 }

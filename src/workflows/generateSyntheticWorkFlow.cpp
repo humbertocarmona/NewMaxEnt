@@ -12,12 +12,14 @@ void generateSyntheticWorkflow(RunParameters params)
     // h, J, q, nspins, runid
     auto data_filename = params.trained_model_file;
 
-
+    // initialize core model
     MaxEntCore core(params.nspins, params.runid);
 
+    // construct model (using FullEnsembleTrainer to generate means)
     FullEnsembleTrainer model(core, params, data_filename);
     // compute model averages in parallel
     model.computeModelAverages(1.0, true);
+
     model.copySyntheticMeans();
 
     model.saveModel("gen_final");

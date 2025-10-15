@@ -38,10 +38,10 @@ void HeatBathTrainer::computeModelAverages(double beta, bool triplets)
         int thread_id   = omp_get_thread_num();
         int num_threads = omp_get_num_threads();
 
-        if (iter == 1 && thread_id == 0)
-        {
-            logger->info("[computeAverages] Running with {} threads.", num_threads);
-        }
+        // if (iter == 1 && thread_id == 0)
+        // {
+        //     logger->info("[computeAverages] Running with {} threads.", num_threads);
+        // }
 
         size_t samples_per_thread =
             (total_number_samples + num_threads - 1) / num_threads; // ceil division

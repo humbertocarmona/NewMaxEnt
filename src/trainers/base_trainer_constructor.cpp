@@ -98,13 +98,14 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         core.h  = utils::jsonToArmaCol<double>(obj["h"]);
         core.J  = utils::jsonToArmaCol<double>(obj["J"]);
 
-        if (data_filename.find("gen") != std::string::npos)
+        // need to reset the h and J fields.
+        if (obj.contains("sample"))
         {
-            std::cout << " is gen " << std::endl;
             // Start from scratch
             core.h.fill(0.0);
             core.J.fill(0.0);
         }
+
         // if commented, will run with the new run_parameters
         // q_val       = obj["run_parameters"]["q_val"];
         // tolerance_h = obj["run_parameters"]["tolerance_h"];

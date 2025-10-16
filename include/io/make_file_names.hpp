@@ -95,11 +95,9 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
 inline std::string make_DensOfStates_filename(const RunParameters &params)
 {
     std::ostringstream outdir;
-    outdir << params.result_dir << "/" << params.run_type;
     utils::make_path(outdir.str());
 
     std::ostringstream fname;
-    fname << "/log_g_E-" << "-" << params.runid << ".csv";
     std::filesystem::path output = utils::get_available_filename(fname.str());
 
     return output.string();

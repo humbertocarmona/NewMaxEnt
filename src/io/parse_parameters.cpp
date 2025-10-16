@@ -16,17 +16,18 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error("Could not open parameter file: " + filename);
     }
 
-    std::set<std::string> valid_run_types = {"Full_Ensemble", "Full", "Heat_Bath","MC",
-                                             "Temperature_Dep", "TDep", "Gen_Full", "Gen_MC"};
+    std::set<std::string> valid_run_types = {"Full_Ensemble",   "Full", "Heat_Bath", "MC",
+                                             "Temperature_Dep", "TDep", "Gen_Full",  "Gen_MC"};
 
     nlohmann::json json_data;
     infile >> json_data;
 
-    if(!json_data.contains("run_type")){
+    if (!json_data.contains("run_type"))
+    {
         throw std::runtime_error("run_type is required ");
     }
 
-    p.run_type = json_data.value("run_type","");
+    p.run_type = json_data.value("run_type", "");
     if (valid_run_types.count(p.run_type) == 0)
     {
         throw std::runtime_error("Invalid run_type in " + filename + ": " + p.run_type);
@@ -42,10 +43,9 @@ RunParameters parseParameters(const std::string &filename)
     p.beta               = json_data.value("beta", 1.0);
     p.iter               = json_data.value("iter", 1);
 
-    bool isTraining =
-        p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath";
-    bool isMc   = p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";
-    bool isTdep = p.run_type == "Temperature_Dep";
+    bool isTraining = p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath";
+    bool isMc       = p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";
+    bool isTdep     = p.run_type == "Temperature_Dep";
 
     if (isTraining && !json_data.contains("training"))
     {
@@ -155,11 +155,16 @@ RunParameters parseParameters(const std::string &filename)
 
     // adjust result dir
     std::stringstream ss;
+
+    // add number of spins
     ss << p.result_dir << "/n" << p.nspins;
-    if (p.q_val != 1.0)
+
+    // add qval
+    if (p.q_val > 0.0)
     {
         ss << "/q" << p.q_val;
     }
+
     p.result_dir = ss.str();
     utils::make_path(p.result_dir);
     logger->info("[parseParameters] result_dir set to '{}'", p.result_dir);

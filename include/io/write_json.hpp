@@ -5,6 +5,7 @@
 #include "utils/centered_moments.hpp"
 
 #include <nlohmann/json.hpp>
+#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -38,11 +39,16 @@ void writeTrainedModel(const T &model,
     obj["m3_model_centered"] = m_model.centered_moment_3;
 
     // k-pairwise
-    obj["K"] = model.get_K();
+    obj["K"]        = model.get_K();
     obj["pK_data"]  = model.get_pK_data();
     obj["pK_model"] = model.get_pK_model();
 
     obj["run_parameters"] = model.get_params().to_json();
+
+    if (model.get_params().run_type == "Gen_Full")
+    {
+        obj["sample"] = "true";
+    }
 
     auto output = io::make_filename(model.get_params(), prefix);
     std::ofstream out(output);

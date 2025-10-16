@@ -3,6 +3,7 @@
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 #include <fstream>
+#include <iomanip>
 #include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
@@ -179,7 +180,7 @@ RunParameters parseParameters(const std::string &filename)
     // add qval
     if (p.q_val > 0.0)
     {
-        ss << "/q" << p.q_val;
+        ss << "/qmod_" << std::setprecision(1) << p.q_val;
     }
 
     p.result_dir = ss.str();

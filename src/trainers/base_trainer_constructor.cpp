@@ -85,13 +85,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             throw std::runtime_error("Wrong number of spins");
         }
 
-        // if (params.iter < 1)
-        //     iter = obj["iter"].get<int>();
-        // else
-        // {
-        //     iter = params.iter;
-        // }
-
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);

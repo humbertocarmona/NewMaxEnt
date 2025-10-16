@@ -9,14 +9,12 @@
 struct RunParameters
 {
     // main parameters
-    std::string run_type           = "Full_Ensemble"; // "Full_Ensemble" : full_ensemble training, 
-                                                      // "Heat_Bath": MC training,
-                                                      // "Temperature_Dep": Run temperature dependence for trained model.
-                                                      // "Gen_Full": Generate means n<=20, 
-                                                      // "Gen_MC": Generate means n>20
-    std::string data_type          = "raw";          // "raw": set of spin states (Full_Ensemble or Heat_Bath)
-                                                     // "model": start from trained model (Full_Ensemble, Heat_Bath ot Temperature_Ted), 
-                                                     // "fields": start from h and J fields (Gen_Full or Gen_MC)
+    std::string run_type = "Full_Ensemble"; // "Full_Ensemble" : full_ensemble training,
+                                            // "Heat_Bath": MC training,
+                                            // "Temperature_Dep": Run temperature dependence for
+                                            // trained model. "Gen_Full": Generate means n<=20,
+                                            // "Gen_MC": Generate means n>20
+    int continue_run               = 0;
     std::string runid              = "testing";
     std::string raw_data_file      = "none"; // filename with raw data samples to compute means
     std::string trained_model_file = "none"; // filename with trained model to compute means

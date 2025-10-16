@@ -1,11 +1,11 @@
 #include "core/run_parameters.hpp"
+#include "io/read_trained_json.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
-
 RunParameters parseParameters(const std::string &filename)
 {
     auto logger = getLogger();
@@ -42,6 +42,23 @@ RunParameters parseParameters(const std::string &filename)
     p.q_val              = json_data.value("q_val", 1.0);
     p.beta               = json_data.value("beta", 1.0);
     p.iter               = json_data.value("iter", 1);
+    p.continue_run       = json_data.value("continue_run", 0);
+
+    if (p.continue_run == 1)
+    {
+        std::cout << "reading model" + p.trained_model_file << std::endl;
+        // read the model file
+        auto obj = readJSONData(p.trained_model_file);
+        if (!obj.contains("run_parameters"))
+        {
+            throw std::runtime_error("run_parameters requided in " + p.trained_model_file);
+        }
+        auto run_parameters = obj["run_parameters"];
+        p.runid             = run_parameters["runid"];
+        p.q_val             = run_parameters["q_val"];
+        p.nspins            = run_parameters["nspins"];
+        p.iter              = obj["iter"];
+    }
 
     bool isTraining = p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath";
     bool isMc       = p.run_type == "Heat_Bath" || p.run_type == "Wang_Landau";

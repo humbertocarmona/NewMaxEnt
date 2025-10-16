@@ -35,7 +35,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
 
-    iter = 1;
+    iter = params.iter;
     // run_type == Full_Ensemble (Full) or Heat_Bath (MC)
     bool train          = (run_type == "Full" || run_type == "Full_Ensemble");
     train               = train || (run_type == "MC" || run_type == "Heat_Bath");

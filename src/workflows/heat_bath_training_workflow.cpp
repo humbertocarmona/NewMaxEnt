@@ -17,5 +17,5 @@ void heatBathTrainingWorkflow(RunParameters params)
     HeatBathTrainer model(core, params, data_filename);
 
     model.train();
-    model.saveModel("final");
+    model.saveModel("final-");
 }

@@ -8,19 +8,40 @@
 
 namespace io
 {
-
 /**
- * @brief Construct the filename for the main thermodynamic sweep CSV output.
+ * @brief Construct the filename for saving trained model.
  */
-inline std::string make_tdep_filename(const RunParameters &params)
+inline std::string make_filename(const RunParameters &params, std::string prefix)
 {
     std::ostringstream outdir;
-    outdir << params.result_dir << "/" << params.run_type;
+
+    outdir << params.result_dir << "/n" << params.nspins;
+
+    if (params.run_type == "Gen_Full")
+    {
+        outdir << "/qobs_" << std::setprecision(1) << params.q_val;
+    }
+    else
+    {
+        outdir << "/qmod_" << std::setprecision(1) << params.q_val;
+    }
+
+    if (params.k_pairwise)
+    {
+        outdir << "/k_pairwise";
+    }else{
+        outdir << "/pairwise";
+    }
+    outdir << "/" << params.run_type;
+
     utils::make_path(outdir.str());
 
     std::ostringstream fname;
-    fname << outdir.str() << "/sweep-" << params.runid << ".csv";
+
+    fname << outdir.str() << "/" << prefix << params.runid << ".json";
+
     std::filesystem::path output = utils::get_available_filename(fname.str());
+
     return output.string();
 }
 
@@ -55,40 +76,6 @@ inline std::string make_replica_correlation_filename(const RunParameters &params
           << T << ".csv";
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
-    return output.string();
-}
-
-/**
- * @brief Construct the filename for saving trained model.
- */
-inline std::string make_trained_filename(const RunParameters &params)
-{
-    std::ostringstream outdir;
-    outdir << params.result_dir << "/" << params.run_type;
-    utils::make_path(outdir.str());
-
-    std::ostringstream fname;
-    fname << outdir.str() << "/final-" << params.runid << ".json";
-
-    std::filesystem::path output = utils::get_available_filename(fname.str());
-
-    return output.string();
-}
-
-/**
- * @brief Construct the filename.
- */
-inline std::string make_filename(const RunParameters &params, std::string prefix)
-{
-    std::ostringstream outdir;
-    outdir << params.result_dir << "/" << params.run_type;
-    utils::make_path(outdir.str());
-
-    std::ostringstream fname;
-    fname << outdir.str() << "/" << prefix << "-" << params.runid << ".json";
-
-    std::filesystem::path output = utils::get_available_filename(fname.str());
-
     return output.string();
 }
 

@@ -63,7 +63,7 @@ void runTemperatureDependence(RunParameters &params)
     double energy;
     double specific_heat;
     double magnetization;
-    auto file_tdep = io::make_tdep_filename(params);
+    auto file_tdep = io::make_filename(params, "tdep-");
     std::ofstream out(file_tdep);
     logger->info("[runTemperatureDependence] Saving to {}", file_tdep);
     out << "T,beta,energy,specific_heat,magnetization,q_max\n";

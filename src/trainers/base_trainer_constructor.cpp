@@ -17,6 +17,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     auto run_type = params.run_type;
     ntriplets     = n * (n - 1) * (n - 2) / 6;
 
+    // from parameters file
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
 
@@ -34,6 +35,18 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
 
     eta_h_t = params.eta_h;
     eta_J_t = params.eta_J;
+
+    // let's zero this just in case...
+    m1_model = arma::zeros<arma::Col<double>>(core.nspins);
+    m2_model = arma::zeros<arma::Col<double>>(core.nedges);
+    m3_model = arma::zeros<arma::Col<double>>(ntriplets);
+
+    delta_h = arma::zeros<arma::Col<double>>(core.nspins);
+    delta_J = arma::zeros<arma::Col<double>>(core.nedges);
+
+    // k-pairwise
+    pK_model = arma::zeros<arma::Col<double>>(core.nspins + 1);
+    delta_K  = arma::zeros<arma::Col<double>>(core.nspins + 1);
 
     iter = params.iter;
     // run_type == Full_Ensemble (Full) or Heat_Bath (MC)
@@ -85,41 +98,40 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             throw std::runtime_error("Wrong number of spins");
         }
 
+        // observations and last parameters are read from file
         m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
         m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
         m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
+        if (obj.contains("pK_data"))
+        {
+            pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
+        }else{
+            pK_data = arma::zeros<arma::Col<double>>(core.nspins + 1);
+        }
+
+        m1_model = utils::jsonToArmaCol<double>(obj["m1_model"]);
+        m2_model = utils::jsonToArmaCol<double>(obj["m2_model"]);
+        pK_model = utils::jsonToArmaCol<double>(obj["pK_model"]);
+
         core.h  = utils::jsonToArmaCol<double>(obj["h"]);
         core.J  = utils::jsonToArmaCol<double>(obj["J"]);
-
-        // need to reset the h and J fields.
+        if (obj.contains("K")) // K is are the Lagrange multipliers associated with p(k)
+        {
+            core.K = utils::jsonToArmaCol<double>(obj["K"]);
+        }
+        else
+        {
+            core.K.fill(0.0);
+        }
+        // need to reset the h and J fields in case of reading a sample.
         if (obj.contains("sample"))
         {
             // Start from scratch
             core.h.fill(0.0);
             core.J.fill(0.0);
+            core.K.fill(0.0);
         }
 
-        // if commented, will run with the new run_parameters
-        // q_val       = obj["run_parameters"]["q_val"];
-        // tolerance_h = obj["run_parameters"]["tolerance_h"];
-        // tolerance_J = obj["run_parameters"]["tolerance_J"];
-        // eta_h       = obj["run_parameters"]["eta_h"];
-        // eta_J       = obj["run_parameters"]["eta_J"];
-        // alpha_h     = obj["run_parameters"]["alpha_h"];
-        // alpha_J     = obj["run_parameters"]["alpha_J"];
-        // gamma_h     = obj["run_parameters"]["gamma_h"];
-        // gamma_J     = obj["run_parameters"]["gamma_J"];
-
-        // k-pairwise
-        if (obj.contains("pK_data"))
-        {
-            pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
-        }
-        if (obj.contains("K"))
-        {
-            core.K = utils::jsonToArmaCol<double>(obj["K"]);
-        }
-        core.K = arma::zeros<arma::Col<double>>(core.nspins + 1);
     }
     else if (read_model_gen)
     {
@@ -163,14 +175,5 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         throw std::runtime_error("Invalid data file type");
     }
 
-    m1_model = arma::zeros<arma::Col<double>>(core.nspins);
-    m2_model = arma::zeros<arma::Col<double>>(core.nedges);
-    m3_model = arma::zeros<arma::Col<double>>(ntriplets);
 
-    delta_h = arma::zeros<arma::Col<double>>(core.nspins);
-    delta_J = arma::zeros<arma::Col<double>>(core.nedges);
-
-    // k-pairwise
-    pK_model = arma::zeros<arma::Col<double>>(core.nspins + 1);
-    delta_K  = arma::zeros<arma::Col<double>>(core.nspins + 1);
 };

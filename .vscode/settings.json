@@ -1,11 +1,14 @@
 {
     "cSpell.words": [
         "fluct",
+        "kpairwise",
         "logg",
         "magnetizations",
         "maxent",
         "plaw",
         "pretrain",
+        "qmod",
+        "qobs",
         "Tsallis"
     ],
     "files.associations": {

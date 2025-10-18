@@ -46,7 +46,7 @@ void FullEnsembleTrainer::train()
         }
         if (iter % params.save_checkpoint == 0)
         {
-            saveModel("checkpoint");
+            saveModel("checkpoint-");
         }
     }
 

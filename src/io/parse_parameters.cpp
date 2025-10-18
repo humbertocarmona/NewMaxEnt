@@ -52,7 +52,7 @@ RunParameters parseParameters(const std::string &filename)
         auto obj = readJSONData(p.trained_model_file);
         if (!obj.contains("run_parameters"))
         {
-            throw std::runtime_error("run_parameters requided in " + p.trained_model_file);
+            throw std::runtime_error("run_parameters required in " + p.trained_model_file);
         }
         auto run_parameters = obj["run_parameters"];
         p.runid             = run_parameters["runid"];
@@ -171,21 +171,7 @@ RunParameters parseParameters(const std::string &filename)
         }
     }
 
-    // adjust result dir
-    std::stringstream ss;
-
-    // add number of spins
-    ss << p.result_dir << "/n" << p.nspins;
-
-    // add qval
-    if (p.q_val > 0.0)
-    {
-        ss << "/qmod_" << std::setprecision(1) << p.q_val;
-    }
-
-    p.result_dir = ss.str();
-    utils::make_path(p.result_dir);
-    logger->info("[parseParameters] result_dir set to '{}'", p.result_dir);
+    
 
     p.loginfo("parsedParameters");
     return p;

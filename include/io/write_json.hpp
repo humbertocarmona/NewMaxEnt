@@ -13,7 +13,7 @@ template <typename T>
 void writeTrainedModel(const T &model,
                        const CenteredMoments m_data,
                        const CenteredMoments m_model,
-                       std::string prefix = "final")
+                       std::string prefix = "final-")
 {
     auto logger = getLogger();
 

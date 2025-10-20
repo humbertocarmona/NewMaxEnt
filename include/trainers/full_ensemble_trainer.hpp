@@ -16,7 +16,18 @@ class FullEnsembleTrainer : public BaseTrainer
     void computeModelAverages1(double beta = 1.0, bool triplets = false);
     void train() override;
     void saveModel(std::string prefix) const;
+    const std::unordered_map<int, double> &get_GE() const
+    {
+        return GE;
+    }
+
+        const std::unordered_map<int, double> &get_PE() const
+    {
+        return PE;
+    }
 
   private:
     std::string className = "FullEnsembleTrainer";
+    std::unordered_map<int, double> PE; // energy histogram
+    std::unordered_map<int, double> GE; // energy histogram
 };

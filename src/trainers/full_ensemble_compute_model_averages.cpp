@@ -12,7 +12,7 @@ void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
     m1_model.zeros(nspins);
     m2_model.zeros(core.nedges);
     m3_model.zeros(ntriplets);
-    double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
+    // double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
 
 
     // k-pairwise
@@ -31,7 +31,7 @@ void FullEnsembleTrainer::computeModelAverages1(double beta, bool triplets)
     for (const auto &s : sequence)
     {
         E = energyAllPairs(s);
-        P = utils::exp_q(-beta * E, params.q_val, q_inv);
+        P = utils::exp_q(-beta * E, params.q_val);
 
         Z += P;
         avg_energy += P * E;

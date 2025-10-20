@@ -15,7 +15,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     m1_model.zeros(nspins);
     m2_model.zeros(core.nedges);
     m3_model.zeros(ntriplets);
-    double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
+    // double q_inv = (params.q_val != 1) ? 1.0 / (1.0 - params.q_val) : 0.0;
 
     // k-pairwise
     pK_model.zeros(nspins + 1);
@@ -25,7 +25,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     avg_magnetization  = 0.0;
     double Z_partition = 0.0;
     size_t total       = 1ULL << nspins;
-    ;
+
+    GE.clear();
+    PE.clear();
 
 #pragma omp parallel
     {
@@ -42,10 +44,14 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         arma::Col<double> local_m1_model(nspins, arma::fill::zeros);
         arma::Col<double> local_m2_model(nedges, arma::fill::zeros);
         arma::Col<double> local_m3_model;
+        std::unordered_map<int, double> local_GE, local_PE; // energy histogram
+
         if (triplets)
         {
             local_m3_model.set_size(ntriplets);
             local_m3_model.zeros();
+            local_GE.clear();
+            local_PE.clear();
         }
 
         // k-pairwise
@@ -61,7 +67,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         for (const auto &s : sequence)
         {
             E = energyAllPairs(s);
-            P = utils::exp_q(-beta * E, params.q_val, q_inv);
+            P = utils::exp_q(-beta * E, params.q_val);
 
             local_Z += P;
             local_avg_energy += P * E;
@@ -85,7 +91,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             // k_pairwise: always compute p(k)
             int k = static_cast<int>(arma::sum(s + 1) / 2);
             local_pK_model(k) += P;
-            
+
             if (triplets)
             {
                 // Third-order moments
@@ -100,6 +106,10 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
                         }
                     }
                 }
+
+                int E_bin = static_cast<int>(std::round(E / params.energy_bin));
+                local_GE[E_bin] += 1.0;
+                local_PE[E_bin] += P;
             }
         }
 
@@ -114,8 +124,19 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             // k_pairwise: always compute p(k)
             pK_model += local_pK_model;
             if (triplets)
+            {
                 m3_model += local_m3_model;
 
+                // merge local_H -> global H
+                for (const auto &[bin, weight] : local_GE)
+                {
+                    GE[bin] += weight; // accumulate
+                }
+                for (const auto &[bin, weight] : local_PE)
+                {
+                    PE[bin] += weight; // accumulate
+                }
+            }
         }
     } // End of parallel block
 
@@ -127,7 +148,13 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     m1_model /= Z_partition;
     m2_model /= Z_partition;
     if (triplets)
+    {
         m3_model /= Z_partition;
+        for (auto &kv : PE)
+        {
+            kv.second /= Z_partition; // now H[bin] ~ P_q(E_bin)
+        }
+    }
 
     // k-pairwise
     pK_model /= Z_partition;

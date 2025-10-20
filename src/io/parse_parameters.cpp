@@ -1,4 +1,5 @@
 #include "core/run_parameters.hpp"
+#include "io/make_file_names.hpp"
 #include "io/read_trained_json.hpp"
 #include "utils/get_logger.hpp"
 // #include "utils/utilities.hpp"
@@ -171,7 +172,16 @@ RunParameters parseParameters(const std::string &filename)
             p.rng_seed = wl.value("rng_seed", 1);
         }
     }
-
+    if (p.run_type == "Gen_Full" || p.run_type == "Gen_MC")
+    {
+        auto fout = io::make_filename(p, "sample-");
+        std::cout << "will generate " << fout << std::endl;
+    }
+    else if (p.run_type == "Full_Ensemble" || p.run_type == "Full")
+    {
+        auto fout = io::make_filename(p, "final-");
+        std::cout << "will generate " << fout << std::endl;
+    }
     p.loginfo("parsedParameters");
     return p;
 }

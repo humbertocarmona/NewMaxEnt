@@ -1,8 +1,9 @@
 #include "workflows/generateSyntheticWorkFlow.hpp"
 // #include "io/write_json.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
-// #include "utils/centered_moments.hpp"
+#include "io/write_g_E.hpp"
 #include "utils/get_logger.hpp"
+
 
 void generateSyntheticWorkflow(RunParameters params)
 {
@@ -24,4 +25,11 @@ void generateSyntheticWorkflow(RunParameters params)
     // core.h.fill(0.0);
     // core.J.fill(0.0);
     model.saveModel("sample-");
+
+    auto ge = model.get_GE();
+    write_g_E(ge,params.energy_bin,"g_E.csv");
+
+    auto pe = model.get_PE();
+    write_g_E(pe,params.energy_bin,"p_E.csv");
+
 }

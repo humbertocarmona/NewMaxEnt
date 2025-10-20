@@ -56,30 +56,32 @@ inline bool is_file(const std::filesystem::path &path)
     return std::filesystem::exists(path);
 }
 
-inline std::filesystem::path get_available_filename(const std::filesystem::path& base)
+inline std::filesystem::path get_available_filename(const std::filesystem::path &base)
 {
-    if (!std::filesystem::exists(base)) {
+    if (!std::filesystem::exists(base))
+    {
         return base;
     }
 
     std::filesystem::path dir = base.parent_path();
-    std::string stem = base.stem().string();       // filename without extension
-    std::string ext = base.extension().string();   // includes the dot
+    std::string stem          = base.stem().string();      // filename without extension
+    std::string ext           = base.extension().string(); // includes the dot
 
     int counter = 1;
-    while (true) {
+    while (true)
+    {
         std::ostringstream new_name;
         new_name << stem << "_" << std::setw(2) << std::setfill('0') << counter << ext;
         std::filesystem::path candidate = dir / new_name.str();
 
-        if (!std::filesystem::exists(candidate)) {
+        if (!std::filesystem::exists(candidate))
+        {
             return candidate;
         }
 
         ++counter;
     }
 }
-
 
 inline bool is_dir(const std::filesystem::path &path)
 {
@@ -98,14 +100,23 @@ inline std::string now()
     return oss.str();
 }
 
-inline double exp_q(double x, double q, double q_inv)
+inline double exp_q(double x, double q)
 { // q_inv = 1/(1-q) for q!=1
     if (q == 1.0)
         return std::exp(x);
-    double y = 1.0 + (1.0 - q) * x;
-    return (y > 0.0) ? std::pow(y, q_inv) : 0.0;
+    double qq = 1.0 - q;
+    double y = 1.0 + qq * x;
+    return (y > 0.0) ? std::pow(y, 1.0/qq) : 0.0;
 }
 
+inline double log_q(double x, double q)
+{
+    if (q == 1.0)
+        return std::log(x);
+
+    double qq = 1.0 - q;
+    return (pow(x, qq) - 1.0) / qq;
+}
 
 inline std::string brief(const arma::Col<double> &v)
 {
@@ -123,8 +134,7 @@ inline std::string brief(const arma::Col<double> &v)
     return out.str();
 }
 
-template <typename T>
-inline std::string colPrint(const arma::Col<T> &v)
+template <typename T> inline std::string colPrint(const arma::Col<T> &v)
 {
     std::ostringstream out;
     out << "[";

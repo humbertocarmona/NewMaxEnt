@@ -1,7 +1,7 @@
 #include "workflows/generateSyntheticWorkFlow.hpp"
-#include "io/write_json.hpp"
+// #include "io/write_json.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
-#include "utils/centered_moments.hpp"
+// #include "utils/centered_moments.hpp"
 #include "utils/get_logger.hpp"
 
 void generateSyntheticWorkflow(RunParameters params)
@@ -21,7 +21,7 @@ void generateSyntheticWorkflow(RunParameters params)
     model.computeModelAverages(1.0, true);
 
     model.copySyntheticMeans();
-    core.h.fill(0.0);
-    core.J.fill(0.0);
-    model.saveModel("sample");
+    // core.h.fill(0.0);
+    // core.J.fill(0.0);
+    model.saveModel("sample-");
 }

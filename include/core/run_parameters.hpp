@@ -15,6 +15,7 @@ struct RunParameters
                                             // trained model. "Gen_Full": Generate means n<=20,
                                             // "Gen_MC": Generate means n>20
     int continue_run               = 0;
+    int sample                     = 0;
     std::string runid              = "testing";
     std::string raw_data_file      = "none"; // filename with raw data samples to compute means
     std::string trained_model_file = "none"; // filename with trained model to compute means
@@ -42,7 +43,7 @@ struct RunParameters
     double grad_drop_threshold = 1.0e-3;
 
     // k-pairwise (force P(K))
-    bool k_pairwise    = true;
+    bool k_pairwise    = false;
     double tolerance_k = 1.0e-4;
     double eta_k       = 0.1;
     double alpha_k     = 0.1;

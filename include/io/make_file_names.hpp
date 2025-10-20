@@ -19,19 +19,21 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
 
     if (params.run_type == "Gen_Full")
     {
-        outdir << "/qobs_" << std::setprecision(1) << params.q_val;
+        outdir << "/qobs_" << std::setprecision(2) << params.q_val;
     }
     else
     {
-        outdir << "/qmod_" << std::setprecision(1) << params.q_val;
+        outdir << "/qmod_" << std::setprecision(2) << params.q_val;
+        if (params.k_pairwise)
+        {
+            outdir << "/k_pairwise";
+        }
+        else
+        {
+            outdir << "/pairwise";
+        }
     }
 
-    if (params.k_pairwise)
-    {
-        outdir << "/k_pairwise";
-    }else{
-        outdir << "/pairwise";
-    }
     outdir << "/" << params.run_type;
 
     utils::make_path(outdir.str());

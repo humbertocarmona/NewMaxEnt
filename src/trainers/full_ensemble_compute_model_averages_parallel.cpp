@@ -82,6 +82,10 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
                 }
             }
 
+            // k_pairwise: always compute p(k)
+            int k = static_cast<int>(arma::sum(s + 1) / 2);
+            local_pK_model(k) += P;
+            
             if (triplets)
             {
                 // Third-order moments
@@ -97,9 +101,6 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
                     }
                 }
             }
-            // k-pairwise
-            int k = static_cast<int>(arma::sum(s + 1) / 2);
-            local_pK_model(k) += P;
         }
 
 #pragma omp critical
@@ -110,11 +111,11 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             m1_model += local_m1_model;
             m2_model += local_m2_model;
             Z_partition += local_Z;
+            // k_pairwise: always compute p(k)
+            pK_model += local_pK_model;
             if (triplets)
                 m3_model += local_m3_model;
 
-            // k-pairwise
-            pK_model += local_pK_model;
         }
     } // End of parallel block
 

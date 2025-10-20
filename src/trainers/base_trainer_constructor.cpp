@@ -105,7 +105,9 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         if (obj.contains("pK_data"))
         {
             pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
-        }else{
+        }
+        else
+        {
             pK_data = arma::zeros<arma::Col<double>>(core.nspins + 1);
         }
 
@@ -113,8 +115,8 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         m2_model = utils::jsonToArmaCol<double>(obj["m2_model"]);
         pK_model = utils::jsonToArmaCol<double>(obj["pK_model"]);
 
-        core.h  = utils::jsonToArmaCol<double>(obj["h"]);
-        core.J  = utils::jsonToArmaCol<double>(obj["J"]);
+        core.h = utils::jsonToArmaCol<double>(obj["h"]);
+        core.J = utils::jsonToArmaCol<double>(obj["J"]);
         if (obj.contains("K")) // K is are the Lagrange multipliers associated with p(k)
         {
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
@@ -124,14 +126,14 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             core.K.fill(0.0);
         }
         // need to reset the h and J fields in case of reading a sample.
-        if (obj.contains("sample"))
+        if (params.sample == 1)
         {
+            std::cout << "zerando h,j,K" << std::endl;
             // Start from scratch
             core.h.fill(0.0);
             core.J.fill(0.0);
             core.K.fill(0.0);
         }
-
     }
     else if (read_model_gen)
     {
@@ -174,6 +176,4 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     {
         throw std::runtime_error("Invalid data file type");
     }
-
-
 };

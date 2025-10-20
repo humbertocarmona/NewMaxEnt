@@ -1,12 +1,12 @@
 #include "core/run_parameters.hpp"
 #include "io/read_trained_json.hpp"
 #include "utils/get_logger.hpp"
-#include "utils/utilities.hpp"
+// #include "utils/utilities.hpp"
 #include <fstream>
-#include <iomanip>
+// #include <iomanip>
 #include <nlohmann/json.hpp>
 #include <set>
-#include <sstream>
+// #include <sstream>
 RunParameters parseParameters(const std::string &filename)
 {
     auto logger = getLogger();
@@ -44,6 +44,7 @@ RunParameters parseParameters(const std::string &filename)
     p.beta               = json_data.value("beta", 1.0);
     p.iter               = json_data.value("iter", 1);
     p.continue_run       = json_data.value("continue_run", 0);
+    p.sample             = json_data.value("sample", 0);
 
     if (p.continue_run == 1)
     {
@@ -170,8 +171,6 @@ RunParameters parseParameters(const std::string &filename)
             p.rng_seed = wl.value("rng_seed", 1);
         }
     }
-
-    
 
     p.loginfo("parsedParameters");
     return p;

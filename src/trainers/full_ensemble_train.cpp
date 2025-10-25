@@ -40,7 +40,7 @@ void FullEnsembleTrainer::train()
             double h_mean  = arma::mean(core.h);
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
-            logger->info("[full train] Iter {:5d} | M1: {:9.6f} | M2: {:9.6f} | pk: {:9.6f} | "
+            logger->info("[full train] Iter {:5d} | M1: {:11.8f} | M2: {:11.8f} | pk: {:9.6f} | "
                          "eta_t: {:4.2e}",
                          iter, cost.cost_m1, cost.cost_m2, cost.cost_pk, eta_h_t);
         }

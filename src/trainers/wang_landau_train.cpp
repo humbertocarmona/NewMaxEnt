@@ -16,11 +16,11 @@ void WangLandauTrainer::train()
 
         computeModelAverages(1.0, false);
 
-        if (params.updateType == 'g')
+        if (params.updateType == 2)
         {
             gradUpdateModel(iter);
         }
-        else if (params.updateType == 's')
+        else if (params.updateType == 3)
         {
             gradUpdateModelSeq(iter);
         }

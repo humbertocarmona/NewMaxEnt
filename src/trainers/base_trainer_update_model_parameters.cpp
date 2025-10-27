@@ -14,9 +14,10 @@ void BaseTrainer::gradUpdateModel(size_t t)
     double delta_grad_h = std::abs(last_grad_norm_h - grad_norm_h) / last_grad_norm_h;
     if (delta_grad_h < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
-        double fac = params.gamma_h * grad_norm_h / (1.0 + params.gamma_h * grad_norm_h);
-        eta_h_t    = params.eta_h * fac;
-        eta_h_t    = std::max(eta_h_t, params.eta_h_min);
+        double n_h  = grad_norm_h / params.sat_h;
+        double scal = n_h / (1.0 + n_h);
+        eta_h_t     = params.eta_h * scal;
+        eta_h_t     = std::max(eta_h_t, params.eta_h_min);
     }
     for (size_t i = 0; i < core.nspins; i++)
     {
@@ -33,9 +34,10 @@ void BaseTrainer::gradUpdateModel(size_t t)
     double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
     if (delta_grad_J < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
-        double fac = params.gamma_J * grad_norm_J / (1.0 + params.gamma_J * grad_norm_J);
-        eta_J_t    = params.eta_J * fac;
-        eta_J_t    = std::max(eta_J_t, params.eta_J_min);
+        double n_J  = grad_norm_J / params.sat_J;
+        double scal = n_J / (1.0 + n_J);
+        eta_J_t     = params.eta_J * scal;
+        eta_J_t     = std::max(eta_J_t, params.eta_J_min);
     }
     for (size_t i = 0; i < core.nedges; i++)
     {
@@ -89,20 +91,23 @@ void BaseTrainer::gradUpdateModelSeq(size_t t)
     double delta_grad_h = std::abs(last_grad_norm_h - grad_norm_h) / last_grad_norm_h;
     double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
 
-    if (t % 10 == 0)
-        logger->info("delta_grad_h={}", delta_grad_h);
+    // if (t % 10 == 0)
+    //     logger->info("delta_grad_h={}", delta_grad_h);
 
     if (delta_grad_h < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
-        double fac = params.gamma_h * grad_norm_h / (1.0 + params.gamma_h * grad_norm_h);
-        eta_h_t    = params.eta_h * fac;
-        eta_h_t    = std::max(eta_h_t, params.eta_h_min);
+        double n_h = grad_norm_h / params.sat_h;
+
+        double scal = n_h / (1.0 + n_h);
+        eta_h_t     = params.eta_h * scal;
+        eta_h_t     = std::max(eta_h_t, params.eta_h_min);
     }
     if (delta_grad_J < params.grad_drop_threshold) // only decrease if small drop, or negative
     {
-        double fac = params.gamma_J * grad_norm_J / (1.0 + params.gamma_J * grad_norm_J);
-        eta_J_t    = params.eta_J * fac;
-        eta_J_t    = std::max(eta_J_t, params.eta_J_min);
+        double n_J  = grad_norm_J / params.sat_J;
+        double scal = n_J / (1.0 + n_J);
+        eta_J_t     = params.eta_J * scal;
+        eta_J_t     = std::max(eta_J_t, params.eta_J_min);
     }
 
     // Sequential update for h
@@ -233,8 +238,8 @@ void BaseTrainer::secantUpdateModel(size_t t)
         double delta_grad_h = std::abs(last_grad_norm_h - grad_norm_h) / last_grad_norm_h;
         double delta_grad_J = std::abs(last_grad_norm_J - grad_norm_J) / last_grad_norm_J;
 
-        if (t % 10 == 0)
-            logger->info("delta_grad_h={}", delta_grad_h);
+        // if (t % 10 == 0)
+        //     logger->info("delta_grad_h={}", delta_grad_h);
 
         if (delta_grad_h < params.grad_drop_threshold) // only decrease if small drop, or negative
         {

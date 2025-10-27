@@ -46,6 +46,7 @@ RunParameters parseParameters(const std::string &filename)
     p.iter               = json_data.value("iter", 1);
     p.continue_run       = json_data.value("continue_run", 0);
     p.sample             = json_data.value("sample", 0);
+    p.energy_bin         = json_data.value("energy_bin", 0.2);
 
     if (p.continue_run == 1)
     {
@@ -91,12 +92,16 @@ RunParameters parseParameters(const std::string &filename)
         p.tolerance_J     = tr.value("tolerance_J", 1.0e-4);
         p.eta_h           = tr.value("eta_h", 0.1);
         p.eta_J           = tr.value("eta_J", 0.1);
+        p.eta_h_min       = tr.value("eta_h_min", 0.00001);
+        p.eta_J_min       = tr.value("eta_J_min", 0.00001);
         p.alpha_h         = tr.value("alpha_h", 0.1);
         p.alpha_J         = tr.value("alpha_J", 0.1);
         p.gamma_h         = tr.value("gamma_h", 0.2);
         p.gamma_J         = tr.value("gamma_J", 0.2);
+        p.sat_h           = tr.value("sat_h", 0.01);
+        p.sat_J           = tr.value("sat_J", 0.01);
         p.updateType =
-            tr.value("update_type", 'p'); // 'p' power law, 'g' gradient 's' gradient sequential
+            tr.value("updateType", 1); // '1' power law, '2' gradient '3' gradient sequential
     }
 
     if (json_data.contains("k-pairwise"))

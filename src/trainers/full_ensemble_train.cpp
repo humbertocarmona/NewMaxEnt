@@ -13,11 +13,11 @@ void FullEnsembleTrainer::train()
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
-        if (params.updateType == 'g')
+        if (params.updateType == 2)
         {
             gradUpdateModel(iter);
         }
-        else if (params.updateType == 's')
+        else if (params.updateType == 3)
         {
             gradUpdateModelSeq(iter);
         }
@@ -41,8 +41,8 @@ void FullEnsembleTrainer::train()
             double J_mean  = arma::mean(core.J);
             double h_max   = arma::max(arma::abs(core.h));
             logger->info("[full train] Iter {:5d} | M1: {:11.8f} | M2: {:11.8f} | pk: {:9.6f} | "
-                         "eta_t: {:4.2e}",
-                         iter, cost.cost_m1, cost.cost_m2, cost.cost_pk, eta_h_t);
+                         "eta_h_t: {:4.2e} | eta_J_t: {:4.2e}",
+                         iter, cost.cost_m1, cost.cost_m2, cost.cost_pk, eta_h_t, eta_J_t);
         }
         if (iter % params.save_checkpoint == 0)
         {

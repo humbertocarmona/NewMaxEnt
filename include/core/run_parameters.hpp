@@ -29,13 +29,15 @@ struct RunParameters
     size_t save_checkpoint = 10000;
     double tolerance_h     = 1.0e-4;
     double tolerance_J     = 1.0e-4;
-    char updateType        = 'p'; // 'p' power law, 'g' gradient 's' gradient sequential
+    int updateType        = 1; // '1' power law, '2' gradient '3' gradient sequential
     double eta_h           = 0.1;
     double eta_J           = 0.1;
     double alpha_h         = 0.1;
     double alpha_J         = 0.1;
     double gamma_h         = 0.2;
     double gamma_J         = 0.2;
+    double sat_h           = 0.01; // saturation for Grad. Descent
+    double sat_J           = 0.01;
 
     // for adaptive learning rate
     double eta_h_min           = 1.0e-4;
@@ -88,6 +90,7 @@ struct RunParameters
         logger->info("[{}] nspins                 {}", caption, nspins);
         logger->info("[{}] q_val                  {}", caption, q_val);
         logger->info("[{}] beta                   {}", caption, beta);
+        logger->info("[{}] energy_bin             {}", caption, energy_bin);
 
         logger->info("[{}] maxIterations          {}", caption, maxIterations);
         logger->info("[{}] save_checkpoint          {}", caption, save_checkpoint);
@@ -96,10 +99,15 @@ struct RunParameters
 
         logger->info("[{}] eta_h                  {}", caption, eta_h);
         logger->info("[{}] eta_J                  {}", caption, eta_J);
+        logger->info("[{}] eta_h_min              {}", caption, eta_h_min);
+        logger->info("[{}] eta_J_min              {}", caption, eta_J_min);
         logger->info("[{}] alpha_h                {}", caption, alpha_h);
         logger->info("[{}] alpha_J                {}", caption, alpha_J);
         logger->info("[{}] gamma_h                {}", caption, gamma_h);
         logger->info("[{}] gamma_J                {}", caption, gamma_J);
+        logger->info("[{}] sat_h                  {}", caption, sat_h);
+        logger->info("[{}] sat_J                  {}", caption, sat_J);
+        logger->info("[{}] updateType            {}", caption, updateType);
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")
         {
             logger->info("[{}] rng_seed               {}", caption, rng_seed);
@@ -158,10 +166,15 @@ struct RunParameters
         tr["tolerance_J"]     = tolerance_J;
         tr["eta_h"]           = eta_h;
         tr["eta_J"]           = eta_J;
+        tr["eta_h_min"]       = eta_h_min;
+        tr["eta_J_min"]       = eta_J_min;
         tr["alpha_h"]         = alpha_h;
         tr["alpha_J"]         = alpha_J;
         tr["gamma_h"]         = gamma_h;
         tr["gamma_J"]         = gamma_J;
+        tr["sat_h"]           = sat_h;
+        tr["sat_J"]           = sat_J;
+        obj["updateType"]     = updateType;
         obj["training"]       = tr;
 
         if (run_type == "Heat_Bath" || run_type == "Wang_Landau")

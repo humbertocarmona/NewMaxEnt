@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string>
 
-
 template <typename T>
 void writeTrainedModel(const T &model,
                        const CenteredMoments m_data,
@@ -50,7 +49,44 @@ void writeTrainedModel(const T &model,
     {
         obj["sample"] = "true";
     }
+    
+    auto map_ge = model.get_GE();
+    auto map_pe = model.get_PE();
+    
+    arma::Col<double> en, we;
+    auto wbin = model.get_params().energy_bin;
+    
+    std::vector<std::pair<int, double>> sorted_GE(map_ge.begin(), map_ge.end());
+    std::sort(sorted_GE.begin(), sorted_GE.end(),
+              [](const auto &a, const auto &b) { return a.first < b.first; });
+    std::vector<std::pair<int, double>> sorted_PE(map_pe.begin(), map_pe.end());
+    std::sort(sorted_PE.begin(), sorted_PE.end(),
+              [](const auto &a, const auto &b) { return a.first < b.first; });
+    
+    for (const auto &[bin, weight] : sorted_GE)
+    {
+        en.insert_rows(en.n_rows, 1);
+        en(en.n_rows - 1) = bin * wbin;
 
+        we.insert_rows(we.n_rows, 1);
+        we(en.n_rows - 1) = weight;
+    }
+    obj["E"]  = en;
+    obj["GE"] = we;
+
+
+    en.clear();
+    we.clear();
+    for (const auto &[bin, weight] : sorted_PE)
+    {
+        en.insert_rows(en.n_rows, 1);
+        en(en.n_rows - 1) = bin * wbin;
+
+        we.insert_rows(we.n_rows, 1);
+        we(en.n_rows - 1) = weight;
+    }
+
+    obj["PE"] = we;
     auto output = io::make_filename(model.get_params(), prefix);
     std::ofstream out(output);
     out << obj.dump(2);

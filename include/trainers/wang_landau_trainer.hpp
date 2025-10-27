@@ -50,6 +50,16 @@ class WangLandauTrainer : public BaseTrainer
     
     void computeDensityOfStates();
 
+    const std::unordered_map<int, double> &get_GE() const
+    {
+        return GE;
+    }
+
+        const std::unordered_map<int, double> &get_PE() const
+    {
+        return PE;
+    }
+
   private:
     std::string className = "WangLandauTrainer";
     int wg_seed           = 1;
@@ -60,6 +70,8 @@ class WangLandauTrainer : public BaseTrainer
     std::unordered_map<int, double> log_g_E; // ln(G(E) density of states
     std::unordered_map<int, int> H;          // energy histogram
 
+    std::unordered_map<int, double> PE; // energy histogram
+    std::unordered_map<int, double> GE; // energy histogram
     void flip_random_spin(arma::Col<int> &s, std::mt19937 &rng);
 
     bool is_flat(const std::unordered_map<int, int> &H, 

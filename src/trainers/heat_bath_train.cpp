@@ -22,12 +22,12 @@ void HeatBathTrainer::train()
     for (iter = iter; iter < params.maxIterations; ++iter)
     {
         computeModelAverages(1.0, false);
-        if (params.updateType == 'g')
+        if (params.updateType == 2)
         {
             // logger->info("gradient update");
             gradUpdateModel(iter);
         }
-        else if (params.updateType == 's')
+        else if (params.updateType == 3)
         {
             // logger->info("sequential gradient update");
             gradUpdateModelSeq(iter);

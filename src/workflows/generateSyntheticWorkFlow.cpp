@@ -26,10 +26,10 @@ void generateSyntheticWorkflow(RunParameters params)
     // core.J.fill(0.0);
     model.saveModel("sample-");
 
-    auto ge = model.get_GE();
-    write_g_E(ge,params.energy_bin,"g_E.csv");
+    // auto ge = model.get_GE();
+    // write_g_E(ge,params.energy_bin,"g_E.csv");
 
-    auto pe = model.get_PE();
-    write_g_E(pe,params.energy_bin,"p_E.csv");
+    // auto pe = model.get_PE();
+    // write_g_E(pe,params.energy_bin,"p_E.csv");
 
 }

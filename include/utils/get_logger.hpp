@@ -28,16 +28,15 @@ inline std::shared_ptr<spdlog::logger> getLogger()
     if (!logger)
     {
         // Create a console sink
-        auto console_sink    = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto now             = std::chrono::system_clock::now();
-        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-        std::tm *tm_ptr      = std::localtime(&now_time);
-
-        std::ostringstream oss;
-        oss << std::put_time(tm_ptr, "%Y%m%d_%H%M%S");
-        std::string filename = "logs/output_" + oss.str() + ".log";
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        // auto now             = std::chrono::system_clock::now();
+        // std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        // std::tm *tm_ptr      = std::localtime(&now_time);
+        // std::ostringstream oss;
+        // oss << std::put_time(tm_ptr, "%Y%m%d_%H%M%S");
+        // std::string filename = "logs/output_" + oss.str() + ".log";
         // Create a file sink
-        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
+        // auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
 
         // Combine the sinks into a single logger
         // std::vector<spdlog::sink_ptr> sinks = {console_sink, file_sink};

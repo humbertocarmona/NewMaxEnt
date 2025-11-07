@@ -23,7 +23,7 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
     }
     else
     {
-        outdir << "/qmod_" << std::fixed << std::setprecision(2) << params.q_val;
+        // outdir << "/qmod_" << std::fixed << std::setprecision(2) << params.q_val;
         if (params.k_pairwise)
         {
         }

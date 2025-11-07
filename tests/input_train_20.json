@@ -4,13 +4,13 @@
     "run_type__": "Temperature_Dep",
     "run_type___": "Wang_Landau",
     "runid": "P132",
-    "raw_data_file":      "./n20/n1.32_20_1055.3_1057.2_sign_0.0.csv",
-    "trained_model_file": "./results/16/final-Full_Ensemble-test.json",
+    "raw_data_file": "./n20/n1.32_20_1055.3_1057.2_sign_0.0.csv",
+    "trained_model_file": "./results/16/final_Full_Ensemble-test.json",
     "result_dir": "./results",
     "nspins": 20,
     "q_val": 1.0,
     "beta": 1.0,
-    "training":{
+    "training": {
         "maxIterations": 1000,
         "tolerance_h": 1.0e-6,
         "tolerance_J": 1.0e-6,
@@ -27,8 +27,8 @@
         "numSamples": 10000,
         "sampleInterval": 200
     },
-    "Wang_Landau":{
-        "pre_equilibrationSweeps" : 100000,
+    "Wang_Landau": {
+        "pre_equilibrationSweeps": 100000,
         "pre_numSamples": 100,
         "pre_sampleInterval": 200
     },

@@ -179,12 +179,12 @@ RunParameters parseParameters(const std::string &filename)
     }
     if (p.run_type == "Gen_Full" || p.run_type == "Gen_MC")
     {
-        auto fout = io::make_filename(p, "sample-");
+        auto fout = io::make_filename(p, "synth_");
         std::cout << "will generate " << fout << std::endl;
     }
     else if (p.run_type == "Full_Ensemble" || p.run_type == "Full")
     {
-        auto fout = io::make_filename(p, "final-");
+        auto fout = io::make_filename(p, "final_");
         std::cout << "will generate " << fout << std::endl;
     }
     p.loginfo("parsedParameters");

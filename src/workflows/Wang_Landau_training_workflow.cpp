@@ -35,5 +35,4 @@ void WangLandauTrainingWorkflow(RunParameters params)
     // out.close();
 
     model.train();
-    // model.saveModel("final-");
 }

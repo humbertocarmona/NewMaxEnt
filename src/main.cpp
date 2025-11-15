@@ -3,14 +3,14 @@
 #include "workflows/generateSyntheticWorkFlow.hpp"
 #include "workflows/run_temperature_dependence.hpp"
 #include "workflows/training_workflow.hpp"
-
+#include <iostream>
 int main(int argc, char **argv)
 {
     auto logger = getLogger();
 
     if (argc < 2)
     {
-        std::cerr << "Usage: " << argv[0] << " path/to/params.json\n";
+        std::cout << "Usage: " << argv[0] << " path/to/params.json\n";
         return 1;
     }
     std::string param_file = argv[1];

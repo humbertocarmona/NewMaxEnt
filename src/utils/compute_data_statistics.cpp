@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-
-
 DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
 {
 
@@ -50,23 +48,24 @@ DataStatisticsBreakdown compute_data_statistics(const std::string &filename)
         {
             for (int k = j + 1; k < nspins; ++k)
             {
-                res.m3_data(idx++) = arma::mean(data_dbl.col(i) % data_dbl.col(j) % data_dbl.col(k));
+                res.m3_data(idx++) =
+                    arma::mean(data_dbl.col(i) % data_dbl.col(j) % data_dbl.col(k));
             }
         }
     }
 
     res.pK_data.fill(0);
-    for(int n=0; n<nsamples; ++n){
+    for (int n = 0; n < nsamples; ++n)
+    {
         auto s = raw_data.row(n);
-        int k = static_cast<int>(arma::sum(s + 1) / 2); 
+        int k  = static_cast<int>(arma::sum(s + 1) / 2);
         res.pK_data(k) += 1.0;
     }
     res.pK_data /= nsamples;
 
-    logger->debug("[compute_data_statistics] Computed moments 1 (size {}), 2 (size {}), 3 (size {})",
-                  res.m1_data.n_elem,
-                  res.m2_data.n_elem,
-                  res.m3_data.n_elem);
+    logger->debug(
+        "[compute_data_statistics] Computed moments 1 (size {}), 2 (size {}), 3 (size {})",
+        res.m1_data.n_elem, res.m2_data.n_elem, res.m3_data.n_elem);
 
     return res;
 }

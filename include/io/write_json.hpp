@@ -1,12 +1,8 @@
 #pragma once
 
-#include "core/run_parameters.hpp"
 #include "io/make_file_names.hpp"
 #include "utils/centered_moments.hpp"
-
 #include <nlohmann/json.hpp>
-#include <ostream>
-#include <sstream>
 #include <string>
 
 template <typename T>

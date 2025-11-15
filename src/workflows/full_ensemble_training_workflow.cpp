@@ -1,9 +1,6 @@
-#include "io/write_json.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
-#include "utils/centered_moments.hpp"
-#include "utils/get_logger.hpp"
 #include "workflows/training_workflow.hpp"
-
+#include <iostream>
 void fullEnsembleTrainingWorkflow(RunParameters params)
 {
     auto logger = getLogger();

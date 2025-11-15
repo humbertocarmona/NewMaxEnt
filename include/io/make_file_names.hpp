@@ -16,30 +16,33 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
     std::ostringstream outdir;
 
     outdir << params.result_dir << "/n" << params.nspins;
-
+    // example: result_dir = "./Results/n20"
+    //
     if (params.run_type == "Gen_Full")
     {
-        outdir << "/qobs_" << std::fixed << std::setprecision(2) << params.q_val;
+        outdir << "/synth";
+        // example: result_dir = "./Results/n20/synth"
+        // outdir << "/qobs_" << std::fixed << std::setprecision(2) << params.q_val;
+    }
+    else if (params.k_pairwise)
+    {
+        outdir << "/k_pairwise";
+        // example: result_dir = "./Results/n20/k_pairwise"
     }
     else
     {
-        // outdir << "/qmod_" << std::fixed << std::setprecision(2) << params.q_val;
-        if (params.k_pairwise)
-        {
-        }
-        else
-        {
-            outdir << "/pairwise";
-        }
+        outdir << "/pairwise";
+        // example: result_dir = "./Results/n20/pairwise"
     }
 
-    outdir << "/" << params.run_type;
+    // outdir << "/" << params.run_type;
 
     utils::make_path(outdir.str());
 
     std::ostringstream fname;
 
     fname << outdir.str() << "/" << prefix << params.runid << ".json";
+    // example: result_dir = "./Results/n20/pairwise/final_$(runid).json"
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
 

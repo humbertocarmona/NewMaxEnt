@@ -16,7 +16,7 @@ struct RunParameters
                                             // "Gen_MC": Generate means n>20
     int continue_run               = 0;
     int sample                     = 0;
-    std::string runid              = "testing";
+    std::string runid              = "auto";
     std::string raw_data_file      = "none"; // filename with raw data samples to compute means
     std::string trained_model_file = "none"; // filename with trained model to compute means
     std::string result_dir = "./results";    // result_dir/runid/ is where all results will be saved

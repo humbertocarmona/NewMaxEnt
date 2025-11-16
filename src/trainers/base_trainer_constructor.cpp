@@ -58,66 +58,102 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     read_model_gen      = read_model_gen && utils::isFileType(data_filename, "json");
 
     if (read_raw_data)
-    {
-        // reads raw data file
+    {   // reads raw data file
+
+        // need to compute the moments
         DataStatisticsBreakdown res = compute_data_statistics(data_filename);
         m1_data                     = res.m1_data;
         m2_data                     = res.m2_data;
         m3_data                     = res.m3_data;
-
+        pK_data = res.pK_data;
+                
         core.J.fill(0);
         core.h.fill(0);
-        // initialize h[i] to match magnetization
-        // for (int i = 0; i < n; i++)
-        //     core.h[i] = m1_data[i];
-
-        // std::mt19937 rng(params.rng_seed);
-
-        // std::normal_distribution<double> J_dist(0.0, 1.0 / std::sqrt(core.nspins));
-        // for (size_t i = 0; i < core.J.n_elem; ++i)
-        //     core.J(i) = J_dist(rng);
-
-        // k-pairwise
-        pK_data = res.pK_data;
         core.K.fill(0);
+        
+        /* -------------------------------------------------------------------------
+        // initialize h[i] to match magnetization
+        for (int i = 0; i < n; i++)
+                 core.h[i] = m1_data[i];
+
+                 
+        // initialize J[i] with centered normal distribution
+        std::mt19937 rng(params.rng_seed);
+        std::normal_distribution<double> J_dist(0.0, 1.0 / std::sqrt(core.nspins));
+        for (size_t i = 0; i < core.J.n_elem; ++i)
+             core.J(i) = J_dist(rng);
+        ------------------------------------------------------------------------- */
     }
     else if (read_model)
     {
         // re-start from last run (more iterations)
-        auto obj = readJSONData(data_filename);
-        if (!obj.contains("type") || obj["type"] != className)
+        auto obj    = readJSONData(data_filename);
+        auto mm     = obj.contains("m1_data");
+        auto xy     = obj.contains("x_obs");
+        bool obj_ok = mm || xy;
+        if (!obj_ok)
         {
             logger->error("Incorrect or missing object type in JSON");
-            throw std::runtime_error("Not a BaseTrainer file");
+            throw std::runtime_error("Can't read this file");
+        }
+        if (mm)
+        { // latest version of the output file
+            int n = obj["run_parameters"]["nspins"];
+            if (n != core.nspins)
+            {
+                logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
+                throw std::runtime_error("Wrong number of spins");
+            }
+
+            // keep old h and J for continuation
+            core.h = utils::jsonToArmaCol<double>(obj["h"]);
+            core.J = utils::jsonToArmaCol<double>(obj["J"]);
+            // observations and last parameters are read from file
+            m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
+            m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
+            m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
+            if (obj.contains("pK_data"))
+            {
+                pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
+            }
+            else
+            {
+                pK_data = arma::zeros<arma::Col<double>>(core.nspins + 1);
+            }
+
+            m1_model = utils::jsonToArmaCol<double>(obj["m1_model"]);
+            m2_model = utils::jsonToArmaCol<double>(obj["m2_model"]);
+            m3_model = utils::jsonToArmaCol<double>(obj["m3_model"]);
+            pK_model = utils::jsonToArmaCol<double>(obj["pK_model"]);
+        }
+        else if (xy)
+        { // for backwards compatibility
+            int n = obj["nspins"];
+            if (n != core.nspins)
+            {
+                logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
+                throw std::runtime_error("Wrong number of spins");
+            }
+
+            // keep old h and J for continuation
+            core.h = utils::jsonToArmaCol<double>(obj["h"]);
+            core.J = utils::jsonToArmaCol<double>(obj["J"]);
+
+            m1_data = utils::jsonToArmaCol<double>(obj["x_obs"]);
+            m2_data = utils::jsonToArmaCol<double>(obj["xy_obs"]);
+            m3_data = utils::jsonToArmaCol<double>(obj["xyz_obs"]);
+            pK_data = utils::jsonToArmaCol<double>(obj["P_K_obs"]);
+
+            m1_model = utils::jsonToArmaCol<double>(obj["x_mod"]);
+            m2_model = utils::jsonToArmaCol<double>(obj["xy_mod"]);
+            m3_model = utils::jsonToArmaCol<double>(obj["xyz_mod"]);
+            pK_model = utils::jsonToArmaCol<double>(obj["P_K_mod"]);
         }
 
-        int n = obj["run_parameters"]["nspins"];
-        if (n != core.nspins)
-        {
-            logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
-            throw std::runtime_error("Wrong number of spins");
-        }
-
-        // observations and last parameters are read from file
-        m1_data = utils::jsonToArmaCol<double>(obj["m1_data"]);
-        m2_data = utils::jsonToArmaCol<double>(obj["m2_data"]);
-        m3_data = utils::jsonToArmaCol<double>(obj["m3_data"]);
-        if (obj.contains("pK_data"))
-        {
-            pK_data = utils::jsonToArmaCol<double>(obj["pK_data"]);
-        }
-        else
-        {
-            pK_data = arma::zeros<arma::Col<double>>(core.nspins + 1);
-        }
-
-        m1_model = utils::jsonToArmaCol<double>(obj["m1_model"]);
-        m2_model = utils::jsonToArmaCol<double>(obj["m2_model"]);
-        pK_model = utils::jsonToArmaCol<double>(obj["pK_model"]);
-
-        core.h = utils::jsonToArmaCol<double>(obj["h"]);
-        core.J = utils::jsonToArmaCol<double>(obj["J"]);
-        if (obj.contains("K")) // K is are the Lagrange multipliers associated with p(k)
+        // only if the model was run with k_pairwise originally
+        // K is are the Lagrange multipliers associated with p(k)
+        // only the latest version
+        if (obj.contains("K"))
         {
             core.K = utils::jsonToArmaCol<double>(obj["K"]);
         }
@@ -125,19 +161,19 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         {
             core.K.fill(0.0);
         }
-        // need to reset the h and J fields in case of reading a sample.
+
+        // need to reset the h and J fields in case of reading a synthetic sample
         if (params.sample == 1)
         {
-            std::cout << "zerando h,j,K" << std::endl;
-            // Start from scratch
+            logger->info("reseting model parameters h,J and K");
             core.h.fill(0.0);
             core.J.fill(0.0);
             core.K.fill(0.0);
         }
+        // keep
     }
     else if (read_model_gen)
-    {
-
+    { // this file contains only nspins, h and J
         auto obj = readJSONData(data_filename);
 
         if (!obj.contains("nspins"))

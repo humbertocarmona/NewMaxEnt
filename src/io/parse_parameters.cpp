@@ -36,7 +36,7 @@ RunParameters parseParameters(const std::string &filename)
     }
 
     // main parameters
-    p.runid              = json_data.value("runid", "testing");
+    p.runid              = json_data.value("runid", "auto");
     p.raw_data_file      = json_data.value("raw_data_file", "none");
     p.trained_model_file = json_data.value("trained_model_file", "none");
     p.result_dir         = json_data.value("result_dir", "./results");
@@ -50,18 +50,30 @@ RunParameters parseParameters(const std::string &filename)
 
     if (p.continue_run == 1)
     {
-        std::cout << "reading model" + p.trained_model_file << std::endl;
+        logger->info("reading model: {}", p.trained_model_file);
         // read the model file
         auto obj = readJSONData(p.trained_model_file);
-        if (!obj.contains("run_parameters"))
-        {
-            throw std::runtime_error("run_parameters required in " + p.trained_model_file);
+        if (obj.contains("run_parameters"))
+        { // latest version
+            auto run_parameters = obj["run_parameters"];
+            p.runid             = run_parameters["runid"];
+            p.q_val             = run_parameters["q_val"];
+            p.nspins            = run_parameters["nspins"];
+            p.iter              = obj["iter"];
         }
-        auto run_parameters = obj["run_parameters"];
-        p.runid             = run_parameters["runid"];
-        p.q_val             = run_parameters["q_val"];
-        p.nspins            = run_parameters["nspins"];
-        p.iter              = obj["iter"];
+        else if (obj.contains("params"))
+        { // legacy
+            auto params = obj["params"];
+            auto q_val = utils::jsonToArmaCol<double>(obj["q_val"]); 
+            p.q_val             = q_val[0];
+            p.nspins            = obj["nspins"];
+            p.iter              = obj["iter"];
+        }
+        else
+        {
+            throw std::runtime_error("'run_parameters' or 'params' required in " +
+                                     p.trained_model_file);
+        }
     }
 
     bool isTraining = p.run_type == "Full_Ensemble" || p.run_type == "Heat_Bath";

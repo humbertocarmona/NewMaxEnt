@@ -29,7 +29,7 @@ class HeatBathTrainer : public BaseTrainer
 
     void train() override;
 
-    void saveModel(std::string prefix) const;
+    void saveModel(std::string filename) const;
 
     const arma::Mat<int> &get_replicas() const
     {

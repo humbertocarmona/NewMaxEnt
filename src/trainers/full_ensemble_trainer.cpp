@@ -1,7 +1,8 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "utils/get_logger.hpp"
 
-void FullEnsembleTrainer::saveModel(std::string prefix) const
+
+void FullEnsembleTrainer::saveModel(std::string filename) const
 {
     auto logger = getLogger();
 
@@ -16,5 +17,6 @@ void FullEnsembleTrainer::saveModel(std::string prefix) const
     CenteredMoments c_data = computeCenteredMoments(get_m1_data(), get_m2_data(), get_m3_data());
 
     // Save trained model and statistics to file
-    writeTrainedModel<FullEnsembleTrainer>(*this, c_data, c_model, prefix);
+
+    writeTrainedModel<FullEnsembleTrainer>(*this, c_data, c_model, filename);
 }

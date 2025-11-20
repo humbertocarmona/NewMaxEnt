@@ -3,6 +3,8 @@
 #include "utils/centered_moments.hpp"
 #include "utils/get_logger.hpp"
 #include "workflows/training_workflow.hpp"
+#include "io/make_file_names.hpp"
+
 
 void heatBathTrainingWorkflow(RunParameters params)
 {
@@ -17,5 +19,6 @@ void heatBathTrainingWorkflow(RunParameters params)
     HeatBathTrainer model(core, params, data_filename);
 
     model.train();
-    model.saveModel("final_");
+
+    model.saveModel(params.file_final);
 }

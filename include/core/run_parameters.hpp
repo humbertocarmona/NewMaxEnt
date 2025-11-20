@@ -69,6 +69,10 @@ struct RunParameters
     double energy_bin             = 0.2;
     double flatness_threshold     = 0.8;
 
+    std::string file_final        = "";
+    std::string file_checkpoint   = "";
+
+
     // post-processing temperature dependence
     std::vector<double> temperature_range = std::vector<double>();
 

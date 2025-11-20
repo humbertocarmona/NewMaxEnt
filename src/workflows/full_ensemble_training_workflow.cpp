@@ -1,5 +1,6 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "workflows/training_workflow.hpp"
+#include "io/make_file_names.hpp"
 #include <iostream>
 void fullEnsembleTrainingWorkflow(RunParameters params)
 {
@@ -16,6 +17,6 @@ void fullEnsembleTrainingWorkflow(RunParameters params)
     FullEnsembleTrainer model(core, params, data_filename);
     std::cout << "updateType=" << params.updateType << std::endl;
     model.train();
-
-    model.saveModel("final_");
+    
+    model.saveModel(params.file_final);
 }

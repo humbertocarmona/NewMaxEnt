@@ -1,7 +1,7 @@
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
 
-void HeatBathTrainer::saveModel(std::string prefix) const
+void HeatBathTrainer::saveModel(std::string filename) const
 {
     auto logger = getLogger();
 
@@ -16,6 +16,6 @@ void HeatBathTrainer::saveModel(std::string prefix) const
         computeCenteredMoments(get_m1_data(), get_m2_data(), get_m3_data());
 
     // Save trained model and statistics to file
-    writeTrainedModel<HeatBathTrainer>(*this, c_data, c_model, prefix);	
+    writeTrainedModel<HeatBathTrainer>(*this, c_data, c_model, filename);	
 
 }

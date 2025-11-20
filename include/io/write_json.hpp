@@ -9,7 +9,7 @@ template <typename T>
 void writeTrainedModel(const T &model,
                        const CenteredMoments m_data,
                        const CenteredMoments m_model,
-                       std::string prefix = "final_")
+                       std::string filename)
 {
     auto logger = getLogger();
 
@@ -83,9 +83,9 @@ void writeTrainedModel(const T &model,
 
     obj["PE"]   = we;
 
-    auto output = io::make_filename(model.get_params(), prefix);
     
-    std::ofstream out(output);
+    
+    std::ofstream out(filename);
     out << obj.dump(2);
-    logger->info("[writeTrainedModel] saved {}", output);
+    logger->info("[writeTrainedModel] saved {}", filename);
 };

@@ -36,7 +36,7 @@ RunParameters parseParameters(const std::string &filename)
     }
 
     // main parameters
-    p.ver               = json_data.value("ver", "1.1");
+    p.ver                = json_data.value("ver", "1.1");
     p.runid              = json_data.value("runid", "auto");
     p.raw_data_file      = json_data.value("raw_data_file", "none");
     p.trained_model_file = json_data.value("trained_model_file", "none");
@@ -65,10 +65,10 @@ RunParameters parseParameters(const std::string &filename)
         else if (obj.contains("params"))
         { // legacy
             auto params = obj["params"];
-            auto q_val = utils::jsonToArmaCol<double>(obj["q_val"]); 
-            p.q_val             = q_val[0];
-            p.nspins            = obj["nspins"];
-            p.iter              = obj["iter"];
+            auto q_val  = utils::jsonToArmaCol<double>(obj["q_val"]);
+            p.q_val     = q_val[0];
+            p.nspins    = obj["nspins"];
+            p.iter      = obj["iter"];
         }
         else
         {
@@ -190,16 +190,20 @@ RunParameters parseParameters(const std::string &filename)
             p.rng_seed = wl.value("rng_seed", 1);
         }
     }
+
     if (p.run_type == "Gen_Full" || p.run_type == "Gen_MC")
     {
-        auto fout = io::make_filename(p, "synth_");
-        std::cout << "will generate " << fout << std::endl;
+        p.file_final = io::make_filename(p, "synth_");
     }
-    else if (p.run_type == "Full_Ensemble" || p.run_type == "Full")
+    else
     {
-        auto fout = io::make_filename(p, "final_");
-        std::cout << "will generate " << fout << std::endl;
+        p.file_final = io::make_filename(p, "final_");
     }
+    p.file_checkpoint = io::make_filename(p, "checkpoint_");
+
     p.loginfo("parsedParameters");
+
+    logger->info(p.file_final);
+
     return p;
 }

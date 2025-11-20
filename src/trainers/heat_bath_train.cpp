@@ -2,6 +2,7 @@
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
 #include "utils/utilities.hpp"
+#include "io/make_file_names.hpp"
 #include <chrono> // Add at the top of your file
 
 /**
@@ -53,7 +54,7 @@ void HeatBathTrainer::train()
         }
         if (iter % params.save_checkpoint == 0)
         {
-            saveModel("checkpoint");
+            saveModel(params.file_checkpoint);
         }
     }
 

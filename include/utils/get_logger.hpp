@@ -44,7 +44,7 @@ inline std::shared_ptr<spdlog::logger> getLogger()
         logger = std::make_shared<spdlog::logger>("MaxEnt", begin(sinks), end(sinks));
 
         // Set the logging level and pattern if needed
-        logger->set_level(spdlog::level::info); // Example: set default level to info
+        logger->set_level(spdlog::level::debug); // Example: set default level to info
         // logger->set_pattern("[%d/%m] %v");
         logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] %v");
         // logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");

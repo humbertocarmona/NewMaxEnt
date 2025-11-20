@@ -41,7 +41,7 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
 
     std::ostringstream fname;
 
-    fname << outdir.str() << "/" << prefix << params.runid << ".json";
+    fname << outdir.str() << "/" << prefix << "_" << params.runid << ".json";
     // example: result_dir = "./Results/n20/pairwise/final_$(runid).json"
 
     std::filesystem::path output = utils::get_available_filename(fname.str());

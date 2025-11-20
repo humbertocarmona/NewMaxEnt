@@ -54,8 +54,13 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     train               = train || (run_type == "MC" || run_type == "Heat_Bath");
     bool read_raw_data  = train && utils::isFileType(data_filename, "csv");
     bool read_model     = train && utils::isFileType(data_filename, "json");
+
     bool read_model_gen = (run_type == "Gen_Full" || run_type == "Gen_MC");
     read_model_gen      = read_model_gen && utils::isFileType(data_filename, "json");
+
+    read_model = read_model || (run_type == "Copy");
+    logger->debug("base trainer constructor debug {} {}", params.ver, read_model);
+
 
     if (read_raw_data)
     {   // reads raw data file
@@ -126,7 +131,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         }
         else if (params.ver == "1.0")
         { // for backwards compatibility
-            logger->debug("so far so good");
             int n = core.nspins;
             if(obj.contains("nspins")){  // ver1.0 synth files don't have nspins
                 n = obj["nspins"];
@@ -166,8 +170,8 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         }
 
         // need to reset the h and J fields in case of reading a synthetic sample
-        if (params.sample == 1)
-        {
+        if (params.reset_fields)
+        { // ! this is the case when reading a synth_ file with data observations
             logger->info("reseting model parameters h,J and K");
             core.h.fill(0.0);
             core.J.fill(0.0);
@@ -213,6 +217,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     }
     else
     {
-        throw std::runtime_error("Invalid data file type");
+        throw std::runtime_error("[base_trainer constructor] Invalid model data type");
     }
 };

@@ -8,6 +8,25 @@
 #include <nlohmann/json.hpp>
 #include <set>
 // #include <sstream>
+
+
+#include <string>
+
+std::string _get_prefix_from_path(const std::string& path) {
+    // Step 1: find last '/'
+    size_t slash = path.find_last_of('/');
+    std::string basename = (slash == std::string::npos)
+                               ? path
+                               : path.substr(slash + 1);
+
+    // Step 2: find first '_'
+    size_t pos = basename.find('_');
+    if (pos == std::string::npos)
+        return basename;   // no "_"
+
+    return basename.substr(0, pos);
+}
+
 RunParameters parseParameters(const std::string &filename)
 {
     auto logger = getLogger();
@@ -18,8 +37,9 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error("Could not open parameter file: " + filename);
     }
 
-    std::set<std::string> valid_run_types = {"Full_Ensemble",   "Full", "Heat_Bath", "MC",
-                                             "Temperature_Dep", "TDep", "Gen_Full",  "Gen_MC"};
+    std::set<std::string> valid_run_types = {
+        "Full_Ensemble", "Full",     "Heat_Bath", "MC",  "Temperature_Dep",
+        "TDep",          "Gen_Full", "Gen_MC",    "Copy"};
 
     nlohmann::json json_data;
     infile >> json_data;
@@ -46,8 +66,13 @@ RunParameters parseParameters(const std::string &filename)
     p.beta               = json_data.value("beta", 1.0);
     p.iter               = json_data.value("iter", 1);
     p.continue_run       = json_data.value("continue_run", 0);
-    p.sample             = json_data.value("sample", 0);
-    p.energy_bin         = json_data.value("energy_bin", 0.2);
+
+    //! read sample: 1 for legacy
+    auto is_sample = json_data.value("sample", 0);
+    p.reset_fields = json_data.value("reset_fields", false);
+    p.reset_fields = p.reset_fields || (is_sample == 1);
+
+    p.energy_bin = json_data.value("energy_bin", 0.2);
 
     if (p.continue_run == 1)
     {
@@ -193,13 +218,17 @@ RunParameters parseParameters(const std::string &filename)
 
     if (p.run_type == "Gen_Full" || p.run_type == "Gen_MC")
     {
-        p.file_final = io::make_filename(p, "synth_");
+        p.file_final = io::make_filename(p, "synth");
+    }
+    else if(p.run_type == "Copy"){
+        std::string prefix = _get_prefix_from_path(p.trained_model_file);
+        p.file_final = io::make_filename(p, prefix);
     }
     else
     {
-        p.file_final = io::make_filename(p, "final_");
+        p.file_final = io::make_filename(p, "final");
     }
-    p.file_checkpoint = io::make_filename(p, "checkpoint_");
+    p.file_checkpoint = io::make_filename(p, "checkpoint");
 
     p.loginfo("parsedParameters");
 

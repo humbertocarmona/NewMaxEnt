@@ -16,7 +16,7 @@ struct RunParameters
                                             // "Gen_MC": Generate means n>20
     std::string ver = "1.1";
     int continue_run               = 0;
-    int sample                     = 0;
+    bool reset_fields              = false;
     std::string runid              = "auto";
     std::string raw_data_file      = "none"; // filename with raw data samples to compute means
     std::string trained_model_file = "none"; // filename with trained model to compute means

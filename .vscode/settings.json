@@ -97,6 +97,9 @@
     "stdfloat": "cpp",
     "typeindex": "cpp",
     "queue": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "coroutine": "cpp",
+    "csetjmp": "cpp",
+    "unordered_set": "cpp"
   }
 }

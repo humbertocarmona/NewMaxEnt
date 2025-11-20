@@ -103,12 +103,25 @@ class BaseTrainer
         return params;
     }
 
-    const void copySyntheticMeans() {
+    const void computed_means_to_data()
+    {
         m1_data = m1_model;
         m2_data = m2_model;
         m3_data = m3_model;
         pK_data = pK_model;
     };
+
+    //* set variables (for the Copy workflow)
+    const void set_model_means(const arma::Col<double> &moment_1,
+                               const arma::Col<double> &moment_2,
+                               const arma::Col<double> &moment_3,
+                               const arma::Col<double> &pk)
+    {
+        m1_model = moment_1;
+        m2_model = moment_2;
+        m3_model = moment_3;
+        pK_model = pk;
+    }
 
   protected:
     MaxEntCore &core;

@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     {
         runTemperatureDependence(params);
     }
-    else if (params.run_type == "Gen_Full" || params.run_type == "Gen_MC")
+    else if (params.run_type == "Gen_Full" || params.run_type == "Gen_MC" || params.run_type == "Copy")
     {
         full_ensemble_no_update(params);
     }

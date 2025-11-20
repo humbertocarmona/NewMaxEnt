@@ -82,7 +82,9 @@ void writeTrainedModel(const T &model,
     }
 
     obj["PE"]   = we;
+
     auto output = io::make_filename(model.get_params(), prefix);
+    
     std::ofstream out(output);
     out << obj.dump(2);
     logger->info("[writeTrainedModel] saved {}", output);

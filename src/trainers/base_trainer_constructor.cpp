@@ -88,15 +88,13 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     {
         // re-start from last run (more iterations)
         auto obj    = readJSONData(data_filename);
-        auto mm     = obj.contains("m1_data");
-        auto xy     = obj.contains("x_obs");
-        bool obj_ok = mm || xy;
+        bool obj_ok = obj.contains("m1_data") || obj.contains("x_obs");
         if (!obj_ok)
         {
             logger->error("Incorrect or missing object type in JSON");
             throw std::runtime_error("Can't read this file");
         }
-        if (mm)
+        if (params.ver == "1.1")
         { // latest version of the output file
             int n = obj["run_parameters"]["nspins"];
             if (n != core.nspins)
@@ -126,9 +124,14 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
             m3_model = utils::jsonToArmaCol<double>(obj["m3_model"]);
             pK_model = utils::jsonToArmaCol<double>(obj["pK_model"]);
         }
-        else if (xy)
+        else if (params.ver == "1.0")
         { // for backwards compatibility
-            int n = obj["nspins"];
+            logger->debug("so far so good");
+            int n = core.nspins;
+            if(obj.contains("nspins")){  // ver1.0 synth files don't have nspins
+                n = obj["nspins"];
+            }
+            
             if (n != core.nspins)
             {
                 logger->error("wrong number of spins {}, expected {} ", n, core.nspins);

@@ -36,6 +36,7 @@ RunParameters parseParameters(const std::string &filename)
     }
 
     // main parameters
+    p.ver               = json_data.value("ver", "1.1");
     p.runid              = json_data.value("runid", "auto");
     p.raw_data_file      = json_data.value("raw_data_file", "none");
     p.trained_model_file = json_data.value("trained_model_file", "none");

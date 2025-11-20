@@ -14,6 +14,7 @@ struct RunParameters
                                             // "Temperature_Dep": Run temperature dependence for
                                             // trained model. "Gen_Full": Generate means n<=20,
                                             // "Gen_MC": Generate means n>20
+    std::string ver = "1.1";
     int continue_run               = 0;
     int sample                     = 0;
     std::string runid              = "auto";

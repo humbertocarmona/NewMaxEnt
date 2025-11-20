@@ -1,10 +1,10 @@
-#include "workflows/generateSyntheticWorkFlow.hpp"
+#include "workflows/full_ensemble_no_update.hpp"
 // #include "io/write_json.hpp"
 #include "io/write_g_E.hpp"
 #include "trainers/full_ensemble_trainer.hpp"
 #include "utils/get_logger.hpp"
 
-void generateSyntheticWorkflow(RunParameters params)
+void full_ensemble_no_update(RunParameters params)
 {
     auto logger = getLogger();
 
@@ -22,6 +22,7 @@ void generateSyntheticWorkflow(RunParameters params)
 
     model.copySyntheticMeans();
     // core.h.fill(0.0);
+    
     // core.J.fill(0.0);
     model.saveModel("synth_");
 

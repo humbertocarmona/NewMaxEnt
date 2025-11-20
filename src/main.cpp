@@ -1,6 +1,6 @@
 #include "core/run_parameters.hpp"
 #include "utils/get_logger.hpp"
-#include "workflows/generateSyntheticWorkFlow.hpp"
+#include "workflows/full_ensemble_no_update.hpp"
 #include "workflows/run_temperature_dependence.hpp"
 #include "workflows/training_workflow.hpp"
 #include <iostream>
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     }
     else if (params.run_type == "Gen_Full" || params.run_type == "Gen_MC")
     {
-        generateSyntheticWorkflow(params);
+        full_ensemble_no_update(params);
     }
     else
     {

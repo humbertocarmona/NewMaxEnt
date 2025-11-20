@@ -18,5 +18,5 @@ void fullEnsembleTrainingWorkflow(RunParameters params)
     std::cout << "updateType=" << params.updateType << std::endl;
     model.train();
     
-    model.saveModel(params.file_final);
+    model.saveModel(params.file_final, true);
 }

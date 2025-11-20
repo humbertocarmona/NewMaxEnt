@@ -26,18 +26,18 @@ void full_ensemble_no_update(RunParameters params)
     // initialize core model
     MaxEntCore core(params.nspins, params.runid);
 
-    logger->debug("after core");
 
     // construct model (using FullEnsembleTrainer to generate means)
     FullEnsembleTrainer model(core, params, data_filename);
 
-    logger->info("after model");
     auto m1_orig = model.get_m1_model();
     auto m2_orig = model.get_m2_model();
     auto m3_orig = model.get_m3_model();
     auto pk_orig = model.get_pK_model();
     // compute model averages in parallel
+    logger->info("computing model averages");
     model.computeModelAverages(1.0, true);
+    logger->info("... finished");
 
 
     //* in this case original data = {0}
@@ -48,5 +48,6 @@ void full_ensemble_no_update(RunParameters params)
     if (params.run_type == "Copy")
         model.set_model_means(m1_orig, m2_orig, m3_orig, pk_orig);
 
-    model.saveModel(params.file_final);
+    logger->info("before save model");
+    model.saveModel(params.file_final, false);
 }

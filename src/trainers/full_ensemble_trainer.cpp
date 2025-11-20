@@ -1,15 +1,18 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "utils/get_logger.hpp"
+#include "io/write_json.hpp"
 
 
-void FullEnsembleTrainer::saveModel(std::string filename) const
+void FullEnsembleTrainer::saveModel(std::string filename, bool run_last) const
 {
     auto logger = getLogger();
 
-    // Compute model statistics (averages)
+    // Compute model statistics last time
+    if (run_last){
     const_cast<FullEnsembleTrainer *>(this)->computeModelAverages(
         1.0, true); // `const_cast` needed if this is a `const` method
-
+    }
+    
     // Compute centered moments for model and data
     CenteredMoments c_model =
         computeCenteredMoments(get_m1_model(), get_m2_model(), get_m3_model());

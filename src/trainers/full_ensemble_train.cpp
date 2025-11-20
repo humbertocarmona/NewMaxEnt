@@ -46,7 +46,7 @@ void FullEnsembleTrainer::train()
         }
         if (iter % params.save_checkpoint == 0)
         {
-            saveModel(params.file_checkpoint); 
+            saveModel(params.file_checkpoint, false); 
         }
     }
 

@@ -59,7 +59,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     read_model_gen      = read_model_gen && utils::isFileType(data_filename, "json");
 
     read_model = read_model || (run_type == "Copy");
-    logger->debug("base trainer constructor debug {} {}", params.ver, read_model);
 
 
     if (read_raw_data)
@@ -185,18 +184,18 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
 
         if (!obj.contains("nspins"))
         {
-            logger->error("JSON data need field 'nspins'");
+            logger->error("[base_trainer_constructor] JSON data need field 'nspins'");
             throw std::runtime_error("'nspins' required");
         }
 
         if (!obj.contains("h"))
         {
-            logger->error("JSON data need field 'h'");
+            logger->error("[base_trainer_constructor] JSON data need field 'h'");
             throw std::runtime_error("'h' required");
         }
         if (!obj.contains("J"))
         {
-            logger->error("JSON data need field 'J'");
+            logger->error("[base_trainer_constructor] JSON data need field 'J'");
             throw std::runtime_error("'J' required");
         }
         std::cout << "ok read obj" << std::endl;
@@ -204,7 +203,7 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         int n = obj["nspins"];
         if (n != core.nspins)
         {
-            logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
+            logger->error("[base_trainer_constructor] wrong number of spins {}, expected {} ", n, core.nspins);
             throw std::runtime_error("Wrong number of spins");
         }
         core.h = utils::jsonToArmaCol<double>(obj["h"]);
@@ -217,6 +216,6 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
     }
     else
     {
-        throw std::runtime_error("[base_trainer constructor] Invalid model data type");
+        throw std::runtime_error("[base_trainer_constructor] Invalid model data type");
     }
 };

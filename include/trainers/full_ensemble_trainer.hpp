@@ -15,13 +15,13 @@ class FullEnsembleTrainer : public BaseTrainer
     void computeModelAverages(double beta = 1.0, bool triplets = false) override;
     void computeModelAverages1(double beta = 1.0, bool triplets = false);
     void train() override;
-    void saveModel(std::string filename) const;
+    void saveModel(std::string filename, bool run_last) const;
     const std::unordered_map<int, double> &get_GE() const
     {
         return GE;
     }
 
-        const std::unordered_map<int, double> &get_PE() const
+    const std::unordered_map<int, double> &get_PE() const
     {
         return PE;
     }

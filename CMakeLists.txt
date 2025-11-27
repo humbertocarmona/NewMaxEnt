@@ -16,7 +16,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-set(CUSTOM_OUTPUT_DIR "$ENV{HOME}/.config/bin")
+set(CUSTOM_OUTPUT_DIR "$ENV{HOME}/.local/bin")
 file(MAKE_DIRECTORY ${CUSTOM_OUTPUT_DIR})
 
 

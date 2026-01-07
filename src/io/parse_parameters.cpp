@@ -9,20 +9,18 @@
 #include <set>
 // #include <sstream>
 
-
 #include <string>
 
-std::string _get_prefix_from_path(const std::string& path) {
+std::string _get_prefix_from_path(const std::string &path)
+{
     // Step 1: find last '/'
-    size_t slash = path.find_last_of('/');
-    std::string basename = (slash == std::string::npos)
-                               ? path
-                               : path.substr(slash + 1);
+    size_t slash         = path.find_last_of('/');
+    std::string basename = (slash == std::string::npos) ? path : path.substr(slash + 1);
 
     // Step 2: find first '_'
     size_t pos = basename.find('_');
     if (pos == std::string::npos)
-        return basename;   // no "_"
+        return basename; // no "_"
 
     return basename.substr(0, pos);
 }
@@ -56,17 +54,17 @@ RunParameters parseParameters(const std::string &filename)
     }
 
     // main parameters
-    p.ver                = json_data.value("ver", "1.1");
-    p.runid              = json_data.value("runid", "auto");
-    p.raw_data_file      = json_data.value("raw_data_file", "none");
-    p.trained_model_file = json_data.value("trained_model_file", "none");
-    p.result_dir         = json_data.value("result_dir", "./results");
-    p.nspins             = json_data.value("nspins", 16);
-    p.q_val              = json_data.value("q_val", 1.0);
-    p.beta               = json_data.value("beta", 1.0);
-    p.iter               = json_data.value("iter", 1);
-    p.continue_run       = json_data.value("continue_run", 0);
-
+    p.ver                 = json_data.value("ver", "1.1");
+    p.runid               = json_data.value("runid", "auto");
+    p.raw_data_file       = json_data.value("raw_data_file", "none");
+    p.trained_model_file  = json_data.value("trained_model_file", "none");
+    p.result_dir          = json_data.value("result_dir", "./results");
+    p.nspins              = json_data.value("nspins", 16);
+    p.q_val               = json_data.value("q_val", 1.0);
+    p.beta                = json_data.value("beta", 1.0);
+    p.iter                = json_data.value("iter", 1);
+    p.continue_run        = json_data.value("continue_run", 0);
+    p.compute_replica_cor = json_data.value("compute_replica_cor", false);
     //! read sample: 1 for legacy
     auto is_sample = json_data.value("sample", 0);
     p.reset_fields = json_data.value("reset_fields", false);
@@ -86,6 +84,7 @@ RunParameters parseParameters(const std::string &filename)
             p.q_val             = run_parameters["q_val"];
             p.nspins            = run_parameters["nspins"];
             p.iter              = obj["iter"];
+            logger->info("runid: {}", p.runid);
         }
         else if (obj.contains("params"))
         { // legacy
@@ -114,6 +113,11 @@ RunParameters parseParameters(const std::string &filename)
     if (isTdep && !json_data.contains("temperature_range"))
     {
         throw std::runtime_error(p.run_type + " requires 'temperature_range' in " + filename);
+    }
+    if (p.compute_replica_cor && !json_data.contains("temperature_range"))
+    {
+        throw std::runtime_error("compute_replica_cor  requires 'temperature_range' in " +
+                                 filename);
     }
 
     if (p.trained_model_file == "none" && p.raw_data_file == "none")
@@ -220,9 +224,10 @@ RunParameters parseParameters(const std::string &filename)
     {
         p.file_final = io::make_filename(p, "synth");
     }
-    else if(p.run_type == "Copy"){
+    else if (p.run_type == "Copy")
+    {
         std::string prefix = _get_prefix_from_path(p.trained_model_file);
-        p.file_final = io::make_filename(p, prefix);
+        p.file_final       = io::make_filename(p, prefix);
     }
     else
     {

@@ -4,8 +4,10 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
+        "arma",
         "nsamples",
-        "ntriplets"
+        "ntriplets",
+        "Qmax"
     ],
     "ignoreWords": [],
     "import": []

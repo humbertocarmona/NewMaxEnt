@@ -1,6 +1,6 @@
 #include "trainers/heat_bath_trainer.hpp"
 #include "utils/get_logger.hpp"
-#include "utils/utilities.hpp"
+// #include "utils/utilities.hpp"
 #include <armadillo>
 #include <cmath>
 #include <omp.h> // OpenMP

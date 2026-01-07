@@ -50,37 +50,36 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
 
     iter = params.iter;
     // run_type == Full_Ensemble (Full) or Heat_Bath (MC)
-    bool train          = (run_type == "Full" || run_type == "Full_Ensemble");
-    train               = train || (run_type == "MC" || run_type == "Heat_Bath");
-    bool read_raw_data  = train && utils::isFileType(data_filename, "csv");
-    bool read_model     = train && utils::isFileType(data_filename, "json");
+    bool train = (run_type == "Full" || run_type == "Full_Ensemble");
+    train = train || (run_type == "MC" || run_type == "Heat_Bath" || run_type == "Temperature_Dep");
+    bool read_raw_data = train && utils::isFileType(data_filename, "csv");
+    bool read_model    = train && utils::isFileType(data_filename, "json");
 
     bool read_model_gen = (run_type == "Gen_Full" || run_type == "Gen_MC");
     read_model_gen      = read_model_gen && utils::isFileType(data_filename, "json");
 
     read_model = read_model || (run_type == "Copy");
 
-
     if (read_raw_data)
-    {   // reads raw data file
+    { // reads raw data file
 
         // need to compute the moments
         DataStatisticsBreakdown res = compute_data_statistics(data_filename);
         m1_data                     = res.m1_data;
         m2_data                     = res.m2_data;
         m3_data                     = res.m3_data;
-        pK_data = res.pK_data;
-                
+        pK_data                     = res.pK_data;
+
         core.J.fill(0);
         core.h.fill(0);
         core.K.fill(0);
-        
+
         /* -------------------------------------------------------------------------
         // initialize h[i] to match magnetization
         for (int i = 0; i < n; i++)
                  core.h[i] = m1_data[i];
 
-                 
+
         // initialize J[i] with centered normal distribution
         std::mt19937 rng(params.rng_seed);
         std::normal_distribution<double> J_dist(0.0, 1.0 / std::sqrt(core.nspins));
@@ -131,10 +130,11 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         else if (params.ver == "1.0")
         { // for backwards compatibility
             int n = core.nspins;
-            if(obj.contains("nspins")){  // ver1.0 synth files don't have nspins
+            if (obj.contains("nspins"))
+            { // ver1.0 synth files don't have nspins
                 n = obj["nspins"];
             }
-            
+
             if (n != core.nspins)
             {
                 logger->error("wrong number of spins {}, expected {} ", n, core.nspins);
@@ -203,7 +203,8 @@ BaseTrainer::BaseTrainer(MaxEntCore &core_,
         int n = obj["nspins"];
         if (n != core.nspins)
         {
-            logger->error("[base_trainer_constructor] wrong number of spins {}, expected {} ", n, core.nspins);
+            logger->error("[base_trainer_constructor] wrong number of spins {}, expected {} ", n,
+                          core.nspins);
             throw std::runtime_error("Wrong number of spins");
         }
         core.h = utils::jsonToArmaCol<double>(obj["h"]);

@@ -14,9 +14,10 @@ struct RunParameters
                                             // "Temperature_Dep": Run temperature dependence for
                                             // trained model. "Gen_Full": Generate means n<=20,
                                             // "Gen_MC": Generate means n>20
-    std::string ver = "1.1";
+    std::string ver                = "1.1";
     int continue_run               = 0;
     bool reset_fields              = false;
+    bool compute_replica_cor       = false;
     std::string runid              = "auto";
     std::string raw_data_file      = "none"; // filename with raw data samples to compute means
     std::string trained_model_file = "none"; // filename with trained model to compute means
@@ -30,7 +31,7 @@ struct RunParameters
     size_t save_checkpoint = 10000;
     double tolerance_h     = 1.0e-4;
     double tolerance_J     = 1.0e-4;
-    int updateType        = 1; // '1' power law, '2' gradient '3' gradient sequential
+    int updateType         = 1; // '1' power law, '2' gradient '3' gradient sequential
     double eta_h           = 0.1;
     double eta_J           = 0.1;
     double alpha_h         = 0.1;
@@ -69,9 +70,8 @@ struct RunParameters
     double energy_bin             = 0.2;
     double flatness_threshold     = 0.8;
 
-    std::string file_final        = "";
-    std::string file_checkpoint   = "";
-
+    std::string file_final      = "";
+    std::string file_checkpoint = "";
 
     // post-processing temperature dependence
     std::vector<double> temperature_range = std::vector<double>();

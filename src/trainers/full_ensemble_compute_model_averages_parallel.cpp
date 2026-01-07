@@ -28,7 +28,6 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 
     GE.clear();
     PE.clear();
-
 #pragma omp parallel
     {
         int num_threads   = omp_get_num_threads();

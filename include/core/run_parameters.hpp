@@ -74,7 +74,7 @@ struct RunParameters
     std::string file_checkpoint = "";
 
     // post-processing temperature dependence
-    std::vector<double> temperature_range = std::vector<double>();
+    std::vector<double> beta_range = std::vector<double>();
 
     RunParameters() = default;
 
@@ -123,8 +123,8 @@ struct RunParameters
         }
         if (run_type == "Temperature_Dep")
         {
-            logger->info("[{}] temperature_range =    {}", caption,
-                         utils::colPrint(arma::Col<double>(temperature_range)));
+            logger->info("[{}] beta_range =    {}", caption,
+                         utils::colPrint(arma::Col<double>(beta_range)));
         }
         if (run_type == "Wang_Landau")
         {
@@ -192,7 +192,7 @@ struct RunParameters
             obj["Monte_Carlo"]       = mc;
         }
         if (run_type == "Temperature_Dep")
-            obj["temperature_range"] = temperature_range;
+            obj["beta_range"] = beta_range;
 
         if (run_type == "Wang_Landau")
         {

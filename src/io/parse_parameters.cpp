@@ -110,14 +110,13 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error(p.run_type + " requires 'training' in " + filename);
     }
 
-    if (isTdep && !json_data.contains("temperature_range"))
+    if (isTdep && !json_data.contains("beta_range"))
     {
-        throw std::runtime_error(p.run_type + " requires 'temperature_range' in " + filename);
+        throw std::runtime_error(p.run_type + " requires 'beta_range' in " + filename);
     }
-    if (p.compute_replica_cor && !json_data.contains("temperature_range"))
+    if (p.compute_replica_cor && !json_data.contains("beta_range"))
     {
-        throw std::runtime_error("compute_replica_cor  requires 'temperature_range' in " +
-                                 filename);
+        throw std::runtime_error("compute_replica_cor  requires 'beta_range' in " + filename);
     }
 
     if (p.trained_model_file == "none" && p.raw_data_file == "none")
@@ -163,16 +162,16 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error(p.run_type + " requires 'trained_model_file' in " + filename);
     }
 
-    if (json_data.contains("temperature_range") && json_data["temperature_range"].is_array())
+    if (json_data.contains("beta_range") && json_data["beta_range"].is_array())
     {
-        const auto &arr = json_data["temperature_range"];
+        const auto &arr = json_data["beta_range"];
 
         // Check if all elements are numbers
         bool all_numeric =
             std::all_of(arr.begin(), arr.end(), [](const auto &el) { return el.is_number(); });
 
         if (!all_numeric)
-            throw std::runtime_error("All elements of 'temperature_range' must be numeric");
+            throw std::runtime_error("All elements of 'beta_range' must be numeric");
 
         if (arr.size() == 3)
         {
@@ -181,15 +180,15 @@ RunParameters parseParameters(const std::string &filename)
             double t_step  = arr[2];
 
             if (t_step <= 0)
-                throw std::runtime_error("temperature_range step must be > 0");
+                throw std::runtime_error("beta_range step must be > 0");
 
             for (double T = t_begin; T <= t_end + 1e-10; T += t_step)
-                p.temperature_range.push_back(T);
+                p.beta_range.push_back(T);
         }
         else
         {
             // just copy the arr
-            p.temperature_range = arr.get<std::vector<double>>();
+            p.beta_range = arr.get<std::vector<double>>();
         }
     }
 

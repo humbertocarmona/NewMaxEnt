@@ -1,7 +1,7 @@
 #include "trainers/full_ensemble_trainer.hpp"
 #include "utils/binary_permutations_sequence.hpp"
 #include "utils/get_logger.hpp"
-#include "utils/utilities.hpp"
+// #include "utils/utilities.hpp"
 #include <algorithm> // Required for std::min
 #include <armadillo>
 #include <omp.h> // OpenMP
@@ -25,6 +25,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     avg_magnetization  = 0.0;
     double Z_partition = 0.0;
     size_t total       = 1ULL << nspins;
+    logger->info("Total number of configurations: {}", total);
 
     GE.clear();
     PE.clear();

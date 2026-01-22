@@ -41,8 +41,11 @@ inline std::string make_filename(const RunParameters &params, std::string prefix
 
     std::ostringstream fname;
     fname << outdir.str() << "/" << prefix << "_" << params.runid << "_n" << params.nspins;
-    fname << ".json";
-    // example: result_dir = "./results/pairwise/$(prefix)_$(runid)_n$(nspins).json"
+    if (params.run_type == "Temperature_Dep" || prefix == "tdep")
+        fname << ".csv";
+    else
+        fname << ".json";
+    // example: result_dir = "./results/pairwise/$(prefix)_$(runid)_n$(nspins).json/csv"
 
     std::filesystem::path output = utils::get_available_filename(fname.str());
 

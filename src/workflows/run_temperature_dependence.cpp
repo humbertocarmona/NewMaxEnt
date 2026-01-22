@@ -16,25 +16,25 @@ void save_histogram_to_csv(const std::vector<double> &bin_centers,
                            const std::vector<double> &hist_values,
                            const std::string &filename)
 {
-    std::ofstream out(filename);
-    if (!out)
+    std::ofstream hist_out(filename);
+    if (!hist_out)
     {
         throw std::runtime_error("Could not open histogram file for writing: " + filename);
     }
 
-    out << "q,P_q\n";
-    out << std::fixed << std::setprecision(6);
+    hist_out << "q,P_q\n";
+    hist_out << std::fixed << std::setprecision(6);
     for (size_t i = 0; i < bin_centers.size(); ++i)
     {
-        out << bin_centers[i] << "," << hist_values[i] << "\n";
+        hist_out << bin_centers[i] << "," << hist_values[i] << "\n";
     }
 }
 
 void save_replicas_to_csv(const arma::Mat<int> &replicas, const std::string &filename)
 {
-    std::ofstream out(filename);
+    std::ofstream replicas_out(filename);
 
-    if (!out)
+    if (!replicas_out)
     {
         throw std::runtime_error("Could not open file for writing: " + filename);
     }
@@ -43,14 +43,14 @@ void save_replicas_to_csv(const arma::Mat<int> &replicas, const std::string &fil
     {
         for (size_t j = 0; j < replicas.n_cols; ++j)
         {
-            out << replicas(i, j);
+            replicas_out << replicas(i, j);
             if (j + 1 < replicas.n_cols)
-                out << ",";
+                replicas_out << ",";
         }
-        out << "\n";
+        replicas_out << "\n";
     }
 
-    out.close();
+    replicas_out.close();
 }
 
 void runTemperatureDependence(RunParameters &params)
@@ -63,27 +63,20 @@ void runTemperatureDependence(RunParameters &params)
     FullEnsembleTrainer model_full(core, params, params.trained_model_file);
     HeatBathTrainer model_mc(core, params, params.trained_model_file);
 
-    std::size_t nt = params.temperature_range.size();
-    arma::vec T(params.temperature_range.data(), params.temperature_range.size(),
-                /* copy_aux_mem = */ true);
+    std::size_t nt = params.beta_range.size();
+    arma::vec beta_range(params.beta_range.data(), nt, /* copy_aux_mem = */ true);
     arma::vec E(nt, arma::fill::zeros);
     arma::vec CV(nt, arma::fill::zeros);
     arma::vec M(nt, arma::fill::zeros);
     arma::vec Qmax(nt, arma::fill::zeros);
     arma::vec PQmax(nt, arma::fill::zeros);
 
-    // creates a tde- file to save temperature dependence
-    auto file_tdep = io::make_filename(params, "tdep");
-    // ./results/pairwise/tdep_$(runid)_n_$(nspins).json
-
-    std::ofstream out(file_tdep);
-
     if (nspins < 21)
     { // loop to compute T, beta, <E>, <CV> <mag>, full ensemble is more accurate
         std::size_t i = 0;
-        for (double T : params.temperature_range)
+        for (double beta : params.beta_range)
         {
-            double beta = 1.0 / T;
+            double T = 1.0 / beta;
 
             model_full.computeModelAverages(beta, true);
             double energy = model_full.get_avg_energy();
@@ -91,8 +84,9 @@ void runTemperatureDependence(RunParameters &params)
                 (model_full.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             double magnetization = model_full.get_avg_magnetization();
 
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
-                         energy, specific_heat, magnetization);
+            logger->info(
+                "[runTemperatureDependence]  T={:.2f} beta={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
+                beta, energy, specific_heat, magnetization);
 
             E(i)  = energy;
             CV(i) = specific_heat;
@@ -128,13 +122,14 @@ void runTemperatureDependence(RunParameters &params)
     else
     { // heat_bath already used to train the model
         std::size_t i = 0;
-        for (double T : params.temperature_range)
+        for (double beta : params.beta_range)
         {
-            double beta = 1.0 / T;
+            double T = 1.0 / beta;
 
             model_mc.computeModelAverages(beta, true);
-            double energy        = model_mc.get_avg_energy();
-            double specific_heat = (model_mc.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
+            double energy = model_mc.get_avg_energy();
+            double specific_heat =
+                beta * beta * (model_mc.get_avg_energy_sq() - std::pow(energy, 2.0));
             double magnetization = model_mc.get_avg_magnetization();
 
             auto replicas                   = model_mc.get_replicas();
@@ -150,9 +145,10 @@ void runTemperatureDependence(RunParameters &params)
             Qmax(i)  = q_max;
             PQmax(i) = p_q_max;
 
-            logger->info("[runTemperatureDependence] T={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
-                         "q_max={:.2f}, p_q_max={:.2f}",
-                         T, energy, specific_heat, magnetization, q_max, p_q_max);
+            logger->info(
+                "[runTemperatureDependence] T={:.2f} beta={:.2f} E={:.2f} CV={:.2f} M={:.2f}, "
+                "q_max={:.2f}, p_q_max={:.2f}",
+                T, beta, energy, specific_heat, magnetization, q_max, p_q_max);
 
             if (std::abs(T - 1.0) < 1e-6 * std::max(1.0, std::abs(T)))
             {
@@ -164,38 +160,34 @@ void runTemperatureDependence(RunParameters &params)
             i++;
         }
     }
-    if (file_tdep.size() >= 5 && file_tdep.substr(file_tdep.size() - 5) == ".json")
-    {
-        file_tdep.replace(file_tdep.size() - 5, 5, ".csv");
-    }
-    else
-    {
-        file_tdep += ".csv"; // fallback if no extension
-    }
 
-    std::ofstream fout(file_tdep);
-    if (!fout)
+    // creates a tde- file to save temperature dependence
+    auto file_tdep = io::make_filename(params, "tdep");
+    // ./results/pairwise/tdep_$(runid)_n_$(nspins).csv <----------
+    std::ofstream tdep_fout(file_tdep);
+    if (!tdep_fout)
     {
         logger->error("Could not open {}", file_tdep);
         return;
     }
 
     // Header
-    fout << "T,E,CV,M,Qmax,PQmax\n";
+    tdep_fout << "T,beta,E,CV,M,Qmax,PQmax\n";
 
     // Data
-    size_t n = T.size();
+    size_t n = beta_range.size();
     for (size_t i = 0; i < n; ++i)
     {
-        fout << std::setprecision(12) << T[i] << "," << E[i] << "," << CV[i] << "," << M[i] << ","
-             << Qmax[i] << "," << PQmax[i] << "\n";
+        tdep_fout << std::setprecision(12) << 1.0 / beta_range(i) << "," << beta_range(i) << ","
+                  << E(i) << "," << CV(i) << "," << M(i) << "," << Qmax(i) << "," << PQmax(i)
+                  << "\n";
     }
 
-    fout.close();
+    tdep_fout.close();
     logger->info("[runTemperatureDependence] Saved CSV to {}", file_tdep);
 
     // nlohmann::json obj;
-    // obj["T"]     = T;
+    // obj["beta"]  = beta_range;
     // obj["E"]     = E;
     // obj["CV"]    = CV;
     // obj["M"]     = M;

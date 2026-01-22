@@ -66,6 +66,7 @@ void runTemperatureDependence(RunParameters &params)
     std::size_t nt = params.beta_range.size();
     arma::vec beta_range(params.beta_range.data(), nt, /* copy_aux_mem = */ true);
     arma::vec E(nt, arma::fill::zeros);
+    arma::vec FSUPP(nt, arma::fill::zeros);
     arma::vec CV(nt, arma::fill::zeros);
     arma::vec M(nt, arma::fill::zeros);
     arma::vec Qmax(nt, arma::fill::zeros);
@@ -83,14 +84,16 @@ void runTemperatureDependence(RunParameters &params)
             double specific_heat =
                 (model_full.get_avg_energy_sq() - std::pow(energy, 2.0)) / (T * T);
             double magnetization = model_full.get_avg_magnetization();
+            double f_supp        = model_full.get_f_supp();
 
-            logger->info(
-                "[runTemperatureDependence]  T={:.2f} beta={:.2f} E={:.2f} CV={:.2f} M={:.2f}", T,
-                beta, energy, specific_heat, magnetization);
+            logger->info("[runTemperatureDependence]  T={:.2f} beta={:.2f} E={:.2f} CV={:.2f} "
+                         "M={:.2f} fsupp={:.2e}",
+                         T, beta, energy, specific_heat, magnetization, f_supp);
 
-            E(i)  = energy;
-            CV(i) = specific_heat;
-            M(i)  = magnetization;
+            E(i)     = energy;
+            CV(i)    = specific_heat;
+            M(i)     = magnetization;
+            FSUPP(i) = f_supp;
 
             if (params.compute_replica_cor)
             {
@@ -172,15 +175,15 @@ void runTemperatureDependence(RunParameters &params)
     }
 
     // Header
-    tdep_fout << "T,beta,E,CV,M,Qmax,PQmax\n";
+    tdep_fout << "T,beta,E,CV,M,fsupp,Qmax,PQmax\n";
 
     // Data
     size_t n = beta_range.size();
     for (size_t i = 0; i < n; ++i)
     {
         tdep_fout << std::setprecision(12) << 1.0 / beta_range(i) << "," << beta_range(i) << ","
-                  << E(i) << "," << CV(i) << "," << M(i) << "," << Qmax(i) << "," << PQmax(i)
-                  << "\n";
+                  << E(i) << "," << CV(i) << "," << M(i) << "," << FSUPP(i) << "," << Qmax(i) << ","
+                  << PQmax(i) << "\n";
     }
 
     tdep_fout.close();

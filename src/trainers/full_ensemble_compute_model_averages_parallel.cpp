@@ -25,8 +25,13 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     avg_magnetization  = 0.0;
     double Z_partition = 0.0;
     size_t total       = 1ULL << nspins;
-    logger->info("Total number of configurations: {}", total);
+    // logger->info("Total number of configurations: {}", total);
 
+    size_t N_supp            = 0;   // number of configurations with P>0
+    // double f_supp            = 0.0; // fraction of supported configurations
+    const double one_minus_q = 1.0 - params.q_val;
+
+    // logger->info("Number of threads: {}", omp_get_num_threads());
     GE.clear();
     PE.clear();
 #pragma omp parallel
@@ -40,6 +45,8 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         double local_avg_energy_sq     = 0.0;
         double local_avg_magnetization = 0.0;
         double local_Z                 = 0.0;
+        double local_bracket           = 1.0;
+        size_t local_N_supp            = 0;
 
         arma::Col<double> local_m1_model(nspins, arma::fill::zeros);
         arma::Col<double> local_m2_model(nedges, arma::fill::zeros);
@@ -66,8 +73,14 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         // logger->info("thread {} start {} end {}", thread_id, start, end);
         for (const auto &s : sequence)
         {
-            E = energyAllPairs(s);
-            P = utils::exp_q(-beta * E, params.q_val);
+            E             = energyAllPairs(s);
+            P             = utils::exp_q(-beta * E, params.q_val);
+            local_bracket = 1.0 + one_minus_q * beta * E;
+            // Support counting: Tsallis q<1 typically yields exact zeros via cutoff.
+            if (local_bracket > 0.0)
+            {
+                local_N_supp += 1;
+            }
 
             local_Z += P;
             local_avg_energy += P * E;
@@ -123,6 +136,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             Z_partition += local_Z;
             // k_pairwise: always compute p(k)
             pK_model += local_pK_model;
+
+            N_supp += local_N_supp;
+
             if (triplets)
             {
                 m3_model += local_m3_model;
@@ -158,4 +174,9 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 
     // k-pairwise
     pK_model /= Z_partition;
+
+    f_supp = static_cast<double>(N_supp) / static_cast<double>(total);
+    logger->info(
+        "Support fraction f_supp(beta={:.6g}, q={:.6g}) = {:.6g} (N_supp = {}), total = {:d}", beta,
+        params.q_val, f_supp, N_supp, total);
 }

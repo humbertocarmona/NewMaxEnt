@@ -75,6 +75,7 @@ struct RunParameters
 
     // post-processing temperature dependence
     std::vector<double> beta_range = std::vector<double>();
+    std::vector<double> T_range    = std::vector<double>();
 
     RunParameters() = default;
 
@@ -125,6 +126,8 @@ struct RunParameters
         {
             logger->info("[{}] beta_range =    {}", caption,
                          utils::colPrint(arma::Col<double>(beta_range)));
+            logger->info("[{}] T_range =    {}", caption,
+                         utils::colPrint(arma::Col<double>(T_range)));
         }
         if (run_type == "Wang_Landau")
         {
@@ -192,7 +195,10 @@ struct RunParameters
             obj["Monte_Carlo"]       = mc;
         }
         if (run_type == "Temperature_Dep")
+        {
             obj["beta_range"] = beta_range;
+            obj["T_range"]    = T_range;
+        }
 
         if (run_type == "Wang_Landau")
         {

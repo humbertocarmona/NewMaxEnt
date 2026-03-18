@@ -110,13 +110,15 @@ RunParameters parseParameters(const std::string &filename)
         throw std::runtime_error(p.run_type + " requires 'training' in " + filename);
     }
 
-    if (isTdep && !json_data.contains("beta_range"))
+    if (isTdep && !json_data.contains("beta_range") && !json_data.contains("T_range"))
     {
-        throw std::runtime_error(p.run_type + " requires 'beta_range' in " + filename);
+        throw std::runtime_error(p.run_type + " requires 'beta_range' or 'T_range' in " + filename);
     }
-    if (p.compute_replica_cor && !json_data.contains("beta_range"))
+    if (p.compute_replica_cor && !json_data.contains("beta_range") &&
+        !json_data.contains("T_range"))
     {
-        throw std::runtime_error("compute_replica_cor  requires 'beta_range' in " + filename);
+        throw std::runtime_error("compute_replica_cor  requires 'beta_range' or 'T_range' in " +
+                                 filename);
     }
 
     if (p.trained_model_file == "none" && p.raw_data_file == "none")
@@ -189,6 +191,36 @@ RunParameters parseParameters(const std::string &filename)
         {
             // just copy the arr
             p.beta_range = arr.get<std::vector<double>>();
+        }
+    }
+
+    if (json_data.contains("T_range") && json_data["T_range"].is_array())
+    {
+        const auto &arr = json_data["T_range"];
+
+        // Check if all elements are numbers
+        bool all_numeric =
+            std::all_of(arr.begin(), arr.end(), [](const auto &el) { return el.is_number(); });
+
+        if (!all_numeric)
+            throw std::runtime_error("All elements of 'T_range' must be numeric");
+
+        if (arr.size() == 3)
+        {
+            double t_begin = arr[0];
+            double t_end   = arr[1];
+            double t_step  = arr[2];
+
+            if (t_step <= 0)
+                throw std::runtime_error("T_range step must be > 0");
+
+            for (double T = t_begin; T <= t_end + 1e-10; T += t_step)
+                p.T_range.push_back(T);
+        }
+        else
+        {
+            // just copy the arr
+            p.T_range = arr.get<std::vector<double>>();
         }
     }
 

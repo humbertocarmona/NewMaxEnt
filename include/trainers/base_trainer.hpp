@@ -76,6 +76,18 @@ class BaseTrainer
         return avg_energy;
     }
 
+    const double get_max_weight() const
+    {
+        return max_weight;
+    }
+    const double get_max_bracket() const
+    {
+        return max_bracket;
+    }
+    const double get_max_weight_energy() const
+    {
+        return max_weight_energy;
+    }
     const double get_f_supp() const
     {
         return f_supp;
@@ -158,6 +170,7 @@ class BaseTrainer
     double avg_energy_sq;
     double avg_magnetization;
     double f_supp;
+    double max_weight, max_bracket, max_weight_energy;
 
     // averages used for training
     arma::Col<double> m1_data;  // sample fist momentum: <s_i>

@@ -55,8 +55,17 @@ void save_replicas_to_csv(const arma::Mat<int> &replicas, const std::string &fil
 
 void runTemperatureDependence(RunParameters &params)
 {
-    auto logger = getLogger();
-
+    auto logger      = getLogger();
+    bool use_T_range = false;
+    if (params.beta_range.empty() && !params.T_range.empty())
+    {
+        use_T_range = true;
+        params.beta_range.resize(params.T_range.size());
+        for (size_t i = 0; i < params.T_range.size(); ++i)
+        {
+            params.beta_range[i] = 1.0 / params.T_range[i];
+        }
+    }
     int nspins = params.nspins;
     MaxEntCore core(nspins, params.runid);
 
@@ -71,6 +80,9 @@ void runTemperatureDependence(RunParameters &params)
     arma::vec M(nt, arma::fill::zeros);
     arma::vec Qmax(nt, arma::fill::zeros);
     arma::vec PQmax(nt, arma::fill::zeros);
+    arma::vec MaxWeight(nt, arma::fill::zeros);
+    arma::vec MaxBracket(nt, arma::fill::zeros);
+    arma::vec MaxWeightEnergy(nt, arma::fill::zeros);
 
     if (nspins < 21)
     { // loop to compute T, beta, <E>, <CV> <mag>, full ensemble is more accurate
@@ -90,10 +102,13 @@ void runTemperatureDependence(RunParameters &params)
                          "M={:.2f} fsupp={:.2e}",
                          T, beta, energy, specific_heat, magnetization, f_supp);
 
-            E(i)     = energy;
-            CV(i)    = specific_heat;
-            M(i)     = magnetization;
-            FSUPP(i) = f_supp;
+            E(i)               = energy;
+            CV(i)              = specific_heat;
+            M(i)               = magnetization;
+            FSUPP(i)           = f_supp;
+            MaxWeight(i)       = model_full.get_max_weight();
+            MaxBracket(i)      = model_full.get_max_bracket();
+            MaxWeightEnergy(i) = model_full.get_max_weight_energy();
 
             if (params.compute_replica_cor)
             {
@@ -175,7 +190,7 @@ void runTemperatureDependence(RunParameters &params)
     }
 
     // Header
-    tdep_fout << "T,beta,E,CV,M,fsupp,Qmax,PQmax\n";
+    tdep_fout << "T,beta,E,CV,M,fsupp,Qmax,PQmax,MaxWeight,MaxBracket,MaxWeightEnergy\n";
 
     // Data
     size_t n = beta_range.size();
@@ -183,7 +198,8 @@ void runTemperatureDependence(RunParameters &params)
     {
         tdep_fout << std::setprecision(12) << 1.0 / beta_range(i) << "," << beta_range(i) << ","
                   << E(i) << "," << CV(i) << "," << M(i) << "," << FSUPP(i) << "," << Qmax(i) << ","
-                  << PQmax(i) << "\n";
+                  << PQmax(i) << "," << MaxWeight(i) << "," << MaxBracket(i) << ","
+                  << MaxWeightEnergy(i) << "\n";
     }
 
     tdep_fout.close();

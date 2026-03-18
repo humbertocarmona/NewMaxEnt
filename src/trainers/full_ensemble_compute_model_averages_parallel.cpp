@@ -27,10 +27,14 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     size_t total       = 1ULL << nspins;
     // logger->info("Total number of configurations: {}", total);
 
-    size_t N_supp            = 0;   // number of configurations with P>0
+    size_t N_supp = 0; // number of configurations with P>0
     // double f_supp            = 0.0; // fraction of supported configurations
     const double one_minus_q = 1.0 - params.q_val;
 
+    max_weight        = -std::numeric_limits<double>::max();
+    max_bracket       = -std::numeric_limits<double>::max();
+    max_weight_energy = -std::numeric_limits<double>::max();
+    ;
     // logger->info("Number of threads: {}", omp_get_num_threads());
     GE.clear();
     PE.clear();
@@ -47,6 +51,10 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         double local_Z                 = 0.0;
         double local_bracket           = 1.0;
         size_t local_N_supp            = 0;
+        double local_max_weight        = -std::numeric_limits<double>::max();
+        double local_max_bracket       = -std::numeric_limits<double>::max();
+        double local_max_weight_energy = -std::numeric_limits<double>::max();
+        ;
 
         arma::Col<double> local_m1_model(nspins, arma::fill::zeros);
         arma::Col<double> local_m2_model(nedges, arma::fill::zeros);
@@ -75,7 +83,14 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
         {
             E             = energyAllPairs(s);
             P             = utils::exp_q(-beta * E, params.q_val);
-            local_bracket = 1.0 + one_minus_q * beta * E;
+            local_bracket = 1.0 - one_minus_q * beta * E;
+            if (P > local_max_weight)
+            {
+                local_max_weight        = P;
+                local_max_bracket       = local_bracket;
+                local_max_weight_energy = E;
+            }
+
             // Support counting: Tsallis q<1 typically yields exact zeros via cutoff.
             if (local_bracket > 0.0)
             {
@@ -128,6 +143,12 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
 
 #pragma omp critical
         {
+            if (local_max_weight > max_weight)
+            {
+                max_weight        = local_max_weight;
+                max_bracket       = local_max_bracket;
+                max_weight_energy = local_max_weight_energy;
+            }
             avg_energy += local_avg_energy;
             avg_energy_sq += local_avg_energy_sq;
             avg_magnetization += local_avg_magnetization;
@@ -160,6 +181,7 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
     avg_energy /= Z_partition;
     avg_energy_sq /= Z_partition;
     avg_magnetization /= Z_partition;
+    max_weight /= Z_partition;
 
     m1_model /= Z_partition;
     m2_model /= Z_partition;
@@ -171,12 +193,10 @@ void FullEnsembleTrainer::computeModelAverages(double beta, bool triplets)
             kv.second /= Z_partition; // now H[bin] ~ P_q(E_bin)
         }
     }
-
     // k-pairwise
     pK_model /= Z_partition;
-
     f_supp = static_cast<double>(N_supp) / static_cast<double>(total);
-    logger->info(
-        "Support fraction f_supp(beta={:.6g}, q={:.6g}) = {:.6g} (N_supp = {}), total = {:d}", beta,
-        params.q_val, f_supp, N_supp, total);
+    // logger->info(
+    //     "Support fraction f_supp(beta={:.6g}, q={:.6g}) = {:.6g} (N_supp = {}), total = {:d}",
+    //     beta, params.q_val, f_supp, N_supp, total);
 }

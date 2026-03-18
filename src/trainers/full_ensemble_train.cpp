@@ -20,7 +20,7 @@ void FullEnsembleTrainer::train()
         else if (params.updateType == 3)
         {
             gradUpdateModelSeq(iter);
-        }
+        } 
         else
         {
             plawUpdateModel(iter);
